@@ -42,15 +42,7 @@ const MyMap = () => {
           icon: customIcon,
         })
           .addTo(mcg)
-          .bindPopup(
-            position.INCIDENT_TYPE +
-              " " +
-              position.BLOCK +
-              " " +
-              position.LAT +
-              " " +
-              position.LON
-          )
+          .bindPopup(position.INCIDENT_TYPE)
       );
 
       // optionally center the map around the markers
