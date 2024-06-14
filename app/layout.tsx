@@ -1,3 +1,5 @@
+/* eslint-disable @next/next/next-script-for-ga */
+/* eslint-disable react/no-unescaped-entities */
 /* eslint-disable @next/next/no-sync-scripts */
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
@@ -15,9 +17,19 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  window.dataLayer = window.dataLayer || [];
   return (
     <html lang="en" data-theme="emerald">
       <head>
+        <script
+          async
+          src="https://www.googletagmanager.com/gtag/js?id=G-8VSBZ6SFBZ"
+        ></script>
+        <script>
+          window.dataLayer = window.dataLayer || []; function gtag()
+          {window.dataLayer.push(arguments)}
+          gtag('js', new Date()); gtag('config', 'G-8VSBZ6SFBZ');
+        </script>
         <link
           rel="stylesheet"
           href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css"
@@ -32,7 +44,6 @@ export default function RootLayout({
           rel="stylesheet"
           href="https://unpkg.com/leaflet.markercluster@1.3.0/dist/MarkerCluster.Default.css"
         />
-
         <script
           src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js"
           integrity="sha512-/Nsx9X4HebavoBvEBuyp3I7od5tA0UzAxs+j83KgC8PU0kgB4XiK4Lfe4y4cgBtaRJQEIFCW+oC506aPT2L1zw=="
