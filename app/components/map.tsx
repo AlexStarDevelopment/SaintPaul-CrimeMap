@@ -24,7 +24,6 @@ const MyMap = () => {
   const { data, error, isLoading } = useSWR("/api/data", fetcher);
   // const data = undefined;
   // const isLoading = true;
-  if (data) console.log(data[0].crimes);
 
   if (isLoading)
     return <span className="loading loading-infinity loading-lg"></span>;
