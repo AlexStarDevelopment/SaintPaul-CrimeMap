@@ -31,22 +31,22 @@ export default function Home() {
           <h3 className="card-title">About</h3>
           <p className="m-5">
             My name is Alex! Thanks for visiting my app. I can never find good
-            crime maps of Saint Paul and the public data access spreadsheets are
-            really buggy and hard to work with. Building this app, it was still
-            very difficult to work with the data that the city provides and I
-            had to do a lot of cleanup to get the data usable for mapping. I
-            figured if I was having trouble navigating these resorces, others
-            would be too. That was the insperation behind building this app. I
-            decided to start small with just my own neighborhood, The Westside!
+            crime maps of Saint Paul, and the public data access spreadsheets
+            are really buggy and hard to work with. Building this app, it was
+            still very difficult to work with the data that the city provides,
+            and I had to do a lot of cleanup to get the data usable for mapping.
+            I figured if I was having trouble navigating these resources, others
+            would be too. That was the inspiration behind building this app. I
+            decided to start small with just my own neighborhood, The West Side!
             I have loved living here for the past 4 years and have never had any
-            serious run ins with crime. However, I like to stay informed! I make
-            no claims with this app and the purpose is not political it is
-            simple, to stay informed. I assume you do too if you are reading
-            this! This app is a proof of concept and if you like it and want to
+            serious run-ins with crime. However, I like to stay informed! I make
+            no claims with this app, and the purpose is not political - it is
+            simply to stay informed. I assume you do too if you are reading
+            this! This app is a proof of concept, and if you like it and want to
             see me continue building it, please let me know. If you REALLY like
-            it and want to buy me a cup of joe from Amore on Annapolis and Smith
-            I have included a button above. Please do not feel obligated and
-            only do so if you want and are able! THANK YOU!
+            it and want to buy me a cup of joe from Amore on Annapolis and
+            Smith, I have included a button above. Please do not feel obligated
+            and only do so if you want and are able! THANK YOU!
           </p>
         </div>
       </div>
@@ -65,9 +65,9 @@ export default function Home() {
       </div>
       <div className="card w-96 bg-primary text-primary-content m-5">
         <div className="card-body items-center text-center">
-          <h3 className="card-title">Disclimer</h3>
+          <h3 className="card-title">Disclaimer</h3>
           <p className="m-5">
-            City of Saint Paul Disclimer: This data is public domain. This data
+            City of Saint Paul Disclaimer: This data is public domain. This data
             are provided to you “as is” and without any warranty as to their
             performance, merchantability, or fitness for any particular purpose.
             The City of Saint Paul does not represent or warrant that the data
