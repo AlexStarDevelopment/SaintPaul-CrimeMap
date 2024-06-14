@@ -28,6 +28,8 @@ const MyMap = () => {
 
   if (isLoading)
     return <span className="loading loading-infinity loading-lg"></span>;
+  if (!data)
+    return <span className="loading loading-infinity loading-lg"></span>;
 
   const mcg = L.markerClusterGroup();
 
