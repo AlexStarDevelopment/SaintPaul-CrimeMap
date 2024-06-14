@@ -33,6 +33,6 @@ body {
 }
 
 .leaflet-container {
-  height: 500px;
-  width: 1000px;
+  height: 75vh;
+  width: 80vw;
 }
