@@ -76,52 +76,52 @@ const MyMap = () => {
       });
     };
 
-    const getIcon = (incident: string): DivIcon => {
-      const lowerIncident = incident.toLowerCase();
-      switch (lowerIncident) {
-        case "agg. assault":
-          return newDivIcon(fist);
-        case "agg. assault dom.":
-          return newDivIcon(fist);
-        case "agg. assault dom":
-          return newDivIcon(fist);
-        case "simple asasult dom.":
-          return newDivIcon(fist);
-        case "simple assault dom.":
-          return newDivIcon(fist);
-        case "auto theft":
-          return newDivIcon(car);
-        case "theft":
-          return newDivIcon(money);
-        case "burglary":
-          return newDivIcon(house);
-        case "discharge":
-          return newDivIcon(gun);
-        case "graffiti":
-          return newDivIcon(graffiti);
-        case "vandalism":
-          return newDivIcon(graffiti);
-        case "criminal damage":
-          return newDivIcon(graffiti);
-        case "narcotics":
-          return newDivIcon(narco);
-        case "robbery":
-          return newDivIcon(robbery);
-        case "robbery":
-          return newDivIcon(robbery);
-        case "arson":
-          return newDivIcon(arson);
-        default: {
-          console.log(incident);
-          return new Icon({
-            iconUrl: "/dot-svgrepo-com.svg",
-            iconSize: [10, 10],
-          });
-        }
-      }
-    };
-
     React.useEffect(() => {
+      const getIcon = (incident: string): DivIcon => {
+        const lowerIncident = incident.toLowerCase();
+        switch (lowerIncident) {
+          case "agg. assault":
+            return newDivIcon(fist);
+          case "agg. assault dom.":
+            return newDivIcon(fist);
+          case "agg. assault dom":
+            return newDivIcon(fist);
+          case "simple asasult dom.":
+            return newDivIcon(fist);
+          case "simple assault dom.":
+            return newDivIcon(fist);
+          case "auto theft":
+            return newDivIcon(car);
+          case "theft":
+            return newDivIcon(money);
+          case "burglary":
+            return newDivIcon(house);
+          case "discharge":
+            return newDivIcon(gun);
+          case "graffiti":
+            return newDivIcon(graffiti);
+          case "vandalism":
+            return newDivIcon(graffiti);
+          case "criminal damage":
+            return newDivIcon(graffiti);
+          case "narcotics":
+            return newDivIcon(narco);
+          case "robbery":
+            return newDivIcon(robbery);
+          case "robbery":
+            return newDivIcon(robbery);
+          case "arson":
+            return newDivIcon(arson);
+          default: {
+            console.log(incident);
+            return new Icon({
+              iconUrl: "/dot-svgrepo-com.svg",
+              iconSize: [10, 10],
+            });
+          }
+        }
+      };
+
       mcg.clearLayers();
       markers.forEach((position: any) =>
         L.marker(new L.LatLng(position.LAT, position.LON), {
@@ -139,7 +139,7 @@ const MyMap = () => {
       // map.fitBounds(mcg.getBounds());
       // // add the marker cluster group to the map
       map.addLayer(mcg);
-    }, [markers, map, getIcon]);
+    }, [markers, map]);
 
     return null;
   };
