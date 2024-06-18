@@ -113,7 +113,6 @@ const MyMap = () => {
           case "arson":
             return newDivIcon(arson);
           default: {
-            console.log(incident);
             return new Icon({
               iconUrl: "/dot-svgrepo-com.svg",
               iconSize: [10, 10],
