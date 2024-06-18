@@ -6,19 +6,53 @@ import { MapContainer } from "react-leaflet/MapContainer";
 import { TileLayer } from "react-leaflet/TileLayer";
 import { Marker } from "react-leaflet/Marker";
 import { Popup } from "react-leaflet/Popup";
-import { Icon, Point } from "leaflet";
+import { Icon, DivIcon } from "leaflet";
 import * as L from "leaflet";
 import "leaflet.markercluster";
 import useSWR from "swr";
 import { useMap } from "react-leaflet";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import ReactDOMServer, { renderToStaticMarkup } from "react-dom/server";
+import { faHandFist } from "@fortawesome/free-solid-svg-icons/faHandFist";
+import { faCar } from "@fortawesome/free-solid-svg-icons/faCar";
+import { faMoneyBill } from "@fortawesome/free-solid-svg-icons";
+import { faHouse } from "@fortawesome/free-solid-svg-icons/faHouse";
+import { faGun } from "@fortawesome/free-solid-svg-icons/faGun";
+import { faSprayCan } from "@fortawesome/free-solid-svg-icons/faSprayCan";
+import { faPills } from "@fortawesome/free-solid-svg-icons/faPills";
+import { faMaskFace } from "@fortawesome/free-solid-svg-icons/faMaskFace";
+import { faFire } from "@fortawesome/free-solid-svg-icons/faFire";
+
+const fist = ReactDOMServer.renderToString(
+  <FontAwesomeIcon height={20} width={20} icon={faHandFist} color="black" />
+);
+const car = ReactDOMServer.renderToString(
+  <FontAwesomeIcon height={20} width={20} icon={faCar} color="black" />
+);
+const money = ReactDOMServer.renderToString(
+  <FontAwesomeIcon height={20} width={20} icon={faMoneyBill} color="black" />
+);
+const house = ReactDOMServer.renderToString(
+  <FontAwesomeIcon height={20} width={20} icon={faHouse} color="black" />
+);
+const gun = ReactDOMServer.renderToString(
+  <FontAwesomeIcon height={20} width={20} icon={faGun} color="black" />
+);
+const graffiti = ReactDOMServer.renderToString(
+  <FontAwesomeIcon height={20} width={20} icon={faSprayCan} color="black" />
+);
+const narco = ReactDOMServer.renderToString(
+  <FontAwesomeIcon height={20} width={20} icon={faPills} color="black" />
+);
+const robbery = ReactDOMServer.renderToString(
+  <FontAwesomeIcon height={20} width={20} icon={faMaskFace} color="black" />
+);
+const arson = ReactDOMServer.renderToString(
+  <FontAwesomeIcon height={20} width={20} icon={faFire} color="black" />
+);
 
 // @ts-ignore
 const fetcher = (...args: any[]) => fetch(...args).then((res) => res.json());
-
-const customIcon = new Icon({
-  iconUrl: "/dot-svgrepo-com.svg",
-  iconSize: [10, 10],
-});
 
 const MyMap = () => {
   const { data, error, isLoading } = useSWR("/api/data", fetcher);
@@ -35,11 +69,63 @@ const MyMap = () => {
   const MarkerCluster = ({ markers }: any) => {
     const map = useMap();
 
+    const newDivIcon = (icon: string): DivIcon => {
+      return new DivIcon({
+        html: icon,
+        iconSize: [22, 20],
+      });
+    };
+
+    const getIcon = (incident: string): DivIcon => {
+      const lowerIncident = incident.toLowerCase();
+      switch (lowerIncident) {
+        case "agg. assault":
+          return newDivIcon(fist);
+        case "agg. assault dom.":
+          return newDivIcon(fist);
+        case "agg. assault dom":
+          return newDivIcon(fist);
+        case "simple asasult dom.":
+          return newDivIcon(fist);
+        case "simple assault dom.":
+          return newDivIcon(fist);
+        case "auto theft":
+          return newDivIcon(car);
+        case "theft":
+          return newDivIcon(money);
+        case "burglary":
+          return newDivIcon(house);
+        case "discharge":
+          return newDivIcon(gun);
+        case "graffiti":
+          return newDivIcon(graffiti);
+        case "vandalism":
+          return newDivIcon(graffiti);
+        case "criminal damage":
+          return newDivIcon(graffiti);
+        case "narcotics":
+          return newDivIcon(narco);
+        case "robbery":
+          return newDivIcon(robbery);
+        case "robbery":
+          return newDivIcon(robbery);
+        case "arson":
+          return newDivIcon(arson);
+        default: {
+          console.log(incident);
+          return new Icon({
+            iconUrl: "/dot-svgrepo-com.svg",
+            iconSize: [10, 10],
+          });
+        }
+      }
+    };
+
     React.useEffect(() => {
       mcg.clearLayers();
       markers.forEach((position: any) =>
         L.marker(new L.LatLng(position.LAT, position.LON), {
-          icon: customIcon,
+          icon: getIcon(position.INCIDENT),
         })
           .addTo(mcg)
           .bindPopup(
