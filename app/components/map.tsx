@@ -22,39 +22,16 @@ import { faSprayCan } from "@fortawesome/free-solid-svg-icons/faSprayCan";
 import { faPills } from "@fortawesome/free-solid-svg-icons/faPills";
 import { faFire } from "@fortawesome/free-solid-svg-icons/faFire";
 import { faMask } from "@fortawesome/free-solid-svg-icons/faMask";
-
-const fist = ReactDOMServer.renderToString(
-  <FontAwesomeIcon height={20} width={20} icon={faHandFist} color="black" />
-);
-const car = ReactDOMServer.renderToString(
-  <FontAwesomeIcon height={20} width={20} icon={faCar} color="black" />
-);
-const money = ReactDOMServer.renderToString(
-  <FontAwesomeIcon height={20} width={20} icon={faMoneyBill} color="black" />
-);
-const house = ReactDOMServer.renderToString(
-  <FontAwesomeIcon height={20} width={20} icon={faHouse} color="black" />
-);
-const gun = ReactDOMServer.renderToString(
-  <FontAwesomeIcon height={20} width={20} icon={faGun} color="black" />
-);
-const graffiti = ReactDOMServer.renderToString(
-  <FontAwesomeIcon height={20} width={20} icon={faSprayCan} color="black" />
-);
-const narco = ReactDOMServer.renderToString(
-  <FontAwesomeIcon height={20} width={20} icon={faPills} color="black" />
-);
-const robbery = ReactDOMServer.renderToString(
-  <FontAwesomeIcon height={20} width={20} icon={faMask} color="black" />
-);
-const arson = ReactDOMServer.renderToString(
-  <FontAwesomeIcon height={20} width={20} icon={faFire} color="black" />
-);
+import MarkerCluster from "./markerCluster";
 
 // @ts-ignore
 const fetcher = (...args: any[]) => fetch(...args).then((res) => res.json());
 
-const MyMap = () => {
+interface MyMapProps {
+  option: string;
+}
+
+const MyMap = ({ option }: MyMapProps) => {
   const { data, error, isLoading } = useSWR("/api/data", fetcher);
   // const data = undefined;
   // const isLoading = true;
@@ -64,97 +41,19 @@ const MyMap = () => {
   if (!data)
     return <span className="loading loading-infinity loading-lg"></span>;
 
-  const mcg = L.markerClusterGroup();
-
-  const MarkerCluster = ({ markers }: any) => {
-    const map = useMap();
-
-    const newDivIcon = (icon: string): DivIcon => {
-      return new DivIcon({
-        html: icon,
-        iconSize: [22, 20],
-      });
-    };
-
-    React.useEffect(() => {
-      const getIcon = (incident: string): DivIcon => {
-        const lowerIncident = incident.toLowerCase();
-        switch (lowerIncident) {
-          case "agg. assault":
-            return newDivIcon(fist);
-          case "agg. assault dom.":
-            return newDivIcon(fist);
-          case "agg. assault dom":
-            return newDivIcon(fist);
-          case "simple asasult dom.":
-            return newDivIcon(fist);
-          case "simple assault dom.":
-            return newDivIcon(fist);
-          case "auto theft":
-            return newDivIcon(car);
-          case "theft":
-            return newDivIcon(money);
-          case "burglary":
-            return newDivIcon(house);
-          case "discharge":
-            return newDivIcon(gun);
-          case "graffiti":
-            return newDivIcon(graffiti);
-          case "vandalism":
-            return newDivIcon(graffiti);
-          case "criminal damage":
-            return newDivIcon(graffiti);
-          case "narcotics":
-            return newDivIcon(narco);
-          case "robbery":
-            return newDivIcon(robbery);
-          case "robbery":
-            return newDivIcon(robbery);
-          case "arson":
-            return newDivIcon(arson);
-          default: {
-            return new Icon({
-              iconUrl: "/dot-svgrepo-com.svg",
-              iconSize: [10, 10],
-            });
-          }
-        }
-      };
-
-      mcg.clearLayers();
-      markers.forEach((position: any) =>
-        L.marker(new L.LatLng(position.LAT, position.LON), {
-          icon: getIcon(position.INCIDENT),
-        })
-          .addTo(mcg)
-          .bindPopup(
-            `<div><p>${new Date(position.DATE).toLocaleString()}</p>${
-              position.INCIDENT_TYPE
-            }<p></p></div>`
-          )
-      );
-
-      // optionally center the map around the markers
-      // map.fitBounds(mcg.getBounds());
-      // // add the marker cluster group to the map
-      map.addLayer(mcg);
-    }, [markers, map]);
-
-    return null;
-  };
-
   return (
     <>
       <MapContainer
         center={[44.9308168, -93.0796477]}
         zoom={14}
+        key={option}
         scrollWheelZoom={false}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        <MarkerCluster markers={data[0].crimes} />
+        <MarkerCluster markers={data[option].crimes} />
       </MapContainer>
     </>
   );

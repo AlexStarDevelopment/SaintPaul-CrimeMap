@@ -1,6 +1,7 @@
 "use client";
 import dynamic from "next/dynamic";
 import Head from "next/head";
+import { ChangeEvent, useState } from "react";
 
 const MyMap = dynamic(() => import("./components/map"), {
   ssr: false,
@@ -10,6 +11,8 @@ export default function Home() {
   const handleClick = () => {
     window.open("https://buy.stripe.com/fZeg14aol2JRgnu8ww", "_blank");
   };
+
+  const [option, setOption] = useState("0");
   return (
     <main className="flex min-h-screen flex-col items-center bg-neutral text-neutral-content">
       <div className="navbar bg-primary text-primary-content">
@@ -17,11 +20,21 @@ export default function Home() {
           <h1 className="btn btn-ghost text-lg">
             Westside Saint Paul Crime Map
           </h1>
-          <h2 className="pl-4">MAY 2024</h2>
+          <select
+            onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+              setOption(e.target.value)
+            }
+            className="select select-primary w-full max-w-xs"
+          >
+            <option value={0} selected>
+              May 2024
+            </option>
+            <option value={1}>All Available 2024</option>
+          </select>
         </div>
       </div>
       <div className="flex justify-center items-center h-[75vh] w-[80vw] border-2 m-5">
-        <MyMap />
+        <MyMap option={option} />
       </div>
       <button className="btn btn-primary" onClick={handleClick}>
         Buy me a latte at Amore
@@ -56,10 +69,24 @@ export default function Home() {
           <p className="m-5">
             Data provided by the city is not exact and locations are
             approximate. Addresses from the city are obfuscated for privacy so I
-            round dates to the middle. Ex: 1XX Robert St will become 155 Robert
-            St. Additionally, for some reason the gps lookup app does not like
-            HALL AVE so I tried to find the nearest cross street address to some
-            of the blocks on HALL.
+            round dates to the middle. Ex: 1XX Robert St will become 150 Robert
+            St.
+          </p>
+        </div>
+      </div>
+      <div className="card w-96 bg-primary text-primary-content m-5">
+        <div className="card-body items-center text-center">
+          <h3 className="card-title">Change Log</h3>
+          <p className="m-5">6/14/24 1.0.0 - Initial Release</p>
+          <p className="m-5">6/17/24 1.0.1 - Added dates to each offense</p>
+          <p className="m-5">
+            6/18/24 1.0.2 - Added new icons for each offense
+          </p>
+          <p className="m-5">
+            6/19/24 1.1.0 - Added new dropdown feature which allows switching
+            between May 2024 and All 2024 data available. Fixed minor issue with
+            addesses on HALL. Crimes provided by the city via cross streets are
+            now more accurate. Added change log.
           </p>
         </div>
       </div>
