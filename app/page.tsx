@@ -21,25 +21,24 @@ export default function Home() {
             Westside Saint Paul Crime Map
           </h1>
           <select
+            defaultValue={0}
             onChange={(e: ChangeEvent<HTMLSelectElement>) =>
               setOption(e.target.value)
             }
-            className="select select-primary w-full max-w-xs"
+            className="select select-primary select-sm w-full max-w-xs"
           >
-            <option value={0} selected>
-              May 2024
-            </option>
+            <option value={0}>May 2024</option>
             <option value={1}>All Available 2024</option>
           </select>
         </div>
       </div>
-      <div className="flex justify-center items-center h-[75vh] w-[80vw] border-2 m-5">
+      <div className="flex justify-center items-center h-[70vh] w-[75vw] border-2 m-2">
         <MyMap option={option} />
       </div>
       <button className="btn btn-primary" onClick={handleClick}>
         Buy me a latte at Amore
       </button>
-      <div className="card w-96 bg-primary text-primary-content m-5">
+      <div className="card w-96 bg-primary text-primary-content m-2">
         <div className="card-body items-center text-center">
           <h3 className="card-title">About</h3>
           <p className="m-5">
