@@ -2,6 +2,9 @@
 import dynamic from "next/dynamic";
 import Head from "next/head";
 import { ChangeEvent, useState } from "react";
+import ReactGA from "react-ga";
+
+ReactGA.initialize("G-8VSBZ6SFBZ");
 
 const MyMap = dynamic(() => import("./components/map"), {
   ssr: false,
@@ -9,6 +12,11 @@ const MyMap = dynamic(() => import("./components/map"), {
 
 export default function Home() {
   const handleClick = () => {
+    ReactGA.event({
+      category: "Click",
+      action: "coffeeClick",
+      label: "coffee",
+    });
     window.open("https://buy.stripe.com/fZeg14aol2JRgnu8ww", "_blank");
   };
 
