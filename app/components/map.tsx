@@ -44,8 +44,12 @@ const MyMap = ({ option }: MyMapProps) => {
   return (
     <>
       <MapContainer
-        center={[44.9308168, -93.0796477]}
-        zoom={14}
+        center={
+          Number(option) === 2
+            ? [44.953672, -93.102277]
+            : [44.9308168, -93.0796477]
+        }
+        zoom={Number(option) === 2 ? 12 : 14}
         key={option}
         scrollWheelZoom={false}
       >

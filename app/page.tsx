@@ -20,7 +20,7 @@ export default function Home() {
     window.open("https://buy.stripe.com/fZeg14aol2JRgnu8ww", "_blank");
   };
 
-  const [option, setOption] = useState("0");
+  const [option, setOption] = useState("2");
   return (
     <main className="flex min-h-screen flex-col items-center bg-neutral text-neutral-content">
       <div className="navbar bg-primary text-primary-content">
@@ -29,14 +29,14 @@ export default function Home() {
             Westside Saint Paul Crime Map
           </h1>
           <select
-            defaultValue={0}
+            defaultValue={2}
             onChange={(e: ChangeEvent<HTMLSelectElement>) =>
               setOption(e.target.value)
             }
             className="select select-primary select-sm w-full max-w-xs"
           >
-            <option value={0}>May 2024</option>
-            <option value={1}>All Available 2024</option>
+            <option value={2}>May 2024</option>
+            <option value={1}>All Available 2024 - Only Westside</option>
           </select>
         </div>
       </div>
@@ -57,16 +57,15 @@ export default function Home() {
             and I had to do a lot of cleanup to get the data usable for mapping.
             I figured if I was having trouble navigating these resources, others
             would be too. That was the inspiration behind building this app. I
-            decided to start small with just my own neighborhood, The West Side!
+            decided to start small with just my own neighborhood, The Westside!
             I have loved living here for the past 4 years and have never had any
             serious run-ins with crime. However, I like to stay informed! I make
             no claims with this app, and the purpose is not political - it is
-            simply to stay informed. I assume you do too if you are reading
-            this! This app is a proof of concept, and if you like it and want to
-            see me continue building it, please let me know. If you REALLY like
-            it and want to buy me a cup of joe from Amore on Annapolis and
-            Smith, I have included a button above. Please do not feel obligated
-            and only do so if you want and are able! THANK YOU!
+            simply to stay informed. This app is a proof of concept, and if you
+            like it and want to see me continue building it, please let me know.
+            If you REALLY like it and want to buy me a cup of joe from Amore on
+            Annapolis and Smith, I have included a button above. Please do not
+            feel obligated and only do so if you want and are able! THANK YOU!
           </p>
         </div>
       </div>
@@ -77,7 +76,8 @@ export default function Home() {
             Data provided by the city is not exact and locations are
             approximate. Addresses from the city are obfuscated for privacy so I
             round dates to the middle. Ex: 1XX Robert St will become 150 Robert
-            St.
+            St. Only crimes that have been reported and entered into the cities
+            database will be displayed
           </p>
         </div>
       </div>
@@ -94,6 +94,10 @@ export default function Home() {
             between May 2024 and All 2024 data available. Fixed minor issue with
             addesses on HALL. Crimes provided by the city via cross streets are
             now more accurate. Added change log.
+          </p>
+          <p className="m-5">
+            6/20/24 1.2.0 - Expanded May 2024 data to include the entire city of
+            Saint Paul
           </p>
         </div>
       </div>
