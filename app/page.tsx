@@ -25,9 +25,7 @@ export default function Home() {
     <main className="flex min-h-screen flex-col items-center bg-neutral text-neutral-content">
       <div className="navbar bg-primary text-primary-content">
         <div className="inline-block">
-          <h1 className="btn btn-ghost text-lg">
-            Westside Saint Paul Crime Map
-          </h1>
+          <h1 className="btn btn-ghost text-lg">Saint Paul Crime Map</h1>
           <select
             defaultValue={2}
             onChange={(e: ChangeEvent<HTMLSelectElement>) =>
@@ -50,22 +48,25 @@ export default function Home() {
         <div className="card-body items-center text-center">
           <h3 className="card-title">About</h3>
           <p className="m-5">
-            My name is Alex! Thanks for visiting my app. I can never find good
-            crime maps of Saint Paul, and the public data access spreadsheets
-            are really buggy and hard to work with. Building this app, it was
-            still very difficult to work with the data that the city provides,
-            and I had to do a lot of cleanup to get the data usable for mapping.
-            I figured if I was having trouble navigating these resources, others
-            would be too. That was the inspiration behind building this app. I
-            decided to start small with just my own neighborhood, The Westside!
+            My name is Alex and I live on the Westside in Saint Paul. I can
+            never find good crime maps of Saint Paul, and the public data access
+            spreadsheets are really buggy and hard to work with. I figured if I
+            was having trouble navigating these resources, others would be too.
+            Building this app, it was still very difficult to work with the data
+            that the city provides, and I had to do a lot of cleanup to get the
+            data usable for mapping on this app. I have spent many hours
+            correcting incorrect data and looking up gps coordinates for cross
+            streets by hand!
+          </p>
+          <p className="m-5">
             I have loved living here for the past 4 years and have never had any
             serious run-ins with crime. However, I like to stay informed! I make
-            no claims with this app, and the purpose is not political - it is
-            simply to stay informed. This app is a proof of concept, and if you
-            like it and want to see me continue building it, please let me know.
-            If you REALLY like it and want to buy me a cup of joe from Amore on
-            Annapolis and Smith, I have included a button above. Please do not
-            feel obligated and only do so if you want and are able! THANK YOU!
+            no claims with this app, and the purpose is not political or to
+            perpetuate fear - it is simply to stay informed. If you like this
+            app, please let me know. If you REALLY like it and want to buy me a
+            cup of joe from Amore on Annapolis and Smith, I have included a
+            button above. Please do not feel obligated and only do so if you
+            want and are able! THANK YOU!
           </p>
         </div>
       </div>
@@ -92,7 +93,7 @@ export default function Home() {
           <p className="m-5">
             6/19/24 1.1.0 - Added new dropdown feature which allows switching
             between May 2024 and All 2024 data available. Fixed minor issue with
-            addesses on HALL. Crimes provided by the city via cross streets are
+            addresses on HALL. Crimes provided by the city via cross streets are
             now more accurate. Added change log.
           </p>
           <p className="m-5">
