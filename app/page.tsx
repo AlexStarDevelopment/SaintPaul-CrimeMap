@@ -44,7 +44,7 @@ export default function Home() {
       <button className="btn btn-primary" onClick={handleClick}>
         Buy me a latte at Amore
       </button>
-      <div className="card w-96 bg-primary text-primary-content m-2">
+      <div className="card w-[100vw] bg-primary text-primary-content m-2">
         <div className="card-body items-center text-center">
           <h3 className="card-title">About</h3>
           <p className="m-5">
@@ -70,7 +70,7 @@ export default function Home() {
           </p>
         </div>
       </div>
-      <div className="card w-96 bg-primary text-primary-content m-5">
+      <div className="card w-[100vw] bg-primary text-primary-content m-5">
         <div className="card-body items-center text-center">
           <h3 className="card-title">Limitations</h3>
           <p className="m-5">
@@ -82,7 +82,7 @@ export default function Home() {
           </p>
         </div>
       </div>
-      <div className="card w-96 bg-primary text-primary-content m-5">
+      <div className="card w-[100vw] bg-primary text-primary-content m-5">
         <div className="card-body items-center text-center">
           <h3 className="card-title">Change Log</h3>
           <p className="m-5">6/14/24 1.0.0 - Initial Release</p>
@@ -98,11 +98,11 @@ export default function Home() {
           </p>
           <p className="m-5">
             6/20/24 1.2.0 - Expanded May 2024 data to include the entire city of
-            Saint Paul
+            Saint Paul. Widened text cards on desktop
           </p>
         </div>
       </div>
-      <div className="card w-96 bg-primary text-primary-content m-5">
+      <div className="card w-[100vw] bg-primary text-primary-content m-5">
         <div className="card-body items-center text-center">
           <h3 className="card-title">Disclaimer</h3>
           <p className="m-5">
