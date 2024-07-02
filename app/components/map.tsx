@@ -20,6 +20,8 @@ const MyMap = ({ option }: MyMapProps) => {
   // const data = undefined;
   // const isLoading = true;
 
+  console.log(error);
+
   if (isLoading)
     return <span className="loading loading-infinity loading-lg"></span>;
   if (!data)
