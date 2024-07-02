@@ -16,15 +16,23 @@ interface MyMapProps {
 }
 
 const MyMap = ({ option }: MyMapProps) => {
-  const { data, error, isLoading } = useSWR("/api/data", fetcher);
-  // const data = undefined;
-  // const isLoading = true;
+  // const { data, error, isLoading } = useSWR("/api/data", fetcher);
+  // // const data = undefined;
+  // // const isLoading = true;
 
-  console.log(error);
+  // console.log(error);
 
-  if (isLoading)
-    return <span className="loading loading-infinity loading-lg"></span>;
-  if (!data) return <h1>Down for maintenance</h1>;
+  // if (isLoading)
+  //   return <span className="loading loading-infinity loading-lg"></span>;
+  // if (!data)
+  //   return <span className="loading loading-infinity loading-lg"></span>;
+
+  return (
+    <h1>
+      Down for maintenance - Sorry for the inconvenience. Faster app with new
+      features coming very soon!
+    </h1>
+  );
 
   return (
     <>
