@@ -24,8 +24,7 @@ const MyMap = ({ option }: MyMapProps) => {
 
   if (isLoading)
     return <span className="loading loading-infinity loading-lg"></span>;
-  if (!data)
-    return <span className="loading loading-infinity loading-lg"></span>;
+  if (!data) return <h1>Down for maintenance</h1>;
 
   return (
     <>
