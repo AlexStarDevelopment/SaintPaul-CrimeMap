@@ -4,4 +4,5 @@ export const april24 = 3;
 export const march24 = 4;
 export const february24 = 5;
 export const january24 = 6;
-export const all = 7;
+export const all2024 = 7;
+export const all2023 = 8;

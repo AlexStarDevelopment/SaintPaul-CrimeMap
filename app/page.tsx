@@ -4,7 +4,8 @@ import Head from "next/head";
 import { ChangeEvent, useState } from "react";
 import ReactGA from "react-ga";
 import {
-  all,
+  all2023,
+  all2024,
   april24,
   february24,
   january24,
@@ -48,7 +49,8 @@ export default function Home() {
             <option value={march24}>March 2024</option>
             <option value={february24}>February 2024</option>
             <option value={january24}>January 2024</option>
-            <option value={all}>ALL AVAILABLE 2024</option>
+            <option value={all2024}>ALL - 2024</option>
+            <option value={all2023}>ALL - 2023</option>
           </select>
         </div>
       </div>
@@ -101,7 +103,8 @@ export default function Home() {
           <h3 className="card-title">Change Log</h3>
           <p className="m-5">
             7/2/24 1.3.0 - June 2024 data added. April, March, February, and
-            January data added. All available for 2024 expanded to entire city
+            January data added. All available for 2024 expanded to entire city.
+            All 2023 data added.
           </p>
           <p className="m-5">
             6/20/24 1.2.0 - Expanded May 2024 data to include the entire city of

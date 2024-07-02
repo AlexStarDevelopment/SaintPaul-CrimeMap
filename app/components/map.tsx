@@ -7,7 +7,6 @@ import { TileLayer } from "react-leaflet/TileLayer";
 import "leaflet.markercluster";
 import useSWR from "swr";
 import MarkerCluster from "./markerCluster";
-import { all } from "../const";
 
 // @ts-ignore
 const fetcher = (...args: any[]) => fetch(...args).then((res) => res.json());
