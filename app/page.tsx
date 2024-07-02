@@ -3,7 +3,15 @@ import dynamic from "next/dynamic";
 import Head from "next/head";
 import { ChangeEvent, useState } from "react";
 import ReactGA from "react-ga";
-import { all, june24, may24 } from "./const";
+import {
+  all,
+  april24,
+  february24,
+  january24,
+  june24,
+  march24,
+  may24,
+} from "./const";
 
 ReactGA.initialize("G-8VSBZ6SFBZ");
 
@@ -36,7 +44,11 @@ export default function Home() {
           >
             <option value={june24}>June 2024</option>
             <option value={may24}>May 2024</option>
-            <option value={all}>All Available 2024 - Only Westside</option>
+            <option value={april24}>April 2024</option>
+            <option value={march24}>March 2024</option>
+            <option value={february24}>February 2024</option>
+            <option value={january24}>January 2024</option>
+            <option value={all}>ALL AVAILABLE 2024</option>
           </select>
         </div>
       </div>
@@ -87,7 +99,10 @@ export default function Home() {
       <div className="card w-[100vw] bg-primary text-primary-content m-5">
         <div className="card-body items-center text-center">
           <h3 className="card-title">Change Log</h3>
-          <p className="m-5">7/2/24 1.2.0 - June 2024 data added</p>
+          <p className="m-5">
+            7/2/24 1.3.0 - June 2024 data added. April, March, February, and
+            January data added. All available for 2024 expanded to entire city
+          </p>
           <p className="m-5">
             6/20/24 1.2.0 - Expanded May 2024 data to include the entire city of
             Saint Paul. Widened text cards on desktop

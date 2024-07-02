@@ -4,26 +4,10 @@ import * as React from "react";
 import "leaflet/dist/leaflet.css";
 import { MapContainer } from "react-leaflet/MapContainer";
 import { TileLayer } from "react-leaflet/TileLayer";
-import { Marker } from "react-leaflet/Marker";
-import { Popup } from "react-leaflet/Popup";
-import { Icon, DivIcon } from "leaflet";
-import * as L from "leaflet";
 import "leaflet.markercluster";
 import useSWR from "swr";
-import { useMap } from "react-leaflet";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import ReactDOMServer from "react-dom/server";
-import { faHandFist } from "@fortawesome/free-solid-svg-icons/faHandFist";
-import { faCar } from "@fortawesome/free-solid-svg-icons/faCar";
-import { faMoneyBill } from "@fortawesome/free-solid-svg-icons";
-import { faHouse } from "@fortawesome/free-solid-svg-icons/faHouse";
-import { faGun } from "@fortawesome/free-solid-svg-icons/faGun";
-import { faSprayCan } from "@fortawesome/free-solid-svg-icons/faSprayCan";
-import { faPills } from "@fortawesome/free-solid-svg-icons/faPills";
-import { faFire } from "@fortawesome/free-solid-svg-icons/faFire";
-import { faMask } from "@fortawesome/free-solid-svg-icons/faMask";
 import MarkerCluster from "./markerCluster";
-import { june24, may24 } from "../const";
+import { all } from "../const";
 
 // @ts-ignore
 const fetcher = (...args: any[]) => fetch(...args).then((res) => res.json());
@@ -45,12 +29,8 @@ const MyMap = ({ option }: MyMapProps) => {
   return (
     <>
       <MapContainer
-        center={
-          Number(option) === june24 || Number(option) === may24
-            ? [44.953672, -93.102277]
-            : [44.9308168, -93.0796477]
-        }
-        zoom={Number(option) === june24 || Number(option) === may24 ? 12 : 14}
+        center={[44.953672, -93.102277]}
+        zoom={12}
         key={option}
         scrollWheelZoom={false}
       >
