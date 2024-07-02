@@ -23,12 +23,13 @@ import { faPills } from "@fortawesome/free-solid-svg-icons/faPills";
 import { faFire } from "@fortawesome/free-solid-svg-icons/faFire";
 import { faMask } from "@fortawesome/free-solid-svg-icons/faMask";
 import MarkerCluster from "./markerCluster";
+import { june24, may24 } from "../const";
 
 // @ts-ignore
 const fetcher = (...args: any[]) => fetch(...args).then((res) => res.json());
 
 interface MyMapProps {
-  option: string;
+  option: number;
 }
 
 const MyMap = ({ option }: MyMapProps) => {
@@ -45,11 +46,11 @@ const MyMap = ({ option }: MyMapProps) => {
     <>
       <MapContainer
         center={
-          Number(option) === 2
+          Number(option) === june24 || Number(option) === may24
             ? [44.953672, -93.102277]
             : [44.9308168, -93.0796477]
         }
-        zoom={Number(option) === 2 ? 12 : 14}
+        zoom={Number(option) === june24 || Number(option) === may24 ? 12 : 14}
         key={option}
         scrollWheelZoom={false}
       >

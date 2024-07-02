@@ -3,6 +3,7 @@ import dynamic from "next/dynamic";
 import Head from "next/head";
 import { ChangeEvent, useState } from "react";
 import ReactGA from "react-ga";
+import { all, june24, may24 } from "./const";
 
 ReactGA.initialize("G-8VSBZ6SFBZ");
 
@@ -20,21 +21,22 @@ export default function Home() {
     window.open("https://buy.stripe.com/fZeg14aol2JRgnu8ww", "_blank");
   };
 
-  const [option, setOption] = useState("2");
+  const [option, setOption] = useState(june24);
   return (
     <main className="flex min-h-screen flex-col items-center bg-neutral text-neutral-content">
       <div className="navbar bg-primary text-primary-content">
         <div className="inline-block">
           <h1 className="btn btn-ghost text-lg">Saint Paul Crime Map</h1>
           <select
-            defaultValue={2}
+            defaultValue={june24}
             onChange={(e: ChangeEvent<HTMLSelectElement>) =>
-              setOption(e.target.value)
+              setOption(Number(e.target.value))
             }
             className="select select-primary select-sm w-full max-w-xs"
           >
-            <option value={2}>May 2024</option>
-            <option value={1}>All Available 2024 - Only Westside</option>
+            <option value={june24}>June 2024</option>
+            <option value={may24}>May 2024</option>
+            <option value={all}>All Available 2024 - Only Westside</option>
           </select>
         </div>
       </div>
@@ -85,10 +87,10 @@ export default function Home() {
       <div className="card w-[100vw] bg-primary text-primary-content m-5">
         <div className="card-body items-center text-center">
           <h3 className="card-title">Change Log</h3>
-          <p className="m-5">6/14/24 1.0.0 - Initial Release</p>
-          <p className="m-5">6/17/24 1.0.1 - Added dates to each offense</p>
+          <p className="m-5">7/2/24 1.2.0 - June 2024 data added</p>
           <p className="m-5">
-            6/18/24 1.0.2 - Added new icons for each offense
+            6/20/24 1.2.0 - Expanded May 2024 data to include the entire city of
+            Saint Paul. Widened text cards on desktop
           </p>
           <p className="m-5">
             6/19/24 1.1.0 - Added new dropdown feature which allows switching
@@ -97,9 +99,10 @@ export default function Home() {
             now more accurate. Added change log.
           </p>
           <p className="m-5">
-            6/20/24 1.2.0 - Expanded May 2024 data to include the entire city of
-            Saint Paul. Widened text cards on desktop
+            6/18/24 1.0.2 - Added new icons for each offense
           </p>
+          <p className="m-5">6/17/24 1.0.1 - Added dates to each offense</p>
+          <p className="m-5">6/14/24 1.0.0 - Initial Release</p>
         </div>
       </div>
       <div className="card w-[100vw] bg-primary text-primary-content m-5">
