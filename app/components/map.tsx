@@ -7,46 +7,43 @@ import { TileLayer } from "react-leaflet/TileLayer";
 import "leaflet.markercluster";
 import useSWR from "swr";
 import MarkerCluster from "./markerCluster";
+import { dataSelectionType } from "../const";
 
 // @ts-ignore
 const fetcher = (...args: any[]) => fetch(...args).then((res) => res.json());
 
 interface MyMapProps {
-  option: number;
+  option: dataSelectionType;
 }
 
 const MyMap = ({ option }: MyMapProps) => {
-  // const { data, error, isLoading } = useSWR("/api/data", fetcher);
-  // // const data = undefined;
-  // // const isLoading = true;
-
-  // console.log(error);
-
-  // if (isLoading)
-  //   return <span className="loading loading-infinity loading-lg"></span>;
-  // if (!data)
-  //   return <span className="loading loading-infinity loading-lg"></span>;
-
-  return (
-    <h1>
-      Down for maintenance - Sorry for the inconvenience. Faster app with new
-      features coming very soon!
-    </h1>
+  const { data, error, isLoading } = useSWR(
+    `/api/${option.month}/${option.year}`,
+    fetcher
   );
+  // const data = undefined;
+  // const isLoading = true;
+
+  console.log(error);
+
+  if (isLoading)
+    return <span className="loading loading-infinity loading-lg"></span>;
+  if (!data || data.length === 0)
+    return <span className="loading loading-infinity loading-lg"></span>;
 
   return (
     <>
       <MapContainer
         center={[44.953672, -93.102277]}
         zoom={12}
-        key={option}
+        key={option.id}
         scrollWheelZoom={false}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        <MarkerCluster markers={data[option].crimes} />
+        <MarkerCluster markers={data[0].crimes} />
       </MapContainer>
     </>
   );

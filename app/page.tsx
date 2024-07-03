@@ -3,16 +3,7 @@ import dynamic from "next/dynamic";
 import Head from "next/head";
 import { ChangeEvent, useState } from "react";
 import ReactGA from "react-ga";
-import {
-  all2023,
-  all2024,
-  april24,
-  february24,
-  january24,
-  june24,
-  march24,
-  may24,
-} from "./const";
+import { dataSelection, mappingSelection } from "./const";
 
 ReactGA.initialize("G-8VSBZ6SFBZ");
 
@@ -30,32 +21,32 @@ export default function Home() {
     window.open("https://buy.stripe.com/fZeg14aol2JRgnu8ww", "_blank");
   };
 
-  const [option, setOption] = useState(june24);
+  const [option, setOption] = useState(mappingSelection.all2023);
   return (
     <main className="flex min-h-screen flex-col items-center bg-neutral text-neutral-content">
       <div className="navbar bg-primary text-primary-content">
         <div className="inline-block">
           <h1 className="btn btn-ghost text-lg">Saint Paul Crime Map</h1>
           <select
-            defaultValue={june24}
+            defaultValue={mappingSelection.june24}
             onChange={(e: ChangeEvent<HTMLSelectElement>) =>
               setOption(Number(e.target.value))
             }
             className="select select-primary select-sm w-full max-w-xs"
           >
-            <option value={june24}>June 2024</option>
-            <option value={may24}>May 2024</option>
-            <option value={april24}>April 2024</option>
-            <option value={march24}>March 2024</option>
-            <option value={february24}>February 2024</option>
-            <option value={january24}>January 2024</option>
-            <option value={all2024}>ALL - 2024</option>
-            <option value={all2023}>ALL - 2023</option>
+            <option value={mappingSelection.june24}>June 2024</option>
+            <option value={mappingSelection.may24}>May 2024</option>
+            <option value={mappingSelection.april24}>April 2024</option>
+            <option value={mappingSelection.march24}>March 2024</option>
+            <option value={mappingSelection.february24}>February 2024</option>
+            <option value={mappingSelection.january24}>January 2024</option>
+            <option value={mappingSelection.all2024}>ALL - 2024</option>
+            <option value={mappingSelection.all2023}>ALL - 2023</option>
           </select>
         </div>
       </div>
       <div className="flex justify-center items-center h-[70vh] w-[75vw] border-2 m-2">
-        <MyMap option={option} />
+        <MyMap option={dataSelection[option]} />
       </div>
       <button className="btn btn-primary" onClick={handleClick}>
         Buy me a latte at Amore
