@@ -21,27 +21,26 @@ export default function Home() {
     window.open("https://buy.stripe.com/fZeg14aol2JRgnu8ww", "_blank");
   };
 
-  const [option, setOption] = useState(mappingSelection.june24);
+  const [option, setOption] = useState<number>(mappingSelection.june24);
   return (
     <main className="flex min-h-screen flex-col items-center bg-neutral text-neutral-content">
       <div className="navbar bg-primary text-primary-content">
         <div className="inline-block">
           <h1 className="btn btn-ghost text-lg">Saint Paul Crime Map</h1>
           <select
-            defaultValue={mappingSelection.june24}
             onChange={(e: ChangeEvent<HTMLSelectElement>) =>
               setOption(Number(e.target.value))
             }
             className="select select-primary select-sm w-full max-w-xs"
+            value={option}
           >
-            <option value={mappingSelection.june24}>June 2024</option>
-            <option value={mappingSelection.may24}>May 2024</option>
-            <option value={mappingSelection.april24}>April 2024</option>
-            <option value={mappingSelection.march24}>March 2024</option>
-            <option value={mappingSelection.february24}>February 2024</option>
-            <option value={mappingSelection.january24}>January 2024</option>
-            <option value={mappingSelection.all2024}>ALL - 2024</option>
-            <option value={mappingSelection.all2023}>ALL - 2023</option>
+            {dataSelection.map((x) => {
+              return (
+                <option key={x.id} value={x.id}>
+                  {x.month.toUpperCase() + " - " + x.year}
+                </option>
+              );
+            })}
           </select>
         </div>
       </div>
@@ -92,6 +91,7 @@ export default function Home() {
       <div className="card w-[100vw] bg-primary text-primary-content m-5">
         <div className="card-body items-center text-center">
           <h3 className="card-title">Change Log</h3>
+          <p className="m-5">7/3/24 1.4.0 - All data for 2014 - 2022 added.</p>
           <p className="m-5">
             7/2/24 1.3.0 - June 2024 data added. April, March, February, and
             January data added. All available for 2024 expanded to entire city.
