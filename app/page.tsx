@@ -21,7 +21,7 @@ export default function Home() {
     window.open("https://buy.stripe.com/fZeg14aol2JRgnu8ww", "_blank");
   };
 
-  const [option, setOption] = useState(mappingSelection.all2023);
+  const [option, setOption] = useState(mappingSelection.june24);
   return (
     <main className="flex min-h-screen flex-col items-center bg-neutral text-neutral-content">
       <div className="navbar bg-primary text-primary-content">

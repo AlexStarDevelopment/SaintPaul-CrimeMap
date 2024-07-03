@@ -17,15 +17,12 @@ interface MyMapProps {
 }
 
 const MyMap = ({ option }: MyMapProps) => {
-  console.log(option);
   const { data, error, isLoading } = useSWR(
     `/api/${option.month}/${option.year}`,
     fetcher
   );
   // const data = undefined;
   // const isLoading = true;
-
-  console.log(error);
 
   if (isLoading)
     return <span className="loading loading-infinity loading-lg"></span>;

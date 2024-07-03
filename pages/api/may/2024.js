@@ -2,7 +2,6 @@
 import { connectToDatabase } from "../../../lib/mongodb";
 
 export default async (req, res) => {
-  console.log("her");
   const client = await connectToDatabase();
   const db = client.db();
   const collection = db.collection("crimes");
