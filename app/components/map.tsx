@@ -17,6 +17,7 @@ interface MyMapProps {
 }
 
 const MyMap = ({ option }: MyMapProps) => {
+  console.log(option);
   const { data, error, isLoading } = useSWR(
     `/api/${option.month}/${option.year}`,
     fetcher
