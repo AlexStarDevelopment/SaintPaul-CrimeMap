@@ -8,33 +8,49 @@ import "leaflet.markercluster";
 import MarkerCluster from "./markerCluster";
 import { dataSelectionType } from "../const";
 import { useState } from "react";
-import { getCrimes } from "../api/getCrimes";
+import { getCrimes, getTotalCrimes } from "../api/getCrimes";
 
 interface MyMapProps {
   option: dataSelectionType;
 }
 
 const MyMap = ({ option }: MyMapProps) => {
-  const [items, setItems] = useState<any>([]);
+  const [items, setItems] = useState<Crime[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
 
   React.useEffect(() => {
     setIsLoading(true);
-    const getItems = async () => {
-      const { crimes, totalPages } = await getCrimes(
-        option.month,
-        option.year,
-        currentPage,
-        20000
-      );
-      setIsLoading(false);
-      setItems(crimes);
-      setTotalPages(totalPages);
+    const getTotals = async () => {
+      getTotalCrimes(option.month, option.year, 20000).then((i) => {
+        const num: number = i.totalPages;
+        function aggregateCalls() {
+          let promises = [];
+          for (let i = 1; i <= num; i++) {
+            promises.push(getCrimes(option.month, option.year, i, 20000));
+          }
+          return Promise.all(promises);
+        }
+
+        const getItems = async () => {
+          aggregateCalls().then((iCall) => {
+            const crimesArray: Crime[] = [];
+            iCall.forEach((res) => {
+              res.crimes.forEach((crime: Crime) => {
+                crimesArray.push(crime);
+              });
+            });
+            setIsLoading(false);
+            setItems(crimesArray);
+          });
+        };
+
+        getItems();
+      });
     };
 
-    getItems();
+    getTotals();
   }, [currentPage, option]);
 
   if (isLoading)

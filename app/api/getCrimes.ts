@@ -10,3 +10,15 @@ export const getCrimes = async (
   const data = await res.json();
   return data;
 };
+
+export const getTotalCrimes = async (
+  type: string,
+  year: number,
+  limit: number
+) => {
+  const res = await fetch(
+    `/api/getTotalCrimes?type=${type}&year=${year}&limit=${limit}`
+  );
+  const data = await res.json();
+  return data;
+};
