@@ -2,7 +2,7 @@
 import { connectToDatabase } from "../../lib/mongodb";
 
 export default async (req, res) => {
-  const { type = "june", year = 2024, page = 1, limit = 20000 } = req.query;
+  const { type = "june", year = 2024, page = 1, limit = 30000 } = req.query;
 
   // Convert page and limit to integers
   const pageNum = parseInt(page);
