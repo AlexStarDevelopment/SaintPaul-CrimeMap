@@ -27,7 +27,7 @@ const MyMap = ({ option }: MyMapProps) => {
         option.month,
         option.year,
         currentPage,
-        30000
+        20000
       );
       setIsLoading(false);
       setItems(crimes);
