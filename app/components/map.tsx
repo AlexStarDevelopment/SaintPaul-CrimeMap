@@ -5,28 +5,41 @@ import "leaflet/dist/leaflet.css";
 import { MapContainer } from "react-leaflet/MapContainer";
 import { TileLayer } from "react-leaflet/TileLayer";
 import "leaflet.markercluster";
-import useSWR from "swr";
 import MarkerCluster from "./markerCluster";
 import { dataSelectionType } from "../const";
-
-// @ts-ignore
-const fetcher = (...args: any[]) => fetch(...args).then((res) => res.json());
+import { useState } from "react";
+import { getCrimes } from "../api/getCrimes";
 
 interface MyMapProps {
   option: dataSelectionType;
 }
 
 const MyMap = ({ option }: MyMapProps) => {
-  const { data, error, isLoading } = useSWR(
-    `/api/${option.month}/${option.year}`,
-    fetcher
-  );
-  // const data = undefined;
-  // const isLoading = true;
+  const [items, setItems] = useState<any>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [isLoading, setIsLoading] = useState(true);
+
+  React.useEffect(() => {
+    setIsLoading(true);
+    const getItems = async () => {
+      const { crimes, totalPages } = await getCrimes(
+        option.month,
+        option.year,
+        currentPage,
+        20000
+      );
+      setIsLoading(false);
+      setItems(crimes);
+      setTotalPages(totalPages);
+    };
+
+    getItems();
+  }, [currentPage, option]);
 
   if (isLoading)
     return <span className="loading loading-infinity loading-lg"></span>;
-  if (!data || data.length === 0)
+  if (!items || items.length === 0)
     return <span className="loading loading-infinity loading-lg"></span>;
 
   return (
@@ -41,7 +54,7 @@ const MyMap = ({ option }: MyMapProps) => {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        <MarkerCluster markers={data[0].crimes} />
+        <MarkerCluster markers={items} />
       </MapContainer>
     </>
   );

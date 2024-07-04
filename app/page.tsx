@@ -91,6 +91,11 @@ export default function Home() {
       <div className="card w-[100vw] bg-primary text-primary-content m-5">
         <div className="card-body items-center text-center">
           <h3 className="card-title">Change Log</h3>
+          <p className="m-5">
+            7/4/24 1.4.1 - Fixed loading issues for some years and limit 20k
+            items to be returned until workaround is implemented for call size
+            issues
+          </p>
           <p className="m-5">7/3/24 1.4.0 - All data for 2014 - 2022 added.</p>
           <p className="m-5">
             7/2/24 1.3.0 - June 2024 data added. April, March, February, and
