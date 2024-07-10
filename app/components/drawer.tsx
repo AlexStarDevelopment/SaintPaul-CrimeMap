@@ -9,11 +9,15 @@ import { Option, Select } from "@mui/joy";
 interface DrawerBasicProps {
   crimeTypes: string[];
   setCrimeTypes: (s: string) => void;
+  isFiltersOpen: boolean;
+  setIsFiltersOpen: (b: boolean) => void;
 }
 
 export default function DrawerBasic({
   crimeTypes,
   setCrimeTypes,
+  isFiltersOpen,
+  setIsFiltersOpen,
 }: DrawerBasicProps) {
   const [open, setOpen] = React.useState(false);
 
@@ -27,24 +31,12 @@ export default function DrawerBasic({
         return;
       }
 
-      setOpen(inOpen);
+      setIsFiltersOpen(inOpen);
     };
 
   return (
     <Box sx={{ display: "flex" }}>
-      <button
-        className="btn btn-primary mt-1 mr-1"
-        onClick={toggleDrawer(true)}
-      >
-        Open Filters
-      </button>
-      <button
-        className="btn btn-primary mt-1 ml-1"
-        onClick={() => setCrimeTypes("ALL")}
-      >
-        Clear Filters
-      </button>
-      <Drawer size="sm" open={open} onClose={toggleDrawer(false)}>
+      <Drawer size="sm" open={isFiltersOpen} onClose={toggleDrawer(false)}>
         <Box
           sx={{ margin: 1 }}
           role="presentation"

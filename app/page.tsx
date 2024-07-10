@@ -5,6 +5,9 @@ import ReactGA from "react-ga";
 import { dataSelection, mappingSelection } from "./const";
 import DrawerBasic from "./components/drawer";
 import { getCrimes, getTotalCrimes } from "./api/getCrimes";
+import { Box } from "@mui/joy";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFilter } from "@fortawesome/free-solid-svg-icons";
 
 ReactGA.initialize("G-8VSBZ6SFBZ");
 
@@ -27,6 +30,7 @@ export default function Home() {
   const [items, setItems] = useState<Crime[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
+  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [filter, setFilter] = useState("ALL");
 
   const filteredItems =
@@ -88,8 +92,8 @@ export default function Home() {
 
   return (
     <main className="flex min-h-screen flex-col items-center bg-neutral text-neutral-content">
-      <div className="navbar bg-primary text-primary-content">
-        <div className="inline-block">
+      <div className="navbar bg-primary text-primary-content flex place-content-between">
+        <Box className="inline-block">
           <h1 className="btn btn-ghost text-lg">Saint Paul Crime Map</h1>
           <select
             onChange={(e: ChangeEvent<HTMLSelectElement>) =>
@@ -106,9 +110,25 @@ export default function Home() {
               );
             })}
           </select>
-        </div>
+        </Box>
+        <Box
+          sx={{ margin: "1rem" }}
+          onClick={() => setIsFiltersOpen(!isFiltersOpen)}
+        >
+          <FontAwesomeIcon
+            height={20}
+            width={14}
+            icon={faFilter}
+            color="black"
+          />
+        </Box>
       </div>
-      <DrawerBasic crimeTypes={uniqueCrimeOptions} setCrimeTypes={setFilter} />
+      <DrawerBasic
+        crimeTypes={uniqueCrimeOptions}
+        setCrimeTypes={setFilter}
+        isFiltersOpen={isFiltersOpen}
+        setIsFiltersOpen={setIsFiltersOpen}
+      />
       <div className="flex justify-center items-center h-[70vh] w-[75vw] border-2 m-2 z-1">
         <MyMap items={filteredItems} isLoading={isLoading} />
       </div>
