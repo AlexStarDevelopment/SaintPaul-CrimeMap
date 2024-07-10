@@ -32,22 +32,18 @@ export default function DrawerBasic({
 
   return (
     <Box sx={{ display: "flex" }}>
-      <Button
+      <button
         className="btn btn-primary mt-1 mr-1"
-        variant="outlined"
-        color="neutral"
         onClick={toggleDrawer(true)}
       >
         Open Filters
-      </Button>
-      <Button
+      </button>
+      <button
         className="btn btn-primary mt-1 ml-1"
-        variant="outlined"
-        color="neutral"
         onClick={() => setCrimeTypes("ALL")}
       >
         Clear Filters
-      </Button>
+      </button>
       <Drawer size="sm" open={open} onClose={toggleDrawer(false)}>
         <Box
           sx={{ margin: 1 }}

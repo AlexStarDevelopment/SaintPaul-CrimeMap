@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-page-custom-font */
 /* eslint-disable @next/next/next-script-for-ga */
 /* eslint-disable react/no-unescaped-entities */
 /* eslint-disable @next/next/no-sync-scripts */
