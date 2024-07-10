@@ -51,7 +51,7 @@ export default function DrawerBasic({
           onKeyDown={toggleDrawer(false)}
         >
           <div className="flex place-content-between">
-            <h2 className="btn btn-ghost text-lg">Filters</h2>
+            <h2 className="btn btn-ghost text-lg font-bold">Filters</h2>
             <Button
               className="btn btn-ghost text-lg"
               variant="outlined"
@@ -64,7 +64,15 @@ export default function DrawerBasic({
           <Divider />
           {crimeTypes && (
             <List>
+              <label
+                className="mb-1"
+                htmlFor="select-crime-type"
+                id="select-label"
+              >
+                Crime Type:
+              </label>
               <Select
+                listboxId="select-crime-type"
                 onChange={(e, newValue) => setCrimeTypes(newValue || "ALL")}
                 defaultValue="ALL"
                 className="select-primary w-full max-w-xs"
