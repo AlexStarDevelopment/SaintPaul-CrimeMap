@@ -92,37 +92,42 @@ export default function Home() {
 
   return (
     <main className="flex min-h-screen flex-col items-center bg-neutral text-neutral-content">
-      <div className="navbar bg-primary text-primary-content flex place-content-between">
-        <Box className="inline-block">
-          <h1 className="btn btn-ghost text-lg">Saint Paul Crime Map</h1>
-          <select
-            onChange={(e: ChangeEvent<HTMLSelectElement>) =>
-              setOption(Number(e.target.value))
-            }
-            className="select select-primary select-sm w-full max-w-xs"
-            value={option}
-          >
-            {dataSelection.map((x) => {
-              return (
-                <option key={x.id} value={x.id}>
-                  {x.month.toUpperCase() + " - " + x.year}
-                </option>
-              );
-            })}
-          </select>
+      <Box
+        sx={{ width: "100vw", padding: "1rem" }}
+        className="bg-primary text-primary-content"
+      >
+        <Box sx={{ width: "100%" }} className="inline-block">
+          <h1 className="btn btn-ghost text-lg p-1">Saint Paul Crime Map</h1>
+          <Box sx={{ display: "flex" }}>
+            <select
+              onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+                setOption(Number(e.target.value))
+              }
+              className="select select-primary select-sm w-full max-w-xs"
+              value={option}
+            >
+              {dataSelection.map((x) => {
+                return (
+                  <option key={x.id} value={x.id}>
+                    {x.month.toUpperCase() + " - " + x.year}
+                  </option>
+                );
+              })}
+            </select>
+            <Box
+              sx={{ margin: "0.25rem", marginLeft: "1rem" }}
+              onClick={() => setIsFiltersOpen(!isFiltersOpen)}
+            >
+              <FontAwesomeIcon
+                height={20}
+                width={14}
+                icon={faFilter}
+                color="black"
+              />
+            </Box>
+          </Box>
         </Box>
-        <Box
-          sx={{ margin: "1rem" }}
-          onClick={() => setIsFiltersOpen(!isFiltersOpen)}
-        >
-          <FontAwesomeIcon
-            height={20}
-            width={14}
-            icon={faFilter}
-            color="black"
-          />
-        </Box>
-      </div>
+      </Box>
       <DrawerBasic
         crimeTypes={uniqueCrimeOptions}
         setCrimeTypes={setFilter}
