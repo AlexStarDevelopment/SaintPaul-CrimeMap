@@ -111,9 +111,13 @@ const MarkerCluster = ({ markers }: MarkerClusterProps) => {
       })
         .addTo(mcg)
         .bindPopup(
-          `<div><p>${new Date(position.DATE).toLocaleString()}</p>${
-            position.INCIDENT_TYPE
-          }<p></p></div>`
+          `<div><p>Case Number: ${position.CASE_NUMBER}</p><p>Date: ${new Date(
+            position.DATE
+          ).toLocaleString()}</p>
+          <p>Incident: ${position.INCIDENT}</p>
+          <p>Incident details: ${position.INCIDENT_TYPE}</p>
+          <p>Call Disposition: ${position.CALL_DISPOSITION}</p>
+          </div>`
         )
     );
 

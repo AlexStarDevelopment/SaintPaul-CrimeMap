@@ -1,9 +1,10 @@
 "use client";
 import dynamic from "next/dynamic";
-import Head from "next/head";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import ReactGA from "react-ga";
 import { dataSelection, mappingSelection } from "./const";
+import DrawerBasic from "./components/drawer";
+import { getCrimes, getTotalCrimes } from "./api/getCrimes";
 
 ReactGA.initialize("G-8VSBZ6SFBZ");
 
@@ -22,6 +23,69 @@ export default function Home() {
   };
 
   const [option, setOption] = useState<number>(mappingSelection.june24);
+
+  const [items, setItems] = useState<Crime[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(true);
+  const [filter, setFilter] = useState("ALL");
+
+  const filteredItems =
+    filter === "ALL"
+      ? items
+      : items.filter((i) => i.INCIDENT.toUpperCase() === filter.toUpperCase());
+
+  useEffect(() => {
+    setIsLoading(true);
+    const getTotals = async () => {
+      getTotalCrimes(
+        dataSelection[option].month,
+        dataSelection[option].year,
+        20000
+      ).then((i) => {
+        const num: number = i.totalPages;
+        function aggregateCalls() {
+          let promises = [];
+          for (let i = 1; i <= num; i++) {
+            promises.push(
+              getCrimes(
+                dataSelection[option].month,
+                dataSelection[option].year,
+                i,
+                20000
+              )
+            );
+          }
+          return Promise.all(promises);
+        }
+
+        const getItems = async () => {
+          aggregateCalls().then((iCall) => {
+            const crimesArray: Crime[] = [];
+            iCall.forEach((res) => {
+              res.crimes.forEach((crime: Crime) => {
+                crimesArray.push(crime);
+              });
+            });
+            setIsLoading(false);
+            setItems(crimesArray);
+          });
+        };
+
+        getItems();
+      });
+    };
+
+    getTotals();
+  }, [currentPage, option]);
+
+  function getUniqueStrings(arr: string[]): string[] {
+    return [...new Set(arr)];
+  }
+
+  const flat = items.flatMap((i) => i.INCIDENT);
+  flat.unshift("ALL");
+  const uniqueCrimeOptions = getUniqueStrings(flat);
+
   return (
     <main className="flex min-h-screen flex-col items-center bg-neutral text-neutral-content">
       <div className="navbar bg-primary text-primary-content">
@@ -44,8 +108,9 @@ export default function Home() {
           </select>
         </div>
       </div>
-      <div className="flex justify-center items-center h-[70vh] w-[75vw] border-2 m-2">
-        <MyMap option={dataSelection[option]} />
+      <DrawerBasic crimeTypes={uniqueCrimeOptions} setCrimeTypes={setFilter} />
+      <div className="flex justify-center items-center h-[70vh] w-[75vw] border-2 m-2 z-1">
+        <MyMap items={filteredItems} isLoading={isLoading} />
       </div>
       <button className="btn btn-primary" onClick={handleClick}>
         Buy me a latte at Amore
