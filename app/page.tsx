@@ -157,6 +157,10 @@ export default function Home() {
         <div className="card-body items-center text-center">
           <h3 className="card-title">Change Log</h3>
           <p className="m-5">
+            7/10/24 1.5.0 - Filter menu added with support for filtering by
+            crime types
+          </p>
+          <p className="m-5">
             7/4/24 1.4.1 - Fixed loading issues for years 2015-2022
           </p>
           <p className="m-5">7/3/24 1.4.0 - All data for 2014 - 2022 added.</p>
