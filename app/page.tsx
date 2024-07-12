@@ -80,6 +80,7 @@ export default function Home() {
     };
 
     getTotals();
+    setFilter("ALL");
   }, [currentPage, option]);
 
   function getUniqueStrings(arr: string[]): string[] {
