@@ -4,7 +4,7 @@ type Crime = {
   INCIDENT_TYPE: string;
   INCIDENT: string;
   POLICE_GRID_NUMBER: string;
-  NEIGHBORHOOD_NUMBER: string;
+  NEIGHBORHOOD_NUMBER: number;
   NEIGHBORHOOD_NAME: string;
   BLOCK: string;
   CALL_DISPOSITION_CODE: string;

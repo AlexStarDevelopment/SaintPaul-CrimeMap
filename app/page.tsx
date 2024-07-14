@@ -32,11 +32,20 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [filter, setFilter] = useState("ALL");
+  const [neighborhood, setNeighborhood] = useState("ALL");
 
   const filteredItems =
     filter === "ALL"
       ? items
       : items.filter((i) => i.INCIDENT.toUpperCase() === filter.toUpperCase());
+
+  const filteredItemsNeighborhood =
+    neighborhood === "ALL"
+      ? filteredItems
+      : filteredItems.filter(
+          (i) =>
+            i.NEIGHBORHOOD_NAME.toUpperCase() === neighborhood.toUpperCase()
+        );
 
   useEffect(() => {
     setIsLoading(true);
@@ -81,15 +90,8 @@ export default function Home() {
 
     getTotals();
     setFilter("ALL");
+    setNeighborhood("ALL");
   }, [currentPage, option]);
-
-  function getUniqueStrings(arr: string[]): string[] {
-    return [...new Set(arr)];
-  }
-
-  const flat = items.flatMap((i) => i.INCIDENT);
-  flat.unshift("ALL");
-  const uniqueCrimeOptions = getUniqueStrings(flat);
 
   return (
     <main className="flex min-h-screen flex-col items-center bg-neutral text-neutral-content">
@@ -130,13 +132,14 @@ export default function Home() {
         </Box>
       </Box>
       <DrawerBasic
-        crimeTypes={uniqueCrimeOptions}
+        items={items}
         setCrimeTypes={setFilter}
+        setNeighborhood={setNeighborhood}
         isFiltersOpen={isFiltersOpen}
         setIsFiltersOpen={setIsFiltersOpen}
       />
       <div className="flex justify-center items-center h-[70vh] w-[75vw] border-2 m-2 z-1">
-        <MyMap items={filteredItems} isLoading={isLoading} />
+        <MyMap items={filteredItemsNeighborhood} isLoading={isLoading} />
       </div>
       <button className="btn btn-primary" onClick={handleClick}>
         Buy me a latte at Amore
@@ -182,6 +185,10 @@ export default function Home() {
       <div className="card w-[100vw] bg-primary text-primary-content m-5">
         <div className="card-body items-center text-center">
           <h3 className="card-title">Change Log</h3>
+          <p className="m-5">
+            7/14/24 1.6.0 - Filter menu added with support for filtering by
+            neighborhood
+          </p>
           <p className="m-5">
             7/10/24 1.5.0 - Filter menu added with support for filtering by
             crime types
