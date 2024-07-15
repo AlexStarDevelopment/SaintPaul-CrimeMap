@@ -5,9 +5,10 @@ import ReactGA from "react-ga";
 import { dataSelection, mappingSelection } from "./const";
 import DrawerBasic from "./components/drawer";
 import { getCrimes, getTotalCrimes } from "./api/getCrimes";
-import { Box } from "@mui/joy";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFilter } from "@fortawesome/free-solid-svg-icons";
+import { Box } from "@mui/material";
+import dayjs, { Dayjs } from "dayjs";
 
 ReactGA.initialize("G-8VSBZ6SFBZ");
 
@@ -26,18 +27,21 @@ export default function Home() {
   };
 
   const [option, setOption] = useState<number>(mappingSelection.june24);
-
+  const [startDate, setStartDate] = useState<Dayjs | null>(null);
+  const [endDate, setEndDate] = useState<Dayjs | null>(null);
   const [items, setItems] = useState<Crime[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
-  const [filter, setFilter] = useState("ALL");
+  const [crimeType, setCrimeType] = useState("ALL");
   const [neighborhood, setNeighborhood] = useState("ALL");
 
   const filteredItems =
-    filter === "ALL"
+    crimeType === "ALL"
       ? items
-      : items.filter((i) => i.INCIDENT.toUpperCase() === filter.toUpperCase());
+      : items.filter(
+          (i) => i.INCIDENT.toUpperCase() === crimeType.toUpperCase()
+        );
 
   const filteredItemsNeighborhood =
     neighborhood === "ALL"
@@ -46,6 +50,22 @@ export default function Home() {
           (i) =>
             i.NEIGHBORHOOD_NAME.toUpperCase() === neighborhood.toUpperCase()
         );
+
+  const filteredItemsStartDate =
+    startDate === null
+      ? filteredItemsNeighborhood
+      : filteredItemsNeighborhood.filter(
+          (i) => Number(i.DATE) >= startDate.valueOf()
+        );
+
+  const filteredItemsEndDate =
+    endDate === null
+      ? filteredItemsStartDate
+      : filteredItemsStartDate.filter(
+          (i) => Number(i.DATE) <= endDate.valueOf() + 86399000
+        );
+
+  console.log(filteredItemsEndDate);
 
   useEffect(() => {
     setIsLoading(true);
@@ -89,8 +109,10 @@ export default function Home() {
     };
 
     getTotals();
-    setFilter("ALL");
+    setCrimeType("ALL");
     setNeighborhood("ALL");
+    setStartDate(null);
+    setEndDate(null);
   }, [currentPage, option]);
 
   return (
@@ -133,13 +155,19 @@ export default function Home() {
       </Box>
       <DrawerBasic
         items={items}
-        setCrimeTypes={setFilter}
+        setCrimeTypes={setCrimeType}
         setNeighborhood={setNeighborhood}
         isFiltersOpen={isFiltersOpen}
         setIsFiltersOpen={setIsFiltersOpen}
+        crimeType={crimeType}
+        neighborhood={neighborhood}
+        startDate={startDate}
+        endDate={endDate}
+        setStartDate={setStartDate}
+        setEndDate={setEndDate}
       />
       <div className="flex justify-center items-center h-[70vh] w-[75vw] border-2 m-2 z-1">
-        <MyMap items={filteredItemsNeighborhood} isLoading={isLoading} />
+        <MyMap items={filteredItemsEndDate} isLoading={isLoading} />
       </div>
       <button className="btn btn-primary" onClick={handleClick}>
         Buy me a latte at Amore
@@ -185,6 +213,9 @@ export default function Home() {
       <div className="card w-[100vw] bg-primary text-primary-content m-5">
         <div className="card-body items-center text-center">
           <h3 className="card-title">Change Log</h3>
+          <p className="m-5">
+            7/15/24 1.7.0 - Filter menu added with support for filtering by date
+          </p>
           <p className="m-5">
             7/14/24 1.6.0 - Filter menu added with support for filtering by
             neighborhood

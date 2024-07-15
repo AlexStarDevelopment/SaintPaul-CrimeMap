@@ -1,23 +1,42 @@
+import {
+  Box,
+  Button,
+  Divider,
+  Drawer,
+  FormControl,
+  InputLabel,
+  List,
+  MenuItem,
+  Select,
+} from "@mui/material";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import * as React from "react";
-import Box from "@mui/joy/Box";
-import Drawer from "@mui/joy/Drawer";
-import Button from "@mui/joy/Button";
-import List from "@mui/joy/List";
-import Divider from "@mui/joy/Divider";
-import { Option, Select } from "@mui/joy";
-import { Dispatch, SetStateAction } from "react";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { Dayjs } from "dayjs";
 
 interface DrawerBasicProps {
   items: Crime[];
-  setCrimeTypes: (s: string) => void;
-  setNeighborhood: Dispatch<SetStateAction<string>>;
+  startDate: Dayjs | null;
+  setStartDate: (d: Dayjs | null) => void;
+  endDate: Dayjs | null;
+  setEndDate: (d: Dayjs | null) => void;
+  crimeType: string;
+  setCrimeTypes: (ct: string) => void;
+  neighborhood: string;
+  setNeighborhood: (n: string) => void;
   isFiltersOpen: boolean;
   setIsFiltersOpen: (b: boolean) => void;
 }
 
 export default function DrawerBasic({
   items,
+  startDate,
+  setStartDate,
+  endDate,
+  setEndDate,
+  crimeType,
   setCrimeTypes,
+  neighborhood,
   setNeighborhood,
   isFiltersOpen,
   setIsFiltersOpen,
@@ -33,8 +52,6 @@ export default function DrawerBasic({
   const uniqueFlatNeighborhood = getUniqueStrings(flatNeighborhood);
   const uniqueCrimeOptions = getUniqueStrings(flat);
 
-  const [open, setOpen] = React.useState(false);
-
   const toggleDrawer =
     (inOpen: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
       if (
@@ -48,9 +65,16 @@ export default function DrawerBasic({
       setIsFiltersOpen(inOpen);
     };
 
+  const handleClear = () => {
+    setStartDate(null);
+    setEndDate(null);
+    setCrimeTypes("ALL");
+    setNeighborhood("ALL");
+  };
+
   return (
     <Box sx={{ display: "flex" }}>
-      <Drawer size="sm" open={isFiltersOpen} onClose={toggleDrawer(false)}>
+      <Drawer open={isFiltersOpen} onClose={toggleDrawer(false)}>
         <Box
           sx={{ margin: 1 }}
           role="presentation"
@@ -61,7 +85,6 @@ export default function DrawerBasic({
             <Button
               className="btn btn-ghost text-lg"
               variant="outlined"
-              color="neutral"
               onClick={toggleDrawer(false)}
             >
               X
@@ -70,58 +93,75 @@ export default function DrawerBasic({
           <Divider />
           {uniqueCrimeOptions && (
             <List>
-              <label
-                className="mb-1"
-                htmlFor="select-crime-type"
-                id="select-label"
-              >
-                Crime Type:
-              </label>
-              <Select
-                listboxId="select-crime-type"
-                onChange={(e, newValue) => setCrimeTypes(newValue || "ALL")}
-                defaultValue="ALL"
-                className="select-primary w-full max-w-xs"
-              >
-                {uniqueCrimeOptions.map((c) => {
-                  return (
-                    <Option key={c} value={c}>
-                      {c}
-                    </Option>
-                  );
-                })}
-              </Select>
+              <FormControl fullWidth>
+                <InputLabel id="demo-simple-select-label">
+                  Crime Type
+                </InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  label="Crime Type"
+                  value={crimeType}
+                  onChange={(e) => setCrimeTypes(e.target.value || "ALL")}
+                >
+                  {uniqueCrimeOptions.map((c) => {
+                    return (
+                      <MenuItem key={c} value={c}>
+                        {c}
+                      </MenuItem>
+                    );
+                  })}
+                </Select>
+              </FormControl>
             </List>
           )}
-
           <Divider />
-          {uniqueFlatNeighborhood && (
+          {uniqueCrimeOptions && (
             <List>
-              <label
-                className="mb-1"
-                htmlFor="select-neighborhood"
-                id="select-label-2"
-              >
-                Neighborhood:
-              </label>
-              <Select
-                listboxId="select-neighborhood"
-                onChange={(e, newValue) => setNeighborhood(newValue || "ALL")}
-                defaultValue="ALL"
-                className="select-primary w-full max-w-xs"
-              >
-                {uniqueFlatNeighborhood.map((c) => {
-                  return (
-                    <Option key={c} value={c}>
-                      {c}
-                    </Option>
-                  );
-                })}
-              </Select>
+              <FormControl fullWidth>
+                <InputLabel id="select-neighborhood">Neighborhood</InputLabel>
+                <Select
+                  labelId="select-neighborhood"
+                  id="demo-simple-select"
+                  label="Neighborhood"
+                  value={neighborhood}
+                  onChange={(e) => setNeighborhood(e.target.value || "ALL")}
+                >
+                  {uniqueFlatNeighborhood.map((c) => {
+                    return (
+                      <MenuItem key={c} value={c}>
+                        {c}
+                      </MenuItem>
+                    );
+                  })}
+                </Select>
+              </FormControl>
             </List>
           )}
-
-          <Divider />
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <Divider />
+            <DatePicker
+              sx={{ marginTop: "0.5rem", marginBottom: "0.5rem" }}
+              label="Start Date"
+              value={startDate}
+              onChange={(newValue) => setStartDate(newValue)}
+            />
+            <Divider />
+            <DatePicker
+              sx={{ marginTop: "0.5rem", marginBottom: "0.5rem" }}
+              label="End"
+              value={endDate}
+              onChange={(newValue) => setEndDate(newValue)}
+            />
+            <Divider />
+          </LocalizationProvider>
+          <Button
+            onClick={handleClear}
+            sx={{ marginTop: "0.5rem", width: "100%" }}
+            className="btn btn-primary"
+          >
+            Clear All Filters
+          </Button>
         </Box>
       </Drawer>
     </Box>
