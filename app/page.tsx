@@ -26,7 +26,7 @@ export default function Home() {
     window.open("https://buy.stripe.com/fZeg14aol2JRgnu8ww", "_blank");
   };
 
-  const [option, setOption] = useState<number>(mappingSelection.june24);
+  const [option, setOption] = useState<number>(mappingSelection.july24);
   const [startDate, setStartDate] = useState<Dayjs | null>(null);
   const [endDate, setEndDate] = useState<Dayjs | null>(null);
   const [items, setItems] = useState<Crime[]>([]);
@@ -71,8 +71,8 @@ export default function Home() {
     setIsLoading(true);
     const getTotals = async () => {
       getTotalCrimes(
-        dataSelection[option].month,
-        dataSelection[option].year,
+        dataSelection.find((i) => i.id === option)?.month,
+        dataSelection.find((i) => i.id === option)?.year,
         20000
       ).then((i) => {
         const num: number = i.totalPages;
@@ -81,8 +81,8 @@ export default function Home() {
           for (let i = 1; i <= num; i++) {
             promises.push(
               getCrimes(
-                dataSelection[option].month,
-                dataSelection[option].year,
+                dataSelection.find((i) => i.id === option)?.month,
+                dataSelection.find((i) => i.id === option)?.year,
                 i,
                 20000
               )

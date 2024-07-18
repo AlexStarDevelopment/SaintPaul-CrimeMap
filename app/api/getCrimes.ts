@@ -1,6 +1,6 @@
 export const getCrimes = async (
-  type: string,
-  year: number,
+  type: string | undefined,
+  year: number | undefined,
   page: number,
   limit: number
 ) => {
@@ -12,8 +12,8 @@ export const getCrimes = async (
 };
 
 export const getTotalCrimes = async (
-  type: string,
-  year: number,
+  type: string | undefined,
+  year: number | undefined,
   limit: number
 ) => {
   const res = await fetch(

@@ -5,6 +5,7 @@ export type dataSelectionType = {
 };
 
 export const dataSelection: dataSelectionType[] = [
+  { id: 17, month: "july", year: 2024 },
   { id: 0, month: "june", year: 2024 },
   { id: 1, month: "may", year: 2024 },
   { id: 2, month: "april", year: 2024 },
@@ -25,6 +26,7 @@ export const dataSelection: dataSelectionType[] = [
 ];
 
 export const mappingSelection = {
+  july24: 17,
   june24: 0,
   may24: 1,
   april24: 2,
