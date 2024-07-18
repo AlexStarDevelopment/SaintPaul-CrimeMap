@@ -36,36 +36,37 @@ export default function Home() {
   const [crimeType, setCrimeType] = useState("ALL");
   const [neighborhood, setNeighborhood] = useState("ALL");
 
-  const filteredItems =
-    crimeType === "ALL"
-      ? items
-      : items.filter(
-          (i) => i.INCIDENT.toUpperCase() === crimeType.toUpperCase()
-        );
+  const filteredItems = (): Crime[] => {
+    const filteredItems =
+      crimeType === "ALL"
+        ? items
+        : items.filter(
+            (i) => i.INCIDENT.toUpperCase() === crimeType.toUpperCase()
+          );
 
-  const filteredItemsNeighborhood =
-    neighborhood === "ALL"
-      ? filteredItems
-      : filteredItems.filter(
-          (i) =>
-            i.NEIGHBORHOOD_NAME.toUpperCase() === neighborhood.toUpperCase()
-        );
+    const filteredItemsNeighborhood =
+      neighborhood === "ALL"
+        ? filteredItems
+        : filteredItems.filter(
+            (i) =>
+              i.NEIGHBORHOOD_NAME.toUpperCase() === neighborhood.toUpperCase()
+          );
 
-  const filteredItemsStartDate =
-    startDate === null
-      ? filteredItemsNeighborhood
-      : filteredItemsNeighborhood.filter(
-          (i) => Number(i.DATE) >= startDate.valueOf()
-        );
+    const filteredItemsStartDate =
+      startDate === null
+        ? filteredItemsNeighborhood
+        : filteredItemsNeighborhood.filter(
+            (i) => Number(i.DATE) >= startDate.valueOf()
+          );
 
-  const filteredItemsEndDate =
-    endDate === null
-      ? filteredItemsStartDate
-      : filteredItemsStartDate.filter(
-          (i) => Number(i.DATE) <= endDate.valueOf() + 86399000
-        );
-
-  console.log(filteredItemsEndDate);
+    const filteredItemsEndDate =
+      endDate === null
+        ? filteredItemsStartDate
+        : filteredItemsStartDate.filter(
+            (i) => Number(i.DATE) <= endDate.valueOf() + 86399000
+          );
+    return filteredItemsEndDate;
+  };
 
   useEffect(() => {
     setIsLoading(true);
@@ -167,7 +168,7 @@ export default function Home() {
         setEndDate={setEndDate}
       />
       <div className="flex justify-center items-center h-[70vh] w-[75vw] border-2 m-2 z-1">
-        <MyMap items={filteredItemsEndDate} isLoading={isLoading} />
+        <MyMap items={filteredItems()} isLoading={isLoading} />
       </div>
       <button className="btn btn-primary" onClick={handleClick}>
         Buy me a latte at Amore
@@ -213,6 +214,9 @@ export default function Home() {
       <div className="card w-[100vw] bg-primary text-primary-content m-5">
         <div className="card-body items-center text-center">
           <h3 className="card-title">Change Log</h3>
+          <p className="m-5">
+            7/18/24 1.8.0 - Added July data and locations to each incident
+          </p>
           <p className="m-5">
             7/15/24 1.7.0 - Filter menu added with support for filtering by date
           </p>

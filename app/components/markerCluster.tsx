@@ -118,6 +118,7 @@ const MarkerCluster = ({ markers }: MarkerClusterProps) => {
           ).toLocaleString()}</p>
           <p><strong>Incident:</strong> ${position.INCIDENT}</p>
           <p><strong>Incident details:</strong> ${position.INCIDENT_TYPE}</p>
+          <p><strong>Location:</strong> ${position.BLOCK_VIEW}</p>
           <p><strong>Call Disposition:</strong> ${position.CALL_DISPOSITION}</p>
           </div>`
         )
