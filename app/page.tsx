@@ -214,6 +214,7 @@ export default function Home() {
       <div className="card w-[100vw] bg-primary text-primary-content m-5">
         <div className="card-body items-center text-center">
           <h3 className="card-title">Change Log</h3>
+          <p className="m-5">7/22/24 1.8.1 - Data fixes for university ave</p>
           <p className="m-5">
             7/18/24 1.8.0 - Added July data and locations to each incident
           </p>
