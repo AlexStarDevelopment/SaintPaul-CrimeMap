@@ -214,6 +214,9 @@ export default function Home() {
       <div className="card w-[100vw] bg-primary text-primary-content m-5">
         <div className="card-body items-center text-center">
           <h3 className="card-title">Change Log</h3>
+          <p className="m-5">
+            10/15/24 1.8.1 - September data added - All 2024 Data updated
+          </p>
           <p className="m-5">10/4/24 1.8.1 - September data added</p>
           <p className="m-5">9/14/24 1.8.1 - August data added</p>
           <p className="m-5">8/8/24 1.8.1 - Second half of July data added</p>

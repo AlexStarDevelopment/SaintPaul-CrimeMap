@@ -13,7 +13,16 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Saint Paul - Crime Map",
-  description: "Crime map of St Paul, MN",
+  description:
+    "Interactive neighborhood crime map of St Paul, MN created as a free public resource. Created by Saint Paul community member",
+  keywords: [
+    "saint paul crime map",
+    "st paul crime map",
+    "st. paul crime map",
+    "mn crime map",
+    "saint paul mn crime map",
+    "st paul mn crime map",
+  ],
 };
 
 export default function RootLayout({
@@ -24,6 +33,15 @@ export default function RootLayout({
   return (
     <html lang="en" data-theme="emerald">
       <head>
+        <title>Saint Paul - Crime Map</title>
+        <meta
+          name="description"
+          content="Interactive neighborhood crime map of St. Paul, MN created as a free public resource. Created by Saint Paul community member"
+        />
+        <meta
+          name="keywords"
+          content="St. Paul crime map, real-time crime data, St. Paul crime statistics, Minnesota safety map, neighborhood crime map, crime heatmap, St. Paul MN"
+        />
         <Script
           async
           src="https://www.googletagmanager.com/gtag/js?id=G-8VSBZ6SFBZ"
