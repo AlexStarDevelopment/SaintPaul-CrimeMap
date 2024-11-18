@@ -26,7 +26,7 @@ export default function Home() {
     window.open("https://buy.stripe.com/fZeg14aol2JRgnu8ww", "_blank");
   };
 
-  const [option, setOption] = useState<number>(mappingSelection.september24);
+  const [option, setOption] = useState<number>(mappingSelection.october24);
   const [startDate, setStartDate] = useState<Dayjs | null>(null);
   const [endDate, setEndDate] = useState<Dayjs | null>(null);
   const [items, setItems] = useState<Crime[]>([]);
@@ -214,6 +214,9 @@ export default function Home() {
       <div className="card w-[100vw] bg-primary text-primary-content m-5">
         <div className="card-body items-center text-center">
           <h3 className="card-title">Change Log</h3>
+          <p className="m-5">
+            11/18/24 1.8.1 - October data added - All 2024 Data updated
+          </p>
           <p className="m-5">
             10/15/24 1.8.1 - September data added - All 2024 Data updated
           </p>
