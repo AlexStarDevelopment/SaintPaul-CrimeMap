@@ -41,7 +41,7 @@ export default function Home() {
       crimeType === "ALL"
         ? items
         : items.filter(
-            (i) => i.INCIDENT.toUpperCase() === crimeType.toUpperCase()
+            (i) => i.INCIDENT?.toUpperCase() === crimeType.toUpperCase()
           );
 
     const filteredItemsNeighborhood =
