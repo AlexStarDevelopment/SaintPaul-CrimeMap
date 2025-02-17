@@ -61,7 +61,7 @@ const MarkerCluster = ({ markers }: MarkerClusterProps) => {
 
   React.useEffect(() => {
     const getIcon = (incident: string): DivIcon => {
-      const lowerIncident = incident.toLowerCase();
+      const lowerIncident = incident?.toLowerCase();
       switch (lowerIncident) {
         case "agg. assault":
           return newDivIcon(fist);

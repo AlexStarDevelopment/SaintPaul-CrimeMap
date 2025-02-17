@@ -45,7 +45,7 @@ export default function DrawerBasic({
     return [...new Set(arr)];
   }
 
-  const flat = items.flatMap((i) => i.INCIDENT);
+  const flat = items.flatMap((i) => i.INCIDENT ?? i.INCIDENT_TYPE);
   const flatNeighborhood = items.flatMap((i) => i.NEIGHBORHOOD_NAME);
   flat.unshift("ALL");
   flatNeighborhood.unshift("ALL");
