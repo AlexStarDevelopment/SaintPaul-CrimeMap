@@ -26,7 +26,7 @@ export default function Home() {
     window.open("https://buy.stripe.com/fZeg14aol2JRgnu8ww", "_blank");
   };
 
-  const [option, setOption] = useState<number>(mappingSelection.november24);
+  const [option, setOption] = useState<number>(mappingSelection.january25);
   const [startDate, setStartDate] = useState<Dayjs | null>(null);
   const [endDate, setEndDate] = useState<Dayjs | null>(null);
   const [items, setItems] = useState<Crime[]>([]);
@@ -193,7 +193,7 @@ export default function Home() {
             no claims with this app, and the purpose is not political or to
             perpetuate fear - it is simply to stay informed. If you like this
             app, please let me know. If you REALLY like it and want to buy me a
-            cup of joe from Amore on Annapolis and Smith, I have included a
+            cup of coffee from Amore on Annapolis and Smith, I have included a
             button above. Please do not feel obligated and only do so if you
             want and are able! THANK YOU!
           </p>
@@ -214,6 +214,14 @@ export default function Home() {
       <div className="card w-[100vw] bg-primary text-primary-content m-5">
         <div className="card-body items-center text-center">
           <h3 className="card-title">Change Log</h3>
+          <p className="m-5">
+            02/17/25 1.8.1 - Sorry for the delay in the most recent data. I have
+            a new job now and I am settling in well so I took some time to come
+            back to this app and was thrilled to see all the traffic and its #1
+            google ranking! I have updated the app to add december 2024, january
+            2025, and all 2024 is now all of 2024! Another year in the books!
+            Thanks for the support.
+          </p>
           <p className="m-5">
             12/11/24 1.8.1 - November data added - All 2024 Data updated
           </p>
