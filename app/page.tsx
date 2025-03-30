@@ -26,7 +26,7 @@ export default function Home() {
     window.open("https://buy.stripe.com/fZeg14aol2JRgnu8ww", "_blank");
   };
 
-  const [option, setOption] = useState<number>(mappingSelection.january25);
+  const [option, setOption] = useState<number>(mappingSelection.february25);
   const [startDate, setStartDate] = useState<Dayjs | null>(null);
   const [endDate, setEndDate] = useState<Dayjs | null>(null);
   const [items, setItems] = useState<Crime[]>([]);
@@ -215,7 +215,10 @@ export default function Home() {
         <div className="card-body items-center text-center">
           <h3 className="card-title">Change Log</h3>
           <p className="m-5">
-            02/17/25 1.8.1 - Sorry for the delay in the most recent data. I have
+            03/30/25 1.8.9 - February data added. All 2025 updated as of today
+          </p>
+          <p className="m-5">
+            02/17/25 1.8.8 - Sorry for the delay in the most recent data. I have
             a new job now and I am settling in well so I took some time to come
             back to this app and was thrilled to see all the traffic and its #1
             google ranking! I have updated the app to add december 2024, january
@@ -223,17 +226,17 @@ export default function Home() {
             Thanks for the support.
           </p>
           <p className="m-5">
-            12/11/24 1.8.1 - November data added - All 2024 Data updated
+            12/11/24 1.8.7 - November data added - All 2024 Data updated
           </p>
           <p className="m-5">
-            11/18/24 1.8.1 - October data added - All 2024 Data updated
+            11/18/24 1.8.6 - October data added - All 2024 Data updated
           </p>
           <p className="m-5">
-            10/15/24 1.8.1 - September data added - All 2024 Data updated
+            10/15/24 1.8.5 - September data added - All 2024 Data updated
           </p>
-          <p className="m-5">10/4/24 1.8.1 - September data added</p>
-          <p className="m-5">9/14/24 1.8.1 - August data added</p>
-          <p className="m-5">8/8/24 1.8.1 - Second half of July data added</p>
+          <p className="m-5">10/4/24 1.8.4 - September data added</p>
+          <p className="m-5">9/14/24 1.8.3 - August data added</p>
+          <p className="m-5">8/8/24 1.8.2 - Second half of July data added</p>
           <p className="m-5">7/22/24 1.8.1 - Data fixes for university ave</p>
           <p className="m-5">
             7/18/24 1.8.0 - Added July data and locations to each incident
