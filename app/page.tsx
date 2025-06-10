@@ -9,6 +9,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFilter } from "@fortawesome/free-solid-svg-icons";
 import { Box } from "@mui/material";
 import dayjs, { Dayjs } from "dayjs";
+import { useWindowSize } from "react-use";
+import Confetti from "react-confetti";
 
 ReactGA.initialize("G-8VSBZ6SFBZ");
 
@@ -26,7 +28,7 @@ export default function Home() {
     window.open("https://buy.stripe.com/fZeg14aol2JRgnu8ww", "_blank");
   };
 
-  const [option, setOption] = useState<number>(mappingSelection.april25);
+  const [option, setOption] = useState<number>(mappingSelection.may25);
   const [startDate, setStartDate] = useState<Dayjs | null>(null);
   const [endDate, setEndDate] = useState<Dayjs | null>(null);
   const [items, setItems] = useState<Crime[]>([]);
@@ -35,6 +37,16 @@ export default function Home() {
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [crimeType, setCrimeType] = useState("ALL");
   const [neighborhood, setNeighborhood] = useState("ALL");
+  const [showConfetti, setShowConfetti] = useState(true);
+
+  useEffect(() => {
+    // Auto-stop the confetti after 5 seconds
+    const timer = setTimeout(() => {
+      setShowConfetti(false);
+    }, 10000);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const filteredItems = (): Crime[] => {
     const filteredItems =
@@ -118,18 +130,32 @@ export default function Home() {
 
   return (
     <main className="flex min-h-screen flex-col items-center bg-neutral text-neutral-content">
+      {showConfetti && <Confetti width={2500} height={1000} />}
       <Box
         sx={{ width: "100vw", padding: "1rem" }}
         className="bg-primary text-primary-content"
       >
         <Box sx={{ width: "100%" }} className="inline-block">
-          <h1 className="btn btn-ghost text-lg p-1">Saint Paul Crime Map</h1>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-start",
+            }}
+          >
+            <h1 className="text-lg p-1 bg-transparent text-left">
+              Saint Paul Crime Map
+            </h1>
+            <h2 className="text-md p-1 bg-transparent text-left">
+              Thank you for 1 year!
+            </h2>
+          </Box>
           <Box sx={{ display: "flex" }}>
             <select
               onChange={(e: ChangeEvent<HTMLSelectElement>) =>
                 setOption(Number(e.target.value))
               }
-              className="select select-primary select-sm w-full max-w-xs"
+              className="select select-primary select-sm w-full max-w-xs bg-base-100 text-base-content border border-primary"
               value={option}
             >
               {dataSelection.map((x) => {
@@ -170,7 +196,10 @@ export default function Home() {
       <div className="flex justify-center items-center h-[70vh] w-[75vw] border-2 m-2 z-1">
         <MyMap items={filteredItems()} isLoading={isLoading} />
       </div>
-      <button className="btn btn-primary" onClick={handleClick}>
+      <button
+        className="btn btn-primary bg-primary text-primary-content border border-primary hover:bg-primary-focus"
+        onClick={handleClick}
+      >
         Buy me a latte at Amore
       </button>
       <div className="card w-[100vw] bg-primary text-primary-content m-2">
@@ -214,6 +243,10 @@ export default function Home() {
       <div className="card w-[100vw] bg-primary text-primary-content m-5">
         <div className="card-body items-center text-center">
           <h3 className="card-title">Change Log</h3>
+          <p className="m-5">
+            06/10/25 1.9 - May data added. All 2025 updated as of today. Thank
+            you for one year theme!
+          </p>
           <p className="m-5">
             05/13/25 1.8.9 - March / April data added. All 2025 updated as of
             today
