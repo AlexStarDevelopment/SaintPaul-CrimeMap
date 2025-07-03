@@ -1,0 +1,9 @@
+.leaflet-container {
+  height: 70vh;
+  width: 75vw;
+}
+
+/* Force text color to black for all elements within the map container */
+.leaflet-container * {
+  color: black !important;
+}

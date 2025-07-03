@@ -8,11 +8,11 @@ import {
   List,
   MenuItem,
   Select,
-} from "@mui/material";
-import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import * as React from "react";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { Dayjs } from "dayjs";
+} from '@mui/material';
+import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
+import * as React from 'react';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { Dayjs } from 'dayjs';
 
 interface DrawerBasicProps {
   items: Crime[];
@@ -47,39 +47,34 @@ export default function DrawerBasic({
 
   const flat = items.flatMap((i) => i.INCIDENT ?? i.INCIDENT_TYPE);
   const flatNeighborhood = items.flatMap((i) => i.NEIGHBORHOOD_NAME);
-  flat.unshift("ALL");
-  flatNeighborhood.unshift("ALL");
+  flat.unshift('ALL');
+  flatNeighborhood.unshift('ALL');
   const uniqueFlatNeighborhood = getUniqueStrings(flatNeighborhood);
   const uniqueCrimeOptions = getUniqueStrings(flat);
 
-  const toggleDrawer =
-    (inOpen: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
-      if (
-        event.type === "keydown" &&
-        ((event as React.KeyboardEvent).key === "Tab" ||
-          (event as React.KeyboardEvent).key === "Shift")
-      ) {
-        return;
-      }
+  const toggleDrawer = (inOpen: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
+    if (
+      event.type === 'keydown' &&
+      ((event as React.KeyboardEvent).key === 'Tab' ||
+        (event as React.KeyboardEvent).key === 'Shift')
+    ) {
+      return;
+    }
 
-      setIsFiltersOpen(inOpen);
-    };
+    setIsFiltersOpen(inOpen);
+  };
 
   const handleClear = () => {
     setStartDate(null);
     setEndDate(null);
-    setCrimeTypes("ALL");
-    setNeighborhood("ALL");
+    setCrimeTypes('ALL');
+    setNeighborhood('ALL');
   };
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: 'flex' }}>
       <Drawer open={isFiltersOpen} onClose={toggleDrawer(false)}>
-        <Box
-          sx={{ margin: 1 }}
-          role="presentation"
-          onKeyDown={toggleDrawer(false)}
-        >
+        <Box sx={{ margin: 1 }} role="presentation" onKeyDown={toggleDrawer(false)}>
           <div className="flex place-content-between">
             <h2 className="btn btn-ghost text-lg font-bold">Filters</h2>
             <Button
@@ -94,15 +89,13 @@ export default function DrawerBasic({
           {uniqueCrimeOptions && (
             <List>
               <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-label">
-                  Crime Type
-                </InputLabel>
+                <InputLabel id="demo-simple-select-label">Crime Type</InputLabel>
                 <Select
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
                   label="Crime Type"
                   value={crimeType}
-                  onChange={(e) => setCrimeTypes(e.target.value || "ALL")}
+                  onChange={(e) => setCrimeTypes(e.target.value || 'ALL')}
                 >
                   {uniqueCrimeOptions.map((c) => {
                     return (
@@ -125,7 +118,7 @@ export default function DrawerBasic({
                   id="demo-simple-select"
                   label="Neighborhood"
                   value={neighborhood}
-                  onChange={(e) => setNeighborhood(e.target.value || "ALL")}
+                  onChange={(e) => setNeighborhood(e.target.value || 'ALL')}
                 >
                   {uniqueFlatNeighborhood.map((c) => {
                     return (
@@ -141,14 +134,14 @@ export default function DrawerBasic({
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <Divider />
             <DatePicker
-              sx={{ marginTop: "0.5rem", marginBottom: "0.5rem" }}
+              sx={{ marginTop: '0.5rem', marginBottom: '0.5rem' }}
               label="Start Date"
               value={startDate}
               onChange={(newValue) => setStartDate(newValue)}
             />
             <Divider />
             <DatePicker
-              sx={{ marginTop: "0.5rem", marginBottom: "0.5rem" }}
+              sx={{ marginTop: '0.5rem', marginBottom: '0.5rem' }}
               label="End"
               value={endDate}
               onChange={(newValue) => setEndDate(newValue)}
@@ -157,7 +150,7 @@ export default function DrawerBasic({
           </LocalizationProvider>
           <Button
             onClick={handleClear}
-            sx={{ marginTop: "0.5rem", width: "100%" }}
+            sx={{ marginTop: '0.5rem', width: '100%' }}
             className="btn btn-primary"
           >
             Clear All Filters

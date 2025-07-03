@@ -14,3 +14,15 @@ type Crime = {
   LAT: number;
   LON: number;
 };
+
+interface GetCrimesResponse {
+  crimes: Crime[];
+  totalItems: number;
+  totalPages: number;
+  currentPage: number;
+}
+
+interface GetTotalCrimesResponse {
+  totalItems: number;
+  totalPages: number;
+}
