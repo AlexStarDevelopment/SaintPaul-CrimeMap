@@ -2,7 +2,8 @@
 import dynamic from 'next/dynamic';
 import { ChangeEvent, useEffect, useState } from 'react';
 import ReactGA from 'react-ga';
-import { dataSelection, mappingSelection, themes } from './const';
+import { dataSelection, themes } from './const';
+import { Crime } from './models/models';
 import DrawerBasic from './components/drawer';
 import { getCrimes, getTotalCrimes } from './api/getCrimes';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -240,7 +241,9 @@ export default function Home() {
         <div className="card-body items-center text-center">
           <h3 className="card-title">Change Log</h3>
           <p className="m-2">
-            07/03/25 2.0.0 - We've added June 2025 data, cleaned up old data, and made sure you can select your own theme and it stays just how you like it. Enjoy the fresh new look and feel!
+            07/03/25 2.0.0 - We have added June 2025 data, cleaned up old data, and made sure you
+            can select your own theme and it stays just how you like it. Enjoy the fresh new look
+            and feel!
           </p>
           <p className="m-2">
             06/10/25 1.9 - May data added. All 2025 updated as of today. Thank you for one year

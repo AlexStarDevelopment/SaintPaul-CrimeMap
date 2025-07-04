@@ -7,8 +7,9 @@ import { MapContainer } from 'react-leaflet/MapContainer';
 import { TileLayer } from 'react-leaflet/TileLayer';
 import 'leaflet.markercluster';
 import MarkerCluster from './markerCluster';
-import { dataSelectionType } from '../const';
+import { dataSelection } from '../const';
 import { useState } from 'react';
+import { Crime } from '../models/models';
 import { getCrimes, getTotalCrimes } from '../api/getCrimes';
 
 interface MyMapProps {

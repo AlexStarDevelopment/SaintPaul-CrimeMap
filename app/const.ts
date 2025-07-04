@@ -1,4 +1,10 @@
-export const dataSelection = [
+export type dataSelectionType = {
+  id: number;
+  month: string;
+  year: number;
+};
+
+export const dataSelection: dataSelectionType[] = [
   {
     id: 1,
     month: 'june',

@@ -1,4 +1,4 @@
-type Crime = {
+export type Crime = {
   CASE_NUMBER: string;
   CODE: string;
   INCIDENT_TYPE: string;
@@ -15,14 +15,14 @@ type Crime = {
   LON: number;
 };
 
-interface GetCrimesResponse {
+export interface GetCrimesResponse {
   crimes: Crime[];
   totalItems: number;
   totalPages: number;
   currentPage: number;
 }
 
-interface GetTotalCrimesResponse {
+export interface GetTotalCrimesResponse {
   totalItems: number;
   totalPages: number;
 }

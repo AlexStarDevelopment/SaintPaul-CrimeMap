@@ -1,4 +1,4 @@
-import { GetCrimesResponse, GetTotalCrimesResponse } from '../models.ts/models';
+import { GetCrimesResponse, GetTotalCrimesResponse } from '../models/models';
 
 /**
  * Fetches crime data from the API.
