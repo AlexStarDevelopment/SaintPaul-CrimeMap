@@ -15,6 +15,7 @@ import { DivIcon, Icon } from 'leaflet';
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 import { useMap } from 'react-leaflet';
+import { Crime } from '../models/models';
 
 const fist = ReactDOMServer.renderToString(
   <FontAwesomeIcon height={20} width={20} icon={faHandFist} color="black" />
