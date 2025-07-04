@@ -9,8 +9,7 @@ import { getCrimes, getTotalCrimes } from './api/getCrimes';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFilter } from '@fortawesome/free-solid-svg-icons';
 import { Box } from '@mui/material';
-import dayjs, { Dayjs } from 'dayjs';
-import { useWindowSize } from 'react-use';
+import { Dayjs } from 'dayjs';
 ReactGA.initialize('G-8VSBZ6SFBZ');
 
 const MyMap = dynamic(() => import('./components/map'), {
