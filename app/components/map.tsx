@@ -59,53 +59,53 @@ const iconMap = {
   ),
 };
 
+const newDivIcon = (icon: string): L.DivIcon => {
+  return new L.DivIcon({
+    html: icon,
+    iconSize: [22, 20],
+    className: 'custom-div-icon',
+  });
+};
+
+const getIcon = (incident: string): L.DivIcon | L.Icon => {
+  const lowerIncident = incident?.toLowerCase();
+  switch (lowerIncident) {
+    case 'agg. assault':
+    case 'agg. assault dom.':
+    case 'agg. assault dom':
+    case 'simple asasult dom.':
+    case 'simple assault dom.':
+      return newDivIcon(iconMap.fist);
+    case 'auto theft':
+      return newDivIcon(iconMap.car);
+    case 'theft':
+      return newDivIcon(iconMap.money);
+    case 'burglary':
+      return newDivIcon(iconMap.house);
+    case 'discharge':
+      return newDivIcon(iconMap.gun);
+    case 'graffiti':
+    case 'vandalism':
+    case 'criminal damage':
+      return newDivIcon(iconMap.graffiti);
+    case 'narcotics':
+      return newDivIcon(iconMap.narco);
+    case 'robbery':
+      return newDivIcon(iconMap.robbery);
+    case 'arson':
+      return newDivIcon(iconMap.arson);
+    default:
+      return new L.Icon({
+        iconUrl: '/dot-svgrepo-com.svg',
+        iconSize: [10, 10],
+      });
+  }
+};
+
 const MyMap = ({ items, isLoading }: MyMapProps) => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
   const markerClusterGroupRef = useRef<L.MarkerClusterGroup | null>(null);
-
-  const newDivIcon = (icon: string): L.DivIcon => {
-    return new L.DivIcon({
-      html: icon,
-      iconSize: [22, 20],
-      className: 'custom-div-icon',
-    });
-  };
-
-  const getIcon = (incident: string): L.DivIcon | L.Icon => {
-    const lowerIncident = incident?.toLowerCase();
-    switch (lowerIncident) {
-      case 'agg. assault':
-      case 'agg. assault dom.':
-      case 'agg. assault dom':
-      case 'simple asasult dom.':
-      case 'simple assault dom.':
-        return newDivIcon(iconMap.fist);
-      case 'auto theft':
-        return newDivIcon(iconMap.car);
-      case 'theft':
-        return newDivIcon(iconMap.money);
-      case 'burglary':
-        return newDivIcon(iconMap.house);
-      case 'discharge':
-        return newDivIcon(iconMap.gun);
-      case 'graffiti':
-      case 'vandalism':
-      case 'criminal damage':
-        return newDivIcon(iconMap.graffiti);
-      case 'narcotics':
-        return newDivIcon(iconMap.narco);
-      case 'robbery':
-        return newDivIcon(iconMap.robbery);
-      case 'arson':
-        return newDivIcon(iconMap.arson);
-      default:
-        return new L.Icon({
-          iconUrl: '/dot-svgrepo-com.svg',
-          iconSize: [10, 10],
-        });
-    }
-  };
 
   // Initialize map only once
   useEffect(() => {
@@ -121,7 +121,8 @@ const MyMap = ({ items, isLoading }: MyMapProps) => {
 
       // Add tile layer
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        attribution:
+          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
       }).addTo(mapInstanceRef.current);
 
       // Create marker cluster group
@@ -130,13 +131,13 @@ const MyMap = ({ items, isLoading }: MyMapProps) => {
         iconCreateFunction: (cluster: any) => {
           const count = cluster.getChildCount();
           let size = 'small';
-          
+
           if (count >= 100) {
             size = 'large';
           } else if (count >= 10) {
             size = 'medium';
           }
-          
+
           return L.divIcon({
             html: `<div><span>${count}</span></div>`,
             className: `custom-cluster-icon custom-cluster-${size}`,
@@ -184,7 +185,7 @@ const MyMap = ({ items, isLoading }: MyMapProps) => {
             <p><strong>Call Disposition:</strong> ${crime.CALL_DISPOSITION}</p>
           </div>`
         );
-        
+
         markerClusterGroupRef.current?.addLayer(marker);
       });
 
