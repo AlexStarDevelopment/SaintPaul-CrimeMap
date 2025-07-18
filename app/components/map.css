@@ -7,3 +7,64 @@
 .leaflet-container * {
   color: black !important;
 }
+
+/* Custom styles for crime popup */
+.crime-popup {
+  font-family: inherit;
+  color: black !important;
+}
+
+.crime-popup p {
+  margin: 0.25rem 0;
+  color: black !important;
+}
+
+.crime-popup strong {
+  color: black !important;
+}
+
+/* Custom cluster icon styles */
+.custom-cluster-icon {
+  background-color: #ff6b6b;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.custom-cluster-small {
+  background-color: #51cf66;
+}
+
+.custom-cluster-medium {
+  background-color: #ffd43b;
+}
+
+.custom-cluster-large {
+  background-color: #ff6b6b;
+}
+
+.custom-cluster-icon div {
+  background: transparent;
+  border-radius: 50%;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Custom div icon for crime markers */
+.custom-div-icon {
+  background: rgba(255, 255, 255, 0.9);
+  border: 2px solid #333;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}

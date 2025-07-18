@@ -51,18 +51,6 @@ export default function RootLayout({
         </Script>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-
-        {/* Leaflet and MarkerCluster CSS should be loaded before globals.css */}
-        <Script
-          src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js"
-          integrity="sha512-/Nsx9X4HebavoBvEBuyp3I7od5tA0UzAxs+j83KgC8PU0kgB4XiK4Lfe4y4cgBtaRJQEIFCW+oC506aPT2L1zw=="
-          crossOrigin=""
-          strategy="afterInteractive"
-        ></Script>
-        <Script
-          src="https://unpkg.com/leaflet.markercluster@1.3.0/dist/leaflet.markercluster.js"
-          strategy="afterInteractive"
-        ></Script>
       </head>
       <body className={inter.className}>{children}</body>
     </html>
