@@ -9,6 +9,7 @@ import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 import 'leaflet.markercluster';
 import './map.css';
 import { Crime } from '../models/models';
+import { CircularProgress, Box, Typography } from '@mui/material';
 import {
   faCar,
   faFire,
@@ -198,22 +199,64 @@ const MyMap = ({ items, isLoading }: MyMapProps) => {
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%' }}>
       {isLoading && (
-        <div
-          style={{
+        <Box
+          sx={{
             position: 'absolute',
             top: 0,
             left: 0,
             width: '100%',
             height: '100%',
-            backgroundColor: 'rgba(255, 255, 255, 0.7)',
+            backgroundColor: 'rgba(255, 255, 255, 0.9)',
             display: 'flex',
+            flexDirection: 'column',
             justifyContent: 'center',
             alignItems: 'center',
             zIndex: 1000,
+            backdropFilter: 'blur(2px)',
           }}
         >
-          <span className="loading loading-infinity loading-lg"></span>
-        </div>
+          <CircularProgress
+            size={70}
+            thickness={4}
+            sx={{
+              color: 'primary.main',
+              animationDuration: '2s',
+            }}
+          />
+          <Typography
+            variant="h6"
+            sx={{
+              mt: 3,
+              color: 'primary.main',
+              fontWeight: 500,
+              textAlign: 'center',
+              animation: 'pulse 2s infinite',
+              '@keyframes pulse': {
+                '0%': {
+                  opacity: 1,
+                },
+                '50%': {
+                  opacity: 0.5,
+                },
+                '100%': {
+                  opacity: 1,
+                },
+              },
+            }}
+          >
+            Loading Crime Data...
+          </Typography>
+          <Typography
+            variant="body2"
+            sx={{
+              mt: 1,
+              color: 'text.secondary',
+              textAlign: 'center',
+            }}
+          >
+            Please wait while we fetch and process the data
+          </Typography>
+        </Box>
       )}
       <div ref={mapRef} style={{ width: '100%', height: '100%' }} />
     </div>
