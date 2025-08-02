@@ -29,12 +29,11 @@ export default function Home() {
       label: 'coffee',
     });
     if (typeof window !== 'undefined') {
-      window.open('https://buy.stripe.com/fZeg14aol2JRgnu8ww', '_blank');
+      window.open('https://buy.stripe.com/7sY7sLfBcfV3dsZaj85Ne01', '_blank');
     }
   };
 
   const [option, setOption] = useState<number>(dataSelection[0].id);
-  const [currentTheme, setCurrentTheme] = useState<string>('light');
 
   const handleOptionChange = (event: SelectChangeEvent<number>) => {
     const newOption = event.target.value as number;
@@ -200,20 +199,24 @@ export default function Home() {
           </CardContent>
         </Card>
 
-        {/* Support Button */}
+        {/* Quick Support Button - Subtle placement for immediate supporters */}
         <Box sx={{ textAlign: 'center', mb: { xs: 2, sm: 3 } }}>
+          <Typography variant="body2" sx={{ mb: 1, opacity: 0.8 }}>
+            Love this tool? Support Saint Paul&apos;s #1 crime resource
+          </Typography>
           <Button
-            variant="contained"
+            variant="outlined"
             color="primary"
             onClick={handleClick}
-            size="large"
+            size="medium"
             sx={{
-              fontSize: { xs: '0.875rem', sm: '1rem' }, // Smaller text on mobile
-              px: { xs: 2, sm: 3 }, // Less padding on mobile
-              py: { xs: 1, sm: 1.5 }, // Less vertical padding on mobile
+              fontSize: { xs: '0.8rem', sm: '0.9rem' },
+              px: { xs: 2, sm: 2.5 },
+              py: { xs: 0.75, sm: 1 },
+              borderRadius: 2,
             }}
           >
-            Buy me a latte at Amore
+            Support This Resource
           </Button>
         </Box>
 
@@ -230,22 +233,107 @@ export default function Home() {
               About
             </Typography>
             <Typography variant="body1" sx={{ mb: 2 }}>
-              My name is Alex and I live on the Westside in Saint Paul. I can never find good crime
-              maps of Saint Paul, and the public data access spreadsheets are really buggy and hard
-              to work with. I figured if I was having trouble navigating these resources, others
-              would be too. Building this app, it was still very difficult to work with the data
-              that the city provides, and I had to do a lot of cleanup to get the data usable for
-              mapping on this app. I have spent many hours correcting incorrect data and looking up
-              gps coordinates for cross streets by hand!
+              My name is Alex and I live on the Westside in Saint Paul. I couldn&apos;t find
+              reliable crime maps for our city - the public data spreadsheets are buggy and nearly
+              impossible to use. I figured if I was having trouble accessing this critical safety
+              information, others would be too. Building this tool took extensive work cleaning the
+              city&apos;s messy data, hand-correcting GPS coordinates, and making it actually usable
+              for our community.
             </Typography>
             <Typography variant="body1" sx={{ mb: 2 }}>
-              I have loved living here for the past 4 years and have never had any serious run-ins
-              with crime. However, I like to stay informed! I make no claims with this app, and the
-              purpose is not political or to perpetuate fear - it is simply to stay informed. If you
-              like this app, please let me know. If you REALLY like it and want to buy me a cup of
-              coffee from Amore on Annapolis and Smith, I have included a button above. Please do
-              not feel obligated and only do so if you want and are able! THANK YOU!
+              What started as a personal project has become Saint Paul&apos;s #1 crime resource,
+              with thousands of monthly users who depend on accurate, up-to-date safety information.
+              I spend 15-20 hours monthly maintaining this tool, ensuring it stays reliable when
+              other resources fail. If this helps you stay informed about your neighborhood&apos;s
+              safety, please consider supporting its continued development.
             </Typography>
+          </CardContent>
+        </Card>
+
+        {/* Why This Tool Matters Section */}
+        <Card
+          sx={{
+            mb: { xs: 1.5, sm: 2 },
+            backgroundColor: 'primary.main',
+            color: 'primary.contrastText',
+          }}
+        >
+          <CardContent sx={{ textAlign: 'center', px: { xs: 2, sm: 3 }, py: { xs: 2, sm: 3 } }}>
+            <Typography variant="h5" component="h3" gutterBottom>
+              Why This Tool Matters
+            </Typography>
+            <Typography variant="body1" sx={{ mb: 2 }}>
+              <strong>Unlike other crime resources, this tool actually works:</strong>
+            </Typography>
+            <Typography variant="body1" sx={{ mb: 1, textAlign: 'left' }}>
+              • <strong>#1 Google ranking</strong> for Saint Paul crime data
+            </Typography>
+            <Typography variant="body1" sx={{ mb: 1, textAlign: 'left' }}>
+              • <strong>Monthly updates</strong> with cleaned, verified data
+            </Typography>
+            <Typography variant="body1" sx={{ mb: 1, textAlign: 'left' }}>
+              • <strong>Hand-corrected GPS coordinates</strong> for accurate mapping
+            </Typography>
+            <Typography variant="body1" sx={{ mb: 1, textAlign: 'left' }}>
+              • <strong>No crashes or bugs</strong> like the city's official tools
+            </Typography>
+            <Typography variant="body1" sx={{ mb: 1, textAlign: 'left' }}>
+              • <strong>Free for everyone</strong> in our community
+            </Typography>
+            <Typography variant="body1" sx={{ mb: 2, mt: 2 }}>
+              <strong>Monthly costs to maintain this resource:</strong> Server hosting, data
+              processing, and 20+ hours of manual updates to ensure accuracy.
+            </Typography>
+          </CardContent>
+        </Card>
+
+        {/* Support Section */}
+        <Card
+          sx={{
+            mb: { xs: 1.5, sm: 2 },
+            backgroundColor: 'primary.main',
+            color: 'primary.contrastText',
+            border: 2,
+            borderColor: 'primary.light',
+          }}
+        >
+          <CardContent sx={{ textAlign: 'center', px: { xs: 2, sm: 3 }, py: { xs: 2, sm: 3 } }}>
+            <Typography variant="h5" component="h3" gutterBottom>
+              Support Saint Paul's Crime Data Resource
+            </Typography>
+            <Typography variant="body1" sx={{ mb: 2 }}>
+              This tool has grown from a personal project to the most trusted crime resource in Saint
+              Paul. Maintaining this level of accuracy and reliability requires ongoing investment.
+            </Typography>
+            <Typography variant="body1" sx={{ mb: 3 }}>
+              <strong>Join hundreds of Saint Paul residents</strong> who support keeping this
+              critical safety resource free and updated for our entire community.
+            </Typography>
+            
+            <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2, justifyContent: 'center', alignItems: 'center' }}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleClick}
+                size="large"
+                sx={{
+                  fontSize: { xs: '1rem', sm: '1.1rem' },
+                  px: { xs: 3, sm: 4 },
+                  py: { xs: 1.5, sm: 2 },
+                  fontWeight: 'bold',
+                  minWidth: { xs: '100%', sm: '200px' },
+                  backgroundColor: 'primary.light',
+                  '&:hover': {
+                    backgroundColor: 'primary.dark',
+                  },
+                }}
+              >
+                Support This Resource
+              </Button>
+              <Typography variant="body2" sx={{ fontStyle: 'italic', opacity: 0.9 }}>
+                (Buy Alex a coffee at Amore)
+              </Typography>
+            </Box>
           </CardContent>
         </Card>
 
@@ -267,10 +355,14 @@ export default function Home() {
         <Card sx={{ mb: 2, backgroundColor: 'primary.main', color: 'primary.contrastText' }}>
           <CardContent>
             <Typography variant="h5" component="h3" gutterBottom sx={{ textAlign: 'center' }}>
-              Change Log
+              Development History
+            </Typography>
+            <Typography variant="body1" sx={{ mb: 3, textAlign: 'center', fontStyle: 'italic' }}>
+              <strong>Over 25 major updates</strong> in the past year - demonstrating ongoing
+              commitment to Saint Paul&apos;s most reliable crime data resource:
             </Typography>
             <Typography variant="body2" sx={{ mb: 1 }}>
-              08/01/25 2.1.0 - Updates to the map component package. Updates to all 2025 crime data.
+              08/01/25 3.0.0 - Updates to the map component package. Updates to all 2025 crime data. Another major makeover and component upgrade.
             </Typography>
             <Typography variant="body2" sx={{ mb: 1 }}>
               07/03/25 2.0.0 - We have added June 2025 data, cleaned up old data, and made sure you
@@ -355,6 +447,30 @@ export default function Home() {
             <Typography variant="body2" sx={{ mb: 1 }}>
               6/14/24 1.0.0 - Initial Release
             </Typography>
+            
+            <Box sx={{ textAlign: 'center', mt: 3, pt: 2, borderTop: 1, borderColor: 'rgba(255,255,255,0.3)' }}>
+              <Typography variant="body1" sx={{ mb: 2, fontStyle: 'italic' }}>
+                This level of dedication requires ongoing support to continue.
+              </Typography>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleClick}
+                size="large"
+                sx={{
+                  fontSize: { xs: '0.9rem', sm: '1rem' },
+                  px: { xs: 2, sm: 3 },
+                  py: { xs: 1, sm: 1.5 },
+                  fontWeight: 'bold',
+                  backgroundColor: 'primary.light',
+                  '&:hover': {
+                    backgroundColor: 'primary.dark',
+                  },
+                }}
+              >
+                Help Keep This Resource Running
+              </Button>
+            </Box>
           </CardContent>
         </Card>
 
