@@ -275,7 +275,7 @@ export default function Home() {
               • <strong>Hand-corrected GPS coordinates</strong> for accurate mapping
             </Typography>
             <Typography variant="body1" sx={{ mb: 1, textAlign: 'left' }}>
-              • <strong>No crashes or bugs</strong> like the city's official tools
+              • <strong>No crashes or bugs</strong> like the city&apos;s official tools
             </Typography>
             <Typography variant="body1" sx={{ mb: 1, textAlign: 'left' }}>
               • <strong>Free for everyone</strong> in our community
@@ -299,18 +299,27 @@ export default function Home() {
         >
           <CardContent sx={{ textAlign: 'center', px: { xs: 2, sm: 3 }, py: { xs: 2, sm: 3 } }}>
             <Typography variant="h5" component="h3" gutterBottom>
-              Support Saint Paul's Crime Data Resource
+              Support Saint Paul&apos;s Crime Data Resource
             </Typography>
             <Typography variant="body1" sx={{ mb: 2 }}>
-              This tool has grown from a personal project to the most trusted crime resource in Saint
-              Paul. Maintaining this level of accuracy and reliability requires ongoing investment.
+              This tool has grown from a personal project to the most trusted crime resource in
+              Saint Paul. Maintaining this level of accuracy and reliability requires ongoing
+              investment.
             </Typography>
             <Typography variant="body1" sx={{ mb: 3 }}>
               <strong>Join hundreds of Saint Paul residents</strong> who support keeping this
               critical safety resource free and updated for our entire community.
             </Typography>
-            
-            <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2, justifyContent: 'center', alignItems: 'center' }}>
+
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: { xs: 'column', sm: 'row' },
+                gap: 2,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
               <Button
                 variant="contained"
                 color="primary"
@@ -362,7 +371,8 @@ export default function Home() {
               commitment to Saint Paul&apos;s most reliable crime data resource:
             </Typography>
             <Typography variant="body2" sx={{ mb: 1 }}>
-              08/01/25 3.0.0 - Updates to the map component package. Updates to all 2025 crime data. Another major makeover and component upgrade.
+              08/01/25 3.0.0 - Updates to the map component package. Updates to all 2025 crime data.
+              Another major makeover and component upgrade.
             </Typography>
             <Typography variant="body2" sx={{ mb: 1 }}>
               07/03/25 2.0.0 - We have added June 2025 data, cleaned up old data, and made sure you
@@ -447,8 +457,16 @@ export default function Home() {
             <Typography variant="body2" sx={{ mb: 1 }}>
               6/14/24 1.0.0 - Initial Release
             </Typography>
-            
-            <Box sx={{ textAlign: 'center', mt: 3, pt: 2, borderTop: 1, borderColor: 'rgba(255,255,255,0.3)' }}>
+
+            <Box
+              sx={{
+                textAlign: 'center',
+                mt: 3,
+                pt: 2,
+                borderTop: 1,
+                borderColor: 'rgba(255,255,255,0.3)',
+              }}
+            >
               <Typography variant="body1" sx={{ mb: 2, fontStyle: 'italic' }}>
                 This level of dedication requires ongoing support to continue.
               </Typography>
