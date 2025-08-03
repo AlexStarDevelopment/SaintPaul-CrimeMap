@@ -110,6 +110,7 @@ saint-paul-crime-map/
 Fetches crime data with pagination support.
 
 Query parameters:
+
 - `type`: Month identifier (e.g., 'june', 'july')
 - `year`: Year (e.g., '2024')
 - `page`: Page number (default: 1)
@@ -128,6 +129,7 @@ The application supports Material-UI theming. Themes are configured in the `Them
 ### Map Styling
 
 Map markers use FontAwesome icons that are mapped to specific crime types:
+
 - 🤜 Assault (Hand/Fist icon)
 - 🚗 Auto Theft (Car icon)
 - 💰 Theft/Financial (Money icon)
@@ -139,6 +141,7 @@ Map markers use FontAwesome icons that are mapped to specific crime types:
 ## 📊 Data Source
 
 Crime data is sourced from the City of Saint Paul's public crime database. The data includes:
+
 - Reported criminal incidents
 - Approximate locations (addresses are obfuscated for privacy)
 - Crime types and descriptions
@@ -165,6 +168,7 @@ The easiest way to deploy is using [Vercel](https://vercel.com):
 ### Other Platforms
 
 The application can be deployed to any platform that supports Node.js applications:
+
 - AWS
 - Google Cloud
 - Heroku

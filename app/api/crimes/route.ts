@@ -1,55 +1,143 @@
 import { connectToDatabase } from '../../../lib/mongodb';
 import { NextRequest, NextResponse } from 'next/server';
+import { crimeQuerySchema, sanitizeMongoQuery } from '../../lib/validation';
+import { checkRateLimit, apiRateLimiter } from '../../lib/rateLimit';
+import { z } from 'zod';
 
 export async function GET(request: NextRequest) {
-  const { searchParams } = request.nextUrl;
-  const type = searchParams.get('type') || 'june';
-  const year = searchParams.get('year') || '2024';
-  const page = searchParams.get('page') || '1';
-  const limit = searchParams.get('limit') || '20000';
+  // Check rate limit and get headers
+  const { allowed, limit, remaining, reset } = await apiRateLimiter.isAllowed(request);
 
-  // Convert page and limit to integers
-  const pageNum = parseInt(page);
-  const limitNum = parseInt(limit);
-  const typeString = type.toString();
-  const yearInt = parseInt(year);
-
-  // Basic validation
-  if (isNaN(pageNum) || pageNum < 1) {
-    return NextResponse.json({ error: 'Invalid page number' }, { status: 400 });
+  if (!allowed) {
+    return new Response(
+      JSON.stringify({
+        error: 'Too many requests',
+        message: 'Rate limit exceeded. Please try again later.',
+        retryAfter: Math.ceil((reset - Date.now()) / 1000),
+      }),
+      {
+        status: 429,
+        headers: {
+          'X-RateLimit-Limit': limit.toString(),
+          'X-RateLimit-Remaining': remaining.toString(),
+          'X-RateLimit-Reset': new Date(reset).toISOString(),
+          'Retry-After': Math.ceil((reset - Date.now()) / 1000).toString(),
+          'Content-Type': 'application/json',
+        },
+      }
+    );
   }
-  if (isNaN(limitNum) || limitNum < 1) {
-    return NextResponse.json({ error: 'Invalid limit number' }, { status: 400 });
-  }
-  if (isNaN(yearInt) || yearInt < 2000 || yearInt > 2030) {
-    // Example year range
-    return NextResponse.json({ error: 'Invalid year' }, { status: 400 });
-  }
-
-  // Calculate the starting index of the items for the given page
-  const skip = (pageNum - 1) * limitNum;
 
   try {
+    // Parse and validate query parameters
+    const { searchParams } = request.nextUrl;
+    const queryParams = {
+      type: searchParams.get('type') || undefined,
+      year: searchParams.get('year') || undefined,
+      page: searchParams.get('page') || undefined,
+      limit: searchParams.get('limit') || undefined,
+    };
+
+    // Validate with Zod
+    const validated = crimeQuerySchema.parse(queryParams);
+
+    // Sanitize the query parameters
+    const sanitizedQuery = sanitizeMongoQuery({
+      month: validated.type,
+      year: validated.year,
+    });
+
+    // Calculate the starting index of the items for the given page
+    const skip = (validated.page - 1) * validated.limit;
+
+    // Connect to database with timeout
     const client = await connectToDatabase();
     const db = client.db();
     const collection = db.collection('crimes');
 
-    const data = await collection.findOne({ month: typeString, year: yearInt });
+    // Set a timeout for the MongoDB query
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error('Query timeout')), 10000); // 10 second timeout
+    });
+
+    const queryPromise = collection.findOne(sanitizedQuery, {
+      maxTimeMS: 10000, // MongoDB timeout
+      projection: { _id: 0, crimes: 1 }, // Only get crimes array
+    });
+
+    // Race between query and timeout
+    const data = (await Promise.race([queryPromise, timeoutPromise])) as any;
 
     if (!data || !data.crimes) {
-      return NextResponse.json(
-        { crimes: [], totalItems: 0, totalPages: 0, currentPage: pageNum },
+      const response = NextResponse.json(
+        {
+          crimes: [],
+          totalItems: 0,
+          totalPages: 0,
+          currentPage: validated.page,
+        },
         { status: 200 }
+      );
+
+      // Add rate limit headers to response
+      response.headers.set('X-RateLimit-Limit', limit.toString());
+      response.headers.set('X-RateLimit-Remaining', remaining.toString());
+      response.headers.set('X-RateLimit-Reset', new Date(reset).toISOString());
+
+      return response;
+    }
+
+    // Validate that crimes is an array
+    if (!Array.isArray(data.crimes)) {
+      throw new Error('Invalid data format: crimes is not an array');
+    }
+
+    const crimes = data.crimes.slice(skip, skip + validated.limit);
+    const totalItems = data.crimes.length;
+    const totalPages = Math.ceil(totalItems / validated.limit);
+
+    const response = NextResponse.json({
+      crimes,
+      totalItems,
+      totalPages,
+      currentPage: validated.page,
+    });
+
+    // Add rate limit headers to response
+    response.headers.set('X-RateLimit-Limit', limit.toString());
+    response.headers.set('X-RateLimit-Remaining', remaining.toString());
+    response.headers.set('X-RateLimit-Reset', new Date(reset).toISOString());
+
+    return response;
+  } catch (error: any) {
+    // Handle Zod validation errors
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        {
+          error: 'Validation error',
+          details: error.issues.map((e: z.ZodIssue) => ({
+            field: e.path.join('.'),
+            message: e.message,
+          })),
+        },
+        { status: 400 }
       );
     }
 
-    const crimes = data.crimes.slice(skip, skip + limitNum);
-    const totalItems = data.crimes.length;
-    const totalPages = Math.ceil(totalItems / limitNum);
+    // Handle timeout errors
+    if (error.message === 'Query timeout') {
+      return NextResponse.json(
+        { error: 'Request timeout. Please try with smaller limit or different parameters.' },
+        { status: 504 }
+      );
+    }
 
-    return NextResponse.json({ crimes, totalItems, totalPages, currentPage: pageNum });
-  } catch (error: any) {
+    // Log error for monitoring (but don't expose internal details)
     console.error('Error fetching crimes:', error);
-    return NextResponse.json({ error: error.message || 'Internal Server Error' }, { status: 500 });
+
+    return NextResponse.json(
+      { error: 'An error occurred while fetching crime data' },
+      { status: 500 }
+    );
   }
 }

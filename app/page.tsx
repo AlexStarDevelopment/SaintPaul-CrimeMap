@@ -1,7 +1,6 @@
 'use client';
 import dynamic from 'next/dynamic';
 import { ChangeEvent, useEffect, useState } from 'react';
-import ReactGA from 'react-ga';
 import { dataSelection } from './const';
 import { Crime } from './models/models';
 import DrawerBasic from './components/drawer';
@@ -13,7 +12,13 @@ import { Dayjs } from 'dayjs';
 import { Container, Card, CardContent, Box, Button, Typography } from '@mui/material';
 import { SelectChangeEvent } from '@mui/material/Select';
 import { useTheme } from '@mui/material/styles';
-ReactGA.initialize('G-8VSBZ6SFBZ');
+
+// Declare gtag for TypeScript
+declare global {
+  interface Window {
+    gtag: (command: string, targetId: string, config?: any) => void;
+  }
+}
 
 const MyMap = dynamic(() => import('./components/map'), {
   ssr: false,
@@ -23,12 +28,19 @@ export default function Home() {
   const theme = useTheme();
 
   const handleClick = () => {
-    ReactGA.event({
-      category: 'Click',
-      action: 'coffeeClick',
-      label: 'coffee',
-    });
+    // Track analytics event using modern gtag
     if (typeof window !== 'undefined') {
+      try {
+        if (window.gtag) {
+          window.gtag('event', 'click', {
+            event_category: 'engagement',
+            event_label: 'support_button',
+            value: 1,
+          });
+        }
+      } catch (error) {
+        console.warn('Failed to track analytics event:', error);
+      }
       window.open('https://buy.stripe.com/7sY7sLfBcfV3dsZaj85Ne01', '_blank');
     }
   };
@@ -38,7 +50,6 @@ export default function Home() {
   const handleOptionChange = (event: SelectChangeEvent<number>) => {
     const newOption = event.target.value as number;
     setOption(newOption);
-    console.log('Option changed to:', newOption);
   };
   const [startDate, setStartDate] = useState<Dayjs | null>(null);
   const [endDate, setEndDate] = useState<Dayjs | null>(null);

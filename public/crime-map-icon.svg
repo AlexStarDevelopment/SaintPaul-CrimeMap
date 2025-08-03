@@ -1,0 +1,28 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="16" cy="16" r="15" fill="#1e293b" stroke="#475569" stroke-width="2"/>
+  
+  <!-- Map grid background -->
+  <rect x="6" y="6" width="20" height="20" fill="#0f172a" rx="2"/>
+  
+  <!-- Grid lines for map appearance -->
+  <line x1="6" y1="11" x2="26" y2="11" stroke="#374151" stroke-width="0.5"/>
+  <line x1="6" y1="16" x2="26" y2="16" stroke="#374151" stroke-width="0.5"/>
+  <line x1="6" y1="21" x2="26" y2="21" stroke="#374151" stroke-width="0.5"/>
+  <line x1="11" y1="6" x2="11" y2="26" stroke="#374151" stroke-width="0.5"/>
+  <line x1="16" y1="6" x2="16" y2="26" stroke="#374151" stroke-width="0.5"/>
+  <line x1="21" y1="6" x2="21" y2="26" stroke="#374151" stroke-width="0.5"/>
+  
+  <!-- Shield icon (security/crime theme) -->
+  <path d="M16 8L12 10V14C12 17 14.5 19.5 16 20C17.5 19.5 20 17 20 14V10L16 8Z" fill="#ef4444"/>
+  
+  <!-- Map pin icon -->
+  <circle cx="22" cy="22" r="3" fill="#f59e0b"/>
+  <circle cx="22" cy="22" r="1.5" fill="#ffffff"/>
+  <path d="M22 19C20.5 19 19.5 20 19.5 21.5C19.5 23.5 22 26 22 26S24.5 23.5 24.5 21.5C24.5 20 23.5 19 22 19Z" fill="#f59e0b"/>
+  
+  <!-- Crime dots/markers -->
+  <circle cx="9" cy="9" r="1" fill="#dc2626"/>
+  <circle cx="13" cy="23" r="1" fill="#dc2626"/>
+  <circle cx="24" cy="12" r="1" fill="#dc2626"/>
+</svg>

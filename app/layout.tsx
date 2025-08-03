@@ -11,17 +11,15 @@ import ThemeProvider from './components/ThemeProvider';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Saint Paul - Crime Map',
+  title: 'Saint Paul Crime Map - Interactive Crime Data',
   description:
-    'Interactive neighborhood crime map of St Paul, MN created as a free public resource. Created by Saint Paul community member',
-  keywords: [
-    'saint paul crime map',
-    'st paul crime map',
-    'st. paul crime map',
-    'mn crime map',
-    'saint paul mn crime map',
-    'st paul mn crime map',
-  ],
+    'Interactive neighborhood crime map of Saint Paul, Minnesota. View real-time crime data and stay informed about community safety.',
+  keywords: 'saint paul crime map, minnesota crime data, neighborhood safety, crime statistics',
+  authors: [{ name: 'Saint Paul Community Member' }],
+  icons: {
+    icon: '/favicon.svg',
+    apple: '/apple-icon',
+  },
 };
 
 export default function RootLayout({

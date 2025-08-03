@@ -149,7 +149,6 @@ const MyMap = ({ items, isLoading }: MyMapProps) => {
 
       mapInstanceRef.current.addLayer(markerClusterGroupRef.current);
 
-      console.log('Map initialized successfully');
     } catch (error) {
       console.error('Error initializing map:', error);
     }
@@ -189,8 +188,6 @@ const MyMap = ({ items, isLoading }: MyMapProps) => {
 
         markerClusterGroupRef.current?.addLayer(marker);
       });
-
-      console.log(`Added ${items.length} markers to map`);
     } catch (error) {
       console.error('Error updating markers:', error);
     }
