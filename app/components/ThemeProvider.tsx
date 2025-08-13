@@ -1,45 +1,18 @@
 'use client';
-import { ThemeProvider as MUIThemeProvider, createTheme, Theme } from '@mui/material/styles';
+import { ThemeProvider as MUIThemeProvider, Theme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ReactNode, createContext, useContext, useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
+import { getTheme } from '../constants/themes';
+import { ThemeType } from '../models/user';
 
 /**
- * Single dark slate theme configuration
- * Professional dark theme with neutral gray tones
- */
-export const themeConfig = {
-  name: 'Dark Slate',
-  primary: '#78909c',
-  secondary: '#90a4ae',
-  palette: {
-    mode: 'dark' as const,
-    primary: {
-      main: '#78909c',
-      light: '#90a4ae',
-      dark: '#455a64',
-    },
-    secondary: {
-      main: '#90a4ae',
-      light: '#b0bec5',
-      dark: '#546e7a',
-    },
-    background: {
-      default: '#0f172a',
-      paper: '#1e293b',
-    },
-    text: {
-      primary: '#ffffff',
-      secondary: 'rgba(255, 255, 255, 0.7)',
-    },
-  },
-};
-
-/**
- * Type definitions for theme context - simplified for single theme
+ * Type definitions for theme context
  */
 export interface ThemeContextType {
   muiTheme: Theme;
   isHydrated: boolean;
+  currentTheme: ThemeType;
 }
 
 /**
@@ -55,25 +28,39 @@ interface ThemeProviderProps {
 }
 
 /**
- * Theme Provider component with fixed dark slate theme
- * Provides Material-UI integration with no theme switching
+ * Theme Provider component that uses user's saved theme preference
+ * Falls back to system preference or light theme if no preference is set
  *
  * @param children - React child components to wrap with theme context
  */
 export function ThemeProvider({ children }: ThemeProviderProps) {
+  const { data: session } = useSession();
   const [isHydrated, setIsHydrated] = useState(false);
+  const [currentTheme, setCurrentTheme] = useState<ThemeType>('light');
 
   // Hydration effect to prevent SSR/client mismatch
   useEffect(() => {
     setIsHydrated(true);
   }, []);
 
-  // Create Material-UI theme from the single slate configuration
-  const muiTheme = createTheme(themeConfig);
+  // Update theme when session changes
+  useEffect(() => {
+    if (session?.user?.theme) {
+      setCurrentTheme(session.user.theme);
+    } else {
+      // Check for system preference if no user theme is set
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      setCurrentTheme(prefersDark ? 'dark' : 'light');
+    }
+  }, [session]);
+
+  // Get the Material-UI theme based on current selection
+  const muiTheme = getTheme(currentTheme);
 
   const contextValue: ThemeContextType = {
     muiTheme,
     isHydrated,
+    currentTheme,
   };
 
   return (
@@ -88,9 +75,9 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
 
 /**
  * Custom hook to access theme context
- * Provides type-safe access to the fixed dark slate theme
+ * Provides type-safe access to the current theme
  *
- * @returns Theme context with Material-UI theme
+ * @returns Theme context with Material-UI theme and current theme name
  * @throws Error if used outside of ThemeProvider
  */
 export const useTheme = () => {

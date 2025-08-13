@@ -5,10 +5,29 @@ import { ObjectId } from 'mongodb';
 export const getUserById = async (id: string): Promise<User | null> => {
   try {
     const client = await connectToDatabase();
-    const db = client.db('crimemap');
+    const db = client.db(); // Use default database from connection string
     const users = db.collection('users');
 
-    const user = (await users.findOne({ _id: new ObjectId(id) })) as User | null;
+    // Try to find user by ObjectId
+    let user = null;
+    try {
+      user = (await users.findOne({ _id: new ObjectId(id) })) as User | null;
+    } catch (e) {
+      // If ObjectId conversion fails, try string id
+      user = (await users.findOne({ _id: id as any })) as User | null;
+    }
+    
+    // If user found, ensure they have required fields
+    if (user && !user.subscriptionTier) {
+      user.subscriptionTier = 'free';
+      user.subscriptionStatus = 'active';
+      // Update in database
+      await users.updateOne(
+        { _id: user._id },
+        { $set: { subscriptionTier: 'free', subscriptionStatus: 'active' } }
+      );
+    }
+    
     return user;
   } catch (error) {
     console.error('Error fetching user by ID:', error);
@@ -19,7 +38,7 @@ export const getUserById = async (id: string): Promise<User | null> => {
 export const getUserByEmail = async (email: string): Promise<User | null> => {
   try {
     const client = await connectToDatabase();
-    const db = client.db('crimemap');
+    const db = client.db(); // Use default database
     const users = db.collection('users');
 
     const user = (await users.findOne({ email })) as User | null;
@@ -33,7 +52,7 @@ export const getUserByEmail = async (email: string): Promise<User | null> => {
 export const createUser = async (userData: Partial<User>): Promise<User | null> => {
   try {
     const client = await connectToDatabase();
-    const db = client.db('crimemap');
+    const db = client.db(); // Use default database
     const users = db.collection('users');
 
     const now = new Date();
@@ -63,7 +82,7 @@ export const createUser = async (userData: Partial<User>): Promise<User | null> 
 export const updateUser = async (id: string, updates: Partial<User>): Promise<User | null> => {
   try {
     const client = await connectToDatabase();
-    const db = client.db('crimemap');
+    const db = client.db(); // Use default database
     const users = db.collection('users');
 
     const result = await users.findOneAndUpdate(
@@ -97,7 +116,7 @@ export const updateUserSubscription = async (
 ): Promise<User | null> => {
   try {
     const client = await connectToDatabase();
-    const db = client.db('crimemap');
+    const db = client.db(); // Use default database
     const users = db.collection('users');
 
     const updates: Partial<User> = {
@@ -138,7 +157,7 @@ export const updateUserSubscription = async (
 export const getUserByStripeCustomerId = async (stripeCustomerId: string): Promise<User | null> => {
   try {
     const client = await connectToDatabase();
-    const db = client.db('crimemap');
+    const db = client.db(); // Use default database
     const users = db.collection('users');
 
     const user = (await users.findOne({ stripeCustomerId })) as User | null;
@@ -153,7 +172,7 @@ export const getUserByStripeCustomerId = async (stripeCustomerId: string): Promi
 export const initializeUserIndexes = async (): Promise<void> => {
   try {
     const client = await connectToDatabase();
-    const db = client.db('crimemap');
+    const db = client.db(); // Use default database
     const users = db.collection('users');
 
     // Create indexes for efficient queries

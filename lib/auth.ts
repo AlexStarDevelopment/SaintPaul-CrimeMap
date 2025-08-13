@@ -42,21 +42,22 @@ export const authOptions: NextAuthOptions = {
       return true;
     },
     async session({ session, token, user }) {
-      if (session.user?.email) {
-        // Fetch user data from our custom users collection
+      if (user) {
+        // User is available when using database sessions
         const dbUser = await getUserById(user.id);
 
         if (dbUser) {
           // Map database user to session
           const userSession: UserSession = {
-            id: dbUser._id!,
+            id: user.id, // Use the NextAuth user.id
             email: dbUser.email,
             name: dbUser.name,
             image: dbUser.image,
-            subscriptionTier: dbUser.subscriptionTier,
-            subscriptionStatus: dbUser.subscriptionStatus,
+            subscriptionTier: dbUser.subscriptionTier || 'free',
+            subscriptionStatus: dbUser.subscriptionStatus || 'active',
             subscriptionEndDate: dbUser.subscriptionEndDate,
             trialEndDate: dbUser.trialEndDate,
+            theme: dbUser.theme,
           };
 
           // Extend the session with our custom user data
@@ -111,11 +112,13 @@ declare module 'next-auth' {
       subscriptionStatus: 'active' | 'canceled' | 'past_due' | 'incomplete' | 'trialing';
       subscriptionEndDate?: Date;
       trialEndDate?: Date;
+      theme?: 'light' | 'dark' | 'sage' | 'slate';
     };
   }
 
   interface User {
     subscriptionTier: 'free' | 'supporter' | 'pro';
     subscriptionStatus: 'active' | 'canceled' | 'past_due' | 'incomplete' | 'trialing';
+    theme?: 'light' | 'dark' | 'sage' | 'slate';
   }
 }

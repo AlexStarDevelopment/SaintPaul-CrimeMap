@@ -1,5 +1,6 @@
 export type SubscriptionTier = 'free' | 'supporter' | 'pro';
 export type SubscriptionStatus = 'active' | 'canceled' | 'past_due' | 'incomplete' | 'trialing';
+export type ThemeType = 'light' | 'dark' | 'sage' | 'slate';
 
 export interface User {
   _id?: string;
@@ -12,6 +13,7 @@ export interface User {
   stripeSubscriptionId?: string;
   subscriptionEndDate?: Date;
   trialEndDate?: Date;
+  theme?: ThemeType;
   createdAt: Date;
   updatedAt: Date;
   emailVerified?: Date;
@@ -26,6 +28,7 @@ export interface UserSession {
   subscriptionStatus: SubscriptionStatus;
   subscriptionEndDate?: Date;
   trialEndDate?: Date;
+  theme?: ThemeType;
 }
 
 export const SUBSCRIPTION_TIERS: Record<
