@@ -10,11 +10,18 @@ import {
   Box,
   Container,
   Button,
+  Avatar,
+  Menu,
+  Divider,
+  ListItemIcon,
 } from '@mui/material';
-import { FilterList } from '@mui/icons-material';
+import { FilterList, AccountCircle, Logout, Person } from '@mui/icons-material';
 import { SelectChangeEvent } from '@mui/material/Select';
 import { useTheme as useMUITheme } from '@mui/material/styles';
 import { dataSelection } from '../const';
+import { useSession, signIn, signOut } from 'next-auth/react';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface NavigationProps {
   option: number;
@@ -24,6 +31,9 @@ interface NavigationProps {
 
 export default function Navigation({ option, onOptionChange, onFilterClick }: NavigationProps) {
   const muiTheme = useMUITheme();
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   return (
     <AppBar
@@ -141,6 +151,89 @@ export default function Navigation({ option, onOptionChange, onFilterClick }: Na
             >
               Filters
             </Button>
+
+            {/* User Account Section */}
+            {status === 'loading' ? (
+              <Box sx={{ width: 40, height: 40 }} />
+            ) : session ? (
+              <>
+                <Button
+                  onClick={(e) => setAnchorEl(e.currentTarget)}
+                  sx={{
+                    color: 'white',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1,
+                    '&:hover': {
+                      backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                    },
+                  }}
+                >
+                  <Avatar
+                    sx={{ width: 32, height: 32, bgcolor: 'secondary.main' }}
+                    src={session.user?.image || undefined}
+                  >
+                    {session.user?.name?.[0] || session.user?.email?.[0]}
+                  </Avatar>
+                  <Typography variant="body2" sx={{ display: { xs: 'none', sm: 'block' } }}>
+                    {session.user?.name || session.user?.email}
+                  </Typography>
+                </Button>
+                <Menu
+                  anchorEl={anchorEl}
+                  open={Boolean(anchorEl)}
+                  onClose={() => setAnchorEl(null)}
+                  PaperProps={{
+                    sx: { mt: 1.5, minWidth: 200 },
+                  }}
+                >
+                  <MenuItem
+                    onClick={() => {
+                      setAnchorEl(null);
+                      router.push('/account');
+                    }}
+                  >
+                    <ListItemIcon>
+                      <Person fontSize="small" />
+                    </ListItemIcon>
+                    Account
+                  </MenuItem>
+                  <MenuItem disabled>
+                    <Typography variant="body2" color="text.secondary">
+                      {session.user?.subscriptionTier || 'Free'} Plan
+                    </Typography>
+                  </MenuItem>
+                  <Divider />
+                  <MenuItem
+                    onClick={() => {
+                      setAnchorEl(null);
+                      signOut();
+                    }}
+                  >
+                    <ListItemIcon>
+                      <Logout fontSize="small" />
+                    </ListItemIcon>
+                    Sign Out
+                  </MenuItem>
+                </Menu>
+              </>
+            ) : (
+              <Button
+                variant="outlined"
+                startIcon={<AccountCircle />}
+                onClick={() => signIn()}
+                sx={{
+                  color: 'white',
+                  borderColor: 'rgba(255, 255, 255, 0.5)',
+                  '&:hover': {
+                    borderColor: 'white',
+                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                  },
+                }}
+              >
+                Sign In
+              </Button>
+            )}
           </Box>
         </Toolbar>
       </Container>

@@ -2,6 +2,11 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
+  // Skip middleware for NextAuth routes
+  if (request.nextUrl.pathname.startsWith('/api/auth')) {
+    return NextResponse.next();
+  }
+
   // Clone the request headers
   const requestHeaders = new Headers(request.headers);
 
@@ -25,8 +30,8 @@ export function middleware(request: NextRequest) {
   // Add CORS headers for API routes
   if (request.nextUrl.pathname.startsWith('/api/')) {
     response.headers.set('Access-Control-Allow-Origin', '*');
-    response.headers.set('Access-Control-Allow-Methods', 'GET, OPTIONS');
-    response.headers.set('Access-Control-Allow-Headers', 'Content-Type');
+    response.headers.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     response.headers.set('Access-Control-Max-Age', '86400');
   }
 
@@ -41,7 +46,8 @@ export const config = {
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
+     * - api/auth (NextAuth endpoints - explicitly excluded)
      */
-    '/((?!_next/static|_next/image|favicon.ico).*)',
+    '/((?!_next/static|_next/image|favicon.ico|api/auth).*)',
   ],
 };

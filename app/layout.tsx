@@ -7,6 +7,7 @@ import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 import '@fontsource/inter';
 import './globals.css';
 import ThemeProvider from './components/ThemeProvider';
+import SessionProvider from './components/SessionProvider';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -52,7 +53,9 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
       </head>
       <body className={inter.className}>
-        <ThemeProvider>{children}</ThemeProvider>
+        <SessionProvider>
+          <ThemeProvider>{children}</ThemeProvider>
+        </SessionProvider>
       </body>
     </html>
   );
