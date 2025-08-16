@@ -4,42 +4,58 @@ import { authOptions } from '../../../lib/auth';
 import { MongoClient } from 'mongodb';
 
 export async function GET() {
-  // Only allow in development
+  // Multiple security checks for debug endpoint
   if (process.env.NODE_ENV !== 'development') {
     return NextResponse.json({ error: 'Not available in production' }, { status: 403 });
   }
 
+  // Require authentication for debug access
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.email) {
+    return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+  }
+
+  // Additional check: only allow specific admin emails in development
+  const adminEmails = process.env.DEBUG_ADMIN_EMAILS?.split(',') || [];
+  if (adminEmails.length > 0 && !adminEmails.includes(session.user.email)) {
+    return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
+  }
+
   try {
-    const session = await getServerSession(authOptions);
-    
     const client = await MongoClient.connect(process.env.MONGODB_URI!);
     const db = client.db();
     
-    // Get all users
-    const users = await db.collection('users').find({}).toArray();
+    // Get limited user data (remove sensitive fields)
+    const users = await db.collection('users').find({}, {
+      projection: {
+        stripeCustomerId: 0,
+        stripeSubscriptionId: 0,
+        _id: 0
+      }
+    }).toArray();
     
     // Get current session user if logged in
-    const currentUser = session?.user?.email 
-      ? await db.collection('users').findOne({ email: session.user.email })
-      : null;
+    const currentUser = await db.collection('users').findOne(
+      { email: session.user.email },
+      { projection: { stripeCustomerId: 0, stripeSubscriptionId: 0, _id: 0 } }
+    );
     
     await client.close();
     
     return NextResponse.json({
       totalUsers: users.length,
-      currentUser: currentUser || 'Not logged in',
+      currentUser: currentUser || 'Not found',
       allUsers: users.map(u => ({
-        id: u._id,
         email: u.email,
         name: u.name,
-        image: u.image,
         emailVerified: u.emailVerified,
         subscriptionTier: u.subscriptionTier || 'free',
+        subscriptionStatus: u.subscriptionStatus || 'active',
         createdAt: u.createdAt
       }))
     });
   } catch (error) {
-    console.error('Error fetching users:', error);
-    return NextResponse.json({ error: 'Failed to fetch users' }, { status: 500 });
+    console.error('Debug endpoint error:', error);
+    return NextResponse.json({ error: 'Failed to fetch debug data' }, { status: 500 });
   }
 }

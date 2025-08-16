@@ -1,6 +1,7 @@
 import { connectToDatabase } from './mongodb.js';
 import { User, SubscriptionTier, SubscriptionStatus } from '../app/models/user';
 import { ObjectId } from 'mongodb';
+import { logger, sanitizeUserForLogging } from './logger';
 
 export const getUserById = async (id: string): Promise<User | null> => {
   try {
@@ -30,7 +31,7 @@ export const getUserById = async (id: string): Promise<User | null> => {
     
     return user;
   } catch (error) {
-    console.error('Error fetching user by ID:', error);
+    logger.error('Error fetching user by ID', error, { userId: id });
     return null;
   }
 };
@@ -44,7 +45,7 @@ export const getUserByEmail = async (email: string): Promise<User | null> => {
     const user = (await users.findOne({ email })) as User | null;
     return user;
   } catch (error) {
-    console.error('Error fetching user by email:', error);
+    logger.error('Error fetching user by email', error, { email });
     return null;
   }
 };
@@ -74,7 +75,10 @@ export const createUser = async (userData: Partial<User>): Promise<User | null> 
 
     return null;
   } catch (error) {
-    console.error('Error creating user:', error);
+    logger.error('Error creating user', error, { 
+      email: userData.email,
+      name: userData.name 
+    });
     return null;
   }
 };
@@ -98,7 +102,7 @@ export const updateUser = async (id: string, updates: Partial<User>): Promise<Us
 
     return result as User | null;
   } catch (error) {
-    console.error('Error updating user:', error);
+    logger.error('Error updating user', error, { userId: id });
     return null;
   }
 };
@@ -149,7 +153,11 @@ export const updateUserSubscription = async (
 
     return result as User | null;
   } catch (error) {
-    console.error('Error updating user subscription:', error);
+    logger.error('Error updating user subscription', error, { 
+      userId,
+      subscriptionTier: subscriptionData.tier,
+      subscriptionStatus: subscriptionData.status
+    });
     return null;
   }
 };
@@ -163,7 +171,7 @@ export const getUserByStripeCustomerId = async (stripeCustomerId: string): Promi
     const user = (await users.findOne({ stripeCustomerId })) as User | null;
     return user;
   } catch (error) {
-    console.error('Error fetching user by Stripe customer ID:', error);
+    logger.error('Error fetching user by Stripe customer ID', error);
     return null;
   }
 };
@@ -182,8 +190,8 @@ export const initializeUserIndexes = async (): Promise<void> => {
     await users.createIndex({ subscriptionStatus: 1 });
     await users.createIndex({ createdAt: 1 });
 
-    console.log('User collection indexes created successfully');
+    logger.info('User collection indexes created successfully');
   } catch (error) {
-    console.error('Error creating user indexes:', error);
+    logger.error('Error creating user indexes', error);
   }
 };

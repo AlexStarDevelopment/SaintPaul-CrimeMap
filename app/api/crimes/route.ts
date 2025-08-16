@@ -2,6 +2,7 @@ import { connectToDatabase } from '../../../lib/mongodb';
 import { NextRequest, NextResponse } from 'next/server';
 import { crimeQuerySchema, sanitizeMongoQuery } from '../../lib/validation';
 import { checkRateLimit, apiRateLimiter } from '../../lib/rateLimit';
+import { logger, getRequestContext } from '../../../lib/logger';
 import { z } from 'zod';
 
 export async function GET(request: NextRequest) {
@@ -110,8 +111,18 @@ export async function GET(request: NextRequest) {
 
     return response;
   } catch (error: any) {
+    const context = getRequestContext(request);
+
     // Handle Zod validation errors
     if (error instanceof z.ZodError) {
+      logger.warn('Crime API validation error', {
+        ...context,
+        validationErrors: error.issues.map(e => ({
+          field: e.path.join('.'),
+          message: e.message
+        }))
+      });
+
       return NextResponse.json(
         {
           error: 'Validation error',
@@ -126,14 +137,15 @@ export async function GET(request: NextRequest) {
 
     // Handle timeout errors
     if (error.message === 'Query timeout') {
+      logger.error('Crime API query timeout', error, context);
       return NextResponse.json(
         { error: 'Request timeout. Please try with smaller limit or different parameters.' },
         { status: 504 }
       );
     }
 
-    // Log error for monitoring (but don't expose internal details)
-    console.error('Error fetching crimes:', error);
+    // Log error securely without exposing internal details
+    logger.error('Crime API error', error, context);
 
     return NextResponse.json(
       { error: 'An error occurred while fetching crime data' },
