@@ -1,8 +1,8 @@
-import { connectToDatabase } from '../../../lib/mongodb';
 import { NextRequest, NextResponse } from 'next/server';
-import { crimeQuerySchema, sanitizeMongoQuery } from '../../lib/validation';
+import { crimeQuerySchema } from '../../lib/validation';
 import { rateLimit, addRateLimitHeaders } from '../../../lib/rateLimit';
 import { logger, getRequestContext } from '../../../lib/logger';
+import { CrimeCacheService } from '../../../lib/cacheService';
 import { z } from 'zod';
 
 export async function GET(request: NextRequest) {
@@ -40,64 +40,20 @@ export async function GET(request: NextRequest) {
     // Validate with Zod
     const validated = crimeQuerySchema.parse(queryParams);
 
-    // Sanitize the query parameters
-    const sanitizedQuery = sanitizeMongoQuery({
-      month: validated.type,
-      year: validated.year,
-    });
+    // Get paginated crime data using cache service
+    const result = await CrimeCacheService.getPaginatedCrimes(
+      validated.type,
+      validated.year.toString(),
+      validated.page,
+      validated.limit
+    );
 
-    // Calculate the starting index of the items for the given page
-    const skip = (validated.page - 1) * validated.limit;
+    const response = NextResponse.json(result);
 
-    // Connect to database with timeout
-    const client = await connectToDatabase();
-    const db = client.db();
-    const collection = db.collection('crimes');
-
-    // Set a timeout for the MongoDB query
-    const timeoutPromise = new Promise((_, reject) => {
-      setTimeout(() => reject(new Error('Query timeout')), 10000); // 10 second timeout
-    });
-
-    const queryPromise = collection.findOne(sanitizedQuery, {
-      maxTimeMS: 10000, // MongoDB timeout
-      projection: { _id: 0, crimes: 1 }, // Only get crimes array
-    });
-
-    // Race between query and timeout
-    const data = (await Promise.race([queryPromise, timeoutPromise])) as any;
-
-    if (!data || !data.crimes) {
-      const response = NextResponse.json(
-        {
-          crimes: [],
-          totalItems: 0,
-          totalPages: 0,
-          currentPage: validated.page,
-        },
-        { status: 200 }
-      );
-
-      // Add rate limit headers to response
-      return addRateLimitHeaders(response, rateLimitResult);
-    }
-
-    // Validate that crimes is an array
-    if (!Array.isArray(data.crimes)) {
-      throw new Error('Invalid data format: crimes is not an array');
-    }
-
-    const crimes = data.crimes.slice(skip, skip + validated.limit);
-    const totalItems = data.crimes.length;
-    const totalPages = Math.ceil(totalItems / validated.limit);
-
-    const response = NextResponse.json({
-      crimes,
-      totalItems,
-      totalPages,
-      currentPage: validated.page,
-    });
-
+    // Add cache headers
+    response.headers.set('Cache-Control', 'public, max-age=300'); // 5 minute browser cache
+    response.headers.set('X-Cache-Status', result.crimes.length > 0 ? 'hit' : 'miss');
+    
     // Add rate limit headers to response
     return addRateLimitHeaders(response, rateLimitResult);
   } catch (error: any) {

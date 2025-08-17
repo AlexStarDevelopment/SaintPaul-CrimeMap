@@ -10,6 +10,11 @@ import ThemeProvider from './components/ThemeProvider';
 import SessionProvider from './components/SessionProvider';
 import { ErrorBoundary } from './components/ErrorBoundary';
 
+// Initialize cache warming on server startup
+if (typeof window === 'undefined') {
+  import('../lib/cacheWarming');
+}
+
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {

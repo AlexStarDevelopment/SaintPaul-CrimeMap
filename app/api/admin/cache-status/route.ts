@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../../../lib/auth';
 import { getMockCacheStatus, clearMockCache } from '../../../../lib/mockData.js';
+import { CrimeCacheService } from '../../../../lib/cacheService';
+import { getCacheStatus, clearCrimeCache } from '../../../../lib/crimeDataService.js';
 
 // GET /api/admin/cache-status
 export async function GET(request: NextRequest) {
@@ -12,10 +14,20 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const cacheStatus = getMockCacheStatus();
+    // Get status from all cache layers
+    const mockCacheStatus = getMockCacheStatus();
+    const legacyCacheStatus = getCacheStatus();
+    const newCacheStats = CrimeCacheService.getCacheStats();
 
     return NextResponse.json({
-      cache: cacheStatus,
+      cache: {
+        // Legacy cache (for dashboard/location services)
+        legacy: legacyCacheStatus,
+        // Mock data cache (currently used)
+        mock: mockCacheStatus,
+        // New enhanced cache (for main crime APIs)
+        enhanced: newCacheStats,
+      },
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
@@ -33,10 +45,14 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    // Clear all cache layers
     clearMockCache();
+    clearCrimeCache();
+    CrimeCacheService.clearCrimeCache();
 
     return NextResponse.json({
-      message: 'Cache cleared successfully',
+      message: 'All caches cleared successfully',
+      cleared: ['mock', 'legacy', 'enhanced'],
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
