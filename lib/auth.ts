@@ -1,16 +1,13 @@
 import { NextAuthOptions } from 'next-auth';
 import { MongoDBAdapter } from '@auth/mongodb-adapter';
 import GoogleProvider from 'next-auth/providers/google';
-import EmailProvider from 'next-auth/providers/email';
 import { MongoClient } from 'mongodb';
+import { clientPromise as sharedClientPromise } from './mongodb';
 import { getUserById, createUser, updateUser } from './users';
 import { User, UserSession } from '../app/models/user';
 
-// Create a promise that resolves to the MongoClient
-const clientPromise = MongoClient.connect(process.env.MONGODB_URI!, {
-  maxPoolSize: 10,
-  minPoolSize: 2,
-});
+// Reuse the shared Mongo client promise to prevent extra connections
+const clientPromise = sharedClientPromise as unknown as Promise<MongoClient>;
 
 export const authOptions: NextAuthOptions = {
   adapter: MongoDBAdapter(clientPromise) as any,
@@ -18,17 +15,6 @@ export const authOptions: NextAuthOptions = {
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    }),
-    EmailProvider({
-      server: {
-        host: process.env.EMAIL_SERVER_HOST,
-        port: Number(process.env.EMAIL_SERVER_PORT),
-        auth: {
-          user: process.env.EMAIL_SERVER_USER,
-          pass: process.env.EMAIL_SERVER_PASSWORD,
-        },
-      },
-      from: process.env.EMAIL_FROM,
     }),
   ],
   pages: {

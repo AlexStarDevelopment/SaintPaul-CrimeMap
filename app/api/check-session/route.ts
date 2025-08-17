@@ -5,12 +5,12 @@ import { authOptions } from '../../../lib/auth';
 export async function GET() {
   try {
     const session = await getServerSession(authOptions);
-    
+
     // Return minimal session information to prevent data leakage
     if (!session) {
       return NextResponse.json({
         authenticated: false,
-        user: null
+        user: null,
       });
     }
 
@@ -22,15 +22,18 @@ export async function GET() {
         name: session.user?.name,
         image: session.user?.image,
         subscriptionTier: session.user?.subscriptionTier || 'free',
-        theme: session.user?.theme
-      }
+        theme: session.user?.theme,
+      },
     });
   } catch (error) {
     console.error('Session check error:', error);
-    return NextResponse.json({ 
-      authenticated: false, 
-      user: null,
-      error: 'Session check failed' 
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        authenticated: false,
+        user: null,
+        error: 'Session check failed',
+      },
+      { status: 500 }
+    );
   }
 }

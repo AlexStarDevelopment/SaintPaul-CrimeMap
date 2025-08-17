@@ -36,6 +36,7 @@
     "react-dom": "^18.3.1",
     "react-hot-toast": "^2.5.2",
     "react-use": "^17.6.0",
+    "recharts": "^3.1.2",
     "swr": "^2.3.0",
     "zod": "^4.0.14"
   },

@@ -6,6 +6,10 @@ interface LogContext {
   userAgent?: string;
   ip?: string;
   timestamp?: string;
+  validationErrors?: Array<{ field: string; message: string }>; // optional structured validation details
+  attemptedTheme?: string;
+  newTheme?: string;
+  theme?: string;
 }
 
 interface ErrorDetails {
@@ -27,7 +31,7 @@ class SecureLogger {
     'authorization',
     'stripeCustomerId',
     'stripeSubscriptionId',
-    '_id'
+    '_id',
   ];
 
   private sanitizeObject(obj: any): any {
@@ -39,10 +43,10 @@ class SecureLogger {
 
     for (const [key, value] of Object.entries(obj)) {
       const lowerKey = key.toLowerCase();
-      
+
       // Check if this field contains sensitive data
-      const isSensitive = this.sensitiveFields.some(field => 
-        lowerKey.includes(field) || (typeof value === 'string' && value.length > 50)
+      const isSensitive = this.sensitiveFields.some(
+        (field) => lowerKey.includes(field) || (typeof value === 'string' && value.length > 50)
       );
 
       if (isSensitive) {
@@ -62,7 +66,7 @@ class SecureLogger {
       timestamp: new Date().toISOString(),
       level,
       message,
-      ...(data && { data: this.sanitizeObject(data) })
+      ...(data && { data: this.sanitizeObject(data) }),
     };
 
     return JSON.stringify(entry);
@@ -79,7 +83,7 @@ class SecureLogger {
   error(message: string, error?: Error | any, context?: LogContext): void {
     const errorDetails: ErrorDetails = {
       message,
-      context
+      context,
     };
 
     if (error instanceof Error) {
@@ -96,9 +100,9 @@ class SecureLogger {
     const securityEntry = {
       ...context,
       securityEvent: true,
-      severity: 'HIGH'
+      severity: 'HIGH',
     };
-    
+
     console.error(this.createLogEntry('SECURITY', message, securityEntry));
   }
 
@@ -120,21 +124,22 @@ export function getRequestContext(request?: Request): LogContext {
     endpoint: url.pathname,
     method: request.method,
     userAgent: request.headers.get('user-agent') || undefined,
-    ip: request.headers.get('x-forwarded-for')?.split(',')[0] || 
-        request.headers.get('x-real-ip') || 
-        undefined,
-    timestamp: new Date().toISOString()
+    ip:
+      request.headers.get('x-forwarded-for')?.split(',')[0] ||
+      request.headers.get('x-real-ip') ||
+      undefined,
+    timestamp: new Date().toISOString(),
   };
 }
 
 // Helper to sanitize user data for logging
 export function sanitizeUserForLogging(user: any): any {
   if (!user) return null;
-  
+
   return {
     email: user.email,
     subscriptionTier: user.subscriptionTier,
     subscriptionStatus: user.subscriptionStatus,
-    hasStripeId: !!user.stripeCustomerId
+    hasStripeId: !!user.stripeCustomerId,
   };
 }

@@ -38,9 +38,12 @@ class InMemoryRateLimiter {
     return `${ip}:${path}`;
   }
 
-  async isAllowed(
-    request: NextRequest
-  ): Promise<{ allowed: boolean; limit: number; remaining: number; reset: number }> {
+  async isAllowed(request: NextRequest): Promise<{
+    allowed: boolean;
+    limit: number;
+    remaining: number;
+    reset: number;
+  }> {
     const key = this.getKey(request);
     const now = Date.now();
 

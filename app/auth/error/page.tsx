@@ -3,10 +3,11 @@
 import { useSearchParams } from 'next/navigation';
 import { Box, Container, Typography, Button, Paper } from '@mui/material';
 import Link from 'next/link';
+import { Suspense } from 'react';
 
-export default function AuthError() {
+function AuthErrorContent() {
   const searchParams = useSearchParams();
-  const error = searchParams.get('error');
+  const error = searchParams?.get('error') || '';
 
   const getErrorMessage = () => {
     switch (error) {
@@ -34,7 +35,14 @@ export default function AuthError() {
 
   return (
     <Container maxWidth="sm">
-      <Box sx={{ mt: 8, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      <Box
+        sx={{
+          mt: 8,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
         <Paper elevation={3} sx={{ p: 4, width: '100%', textAlign: 'center' }}>
           <Typography variant="h4" gutterBottom color="error">
             Authentication Error
@@ -59,5 +67,32 @@ export default function AuthError() {
         </Paper>
       </Box>
     </Container>
+  );
+}
+
+export default function AuthError() {
+  return (
+    <Suspense
+      fallback={
+        <Container maxWidth="sm">
+          <Box
+            sx={{
+              mt: 8,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+            }}
+          >
+            <Paper elevation={3} sx={{ p: 4, width: '100%', textAlign: 'center' }}>
+              <Typography variant="h4" gutterBottom color="error">
+                Loading...
+              </Typography>
+            </Paper>
+          </Box>
+        </Container>
+      }
+    >
+      <AuthErrorContent />
+    </Suspense>
   );
 }

@@ -8,6 +8,7 @@ import '@fontsource/inter';
 import './globals.css';
 import ThemeProvider from './components/ThemeProvider';
 import SessionProvider from './components/SessionProvider';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -17,6 +18,8 @@ export const metadata: Metadata = {
     'Interactive neighborhood crime map of Saint Paul, Minnesota. View real-time crime data and stay informed about community safety.',
   keywords: 'saint paul crime map, minnesota crime data, neighborhood safety, crime statistics',
   authors: [{ name: 'Saint Paul Community Member' }],
+  // Base URL used to resolve social images and canonical links
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'),
   icons: {
     icon: '/favicon.svg',
     apple: '/apple-icon',
@@ -53,9 +56,11 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
       </head>
       <body className={inter.className}>
-        <SessionProvider>
-          <ThemeProvider>{children}</ThemeProvider>
-        </SessionProvider>
+        <ErrorBoundary>
+          <SessionProvider>
+            <ThemeProvider>{children}</ThemeProvider>
+          </SessionProvider>
+        </ErrorBoundary>
       </body>
     </html>
   );

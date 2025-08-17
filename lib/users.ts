@@ -17,18 +17,19 @@ export const getUserById = async (id: string): Promise<User | null> => {
       // If ObjectId conversion fails, try string id
       user = (await users.findOne({ _id: id as any })) as User | null;
     }
-    
+
     // If user found, ensure they have required fields
     if (user && !user.subscriptionTier) {
       user.subscriptionTier = 'free';
       user.subscriptionStatus = 'active';
       // Update in database
-      await users.updateOne(
-        { _id: user._id },
-        { $set: { subscriptionTier: 'free', subscriptionStatus: 'active' } }
-      );
+      const filter =
+        typeof user._id === 'string' ? { _id: new ObjectId(user._id) } : { _id: user._id };
+      await users.updateOne(filter, {
+        $set: { subscriptionTier: 'free', subscriptionStatus: 'active' },
+      });
     }
-    
+
     return user;
   } catch (error) {
     logger.error('Error fetching user by ID', error, { userId: id });
@@ -75,9 +76,8 @@ export const createUser = async (userData: Partial<User>): Promise<User | null> 
 
     return null;
   } catch (error) {
-    logger.error('Error creating user', error, { 
+    logger.error('Error creating user', error, {
       email: userData.email,
-      name: userData.name 
     });
     return null;
   }
@@ -153,10 +153,8 @@ export const updateUserSubscription = async (
 
     return result as User | null;
   } catch (error) {
-    logger.error('Error updating user subscription', error, { 
+    logger.error('Error updating user subscription', error, {
       userId,
-      subscriptionTier: subscriptionData.tier,
-      subscriptionStatus: subscriptionData.status
     });
     return null;
   }

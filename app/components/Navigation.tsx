@@ -15,7 +15,13 @@ import {
   Divider,
   ListItemIcon,
 } from '@mui/material';
-import { FilterList, AccountCircle, Logout, Person } from '@mui/icons-material';
+import {
+  FilterList,
+  AccountCircle,
+  Logout,
+  Person,
+  Dashboard as DashboardIcon,
+} from '@mui/icons-material';
 import { SelectChangeEvent } from '@mui/material/Select';
 import { useTheme as useMUITheme } from '@mui/material/styles';
 import { dataSelection } from '../const';
@@ -153,9 +159,7 @@ export default function Navigation({ option, onOptionChange, onFilterClick }: Na
             </Button>
 
             {/* User Account Section */}
-            {status === 'loading' ? (
-              <Box sx={{ width: 40, height: 40 }} />
-            ) : session ? (
+            {session ? (
               <>
                 <Button
                   onClick={(e) => setAnchorEl(e.currentTarget)}
@@ -170,12 +174,17 @@ export default function Navigation({ option, onOptionChange, onFilterClick }: Na
                   }}
                 >
                   <Avatar
+                    component="span"
                     sx={{ width: 32, height: 32, bgcolor: 'secondary.main' }}
                     src={session.user?.image || undefined}
                   >
                     {session.user?.name?.[0] || session.user?.email?.[0]}
                   </Avatar>
-                  <Typography variant="body2" sx={{ display: { xs: 'none', sm: 'block' } }}>
+                  <Typography
+                    component="span"
+                    variant="body2"
+                    sx={{ display: { xs: 'none', sm: 'block' } }}
+                  >
                     {session.user?.name || session.user?.email}
                   </Typography>
                 </Button>
@@ -187,6 +196,17 @@ export default function Navigation({ option, onOptionChange, onFilterClick }: Na
                     sx: { mt: 1.5, minWidth: 200 },
                   }}
                 >
+                  <MenuItem
+                    onClick={() => {
+                      setAnchorEl(null);
+                      router.push('/dashboard');
+                    }}
+                  >
+                    <ListItemIcon>
+                      <DashboardIcon fontSize="small" />
+                    </ListItemIcon>
+                    Dashboard
+                  </MenuItem>
                   <MenuItem
                     onClick={() => {
                       setAnchorEl(null);

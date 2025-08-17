@@ -133,7 +133,12 @@ export default function Home() {
   }, [currentPage, option]);
 
   return (
-    <Box sx={{ minHeight: '100vh', backgroundColor: theme.palette.background.default }}>
+    <Box
+      sx={{
+        minHeight: '100vh',
+        backgroundColor: theme.palette.background.default,
+      }}
+    >
       {/* Navigation Header */}
       <Navigation
         option={option}
@@ -239,7 +244,13 @@ export default function Home() {
             color: 'primary.contrastText',
           }}
         >
-          <CardContent sx={{ textAlign: 'center', px: { xs: 2, sm: 3 }, py: { xs: 2, sm: 3 } }}>
+          <CardContent
+            sx={{
+              textAlign: 'center',
+              px: { xs: 2, sm: 3 },
+              py: { xs: 2, sm: 3 },
+            }}
+          >
             <Typography variant="h5" component="h3" gutterBottom>
               About
             </Typography>
@@ -269,7 +280,13 @@ export default function Home() {
             color: 'primary.contrastText',
           }}
         >
-          <CardContent sx={{ textAlign: 'center', px: { xs: 2, sm: 3 }, py: { xs: 2, sm: 3 } }}>
+          <CardContent
+            sx={{
+              textAlign: 'center',
+              px: { xs: 2, sm: 3 },
+              py: { xs: 2, sm: 3 },
+            }}
+          >
             <Typography variant="h5" component="h3" gutterBottom>
               Why This Tool Matters
             </Typography>
@@ -308,7 +325,13 @@ export default function Home() {
             borderColor: 'primary.light',
           }}
         >
-          <CardContent sx={{ textAlign: 'center', px: { xs: 2, sm: 3 }, py: { xs: 2, sm: 3 } }}>
+          <CardContent
+            sx={{
+              textAlign: 'center',
+              px: { xs: 2, sm: 3 },
+              py: { xs: 2, sm: 3 },
+            }}
+          >
             <Typography variant="h5" component="h3" gutterBottom>
               Support Saint Paul&apos;s Crime Data Resource
             </Typography>
@@ -358,7 +381,13 @@ export default function Home() {
         </Card>
 
         {/* Limitations Section */}
-        <Card sx={{ mb: 2, backgroundColor: 'primary.main', color: 'primary.contrastText' }}>
+        <Card
+          sx={{
+            mb: 2,
+            backgroundColor: 'primary.main',
+            color: 'primary.contrastText',
+          }}
+        >
           <CardContent sx={{ textAlign: 'center' }}>
             <Typography variant="h5" component="h3" gutterBottom>
               Limitations
@@ -372,7 +401,13 @@ export default function Home() {
           </CardContent>
         </Card>
         {/* Change Log Section */}
-        <Card sx={{ mb: 2, backgroundColor: 'primary.main', color: 'primary.contrastText' }}>
+        <Card
+          sx={{
+            mb: 2,
+            backgroundColor: 'primary.main',
+            color: 'primary.contrastText',
+          }}
+        >
           <CardContent>
             <Typography variant="h5" component="h3" gutterBottom sx={{ textAlign: 'center' }}>
               Development History
@@ -504,7 +539,13 @@ export default function Home() {
         </Card>
 
         {/* Disclaimer Section */}
-        <Card sx={{ mb: 2, backgroundColor: 'primary.main', color: 'primary.contrastText' }}>
+        <Card
+          sx={{
+            mb: 2,
+            backgroundColor: 'primary.main',
+            color: 'primary.contrastText',
+          }}
+        >
           <CardContent sx={{ textAlign: 'center' }}>
             <Typography variant="h5" component="h3" gutterBottom>
               Disclaimer

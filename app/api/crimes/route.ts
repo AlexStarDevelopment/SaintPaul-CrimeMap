@@ -1,29 +1,27 @@
 import { connectToDatabase } from '../../../lib/mongodb';
 import { NextRequest, NextResponse } from 'next/server';
 import { crimeQuerySchema, sanitizeMongoQuery } from '../../lib/validation';
-import { checkRateLimit, apiRateLimiter } from '../../lib/rateLimit';
+import { rateLimit, addRateLimitHeaders } from '../../../lib/rateLimit';
 import { logger, getRequestContext } from '../../../lib/logger';
 import { z } from 'zod';
 
 export async function GET(request: NextRequest) {
-  // Check rate limit and get headers
-  const { allowed, limit, remaining, reset } = await apiRateLimiter.isAllowed(request);
+  // Check rate limit
+  const rateLimitResult = await rateLimit(request);
 
-  if (!allowed) {
-    return new Response(
-      JSON.stringify({
-        error: 'Too many requests',
-        message: 'Rate limit exceeded. Please try again later.',
-        retryAfter: Math.ceil((reset - Date.now()) / 1000),
-      }),
+  if (!rateLimitResult.success) {
+    return NextResponse.json(
+      {
+        error: 'Rate limit exceeded',
+        retryAfter: rateLimitResult.retryAfter,
+      },
       {
         status: 429,
         headers: {
-          'X-RateLimit-Limit': limit.toString(),
-          'X-RateLimit-Remaining': remaining.toString(),
-          'X-RateLimit-Reset': new Date(reset).toISOString(),
-          'Retry-After': Math.ceil((reset - Date.now()) / 1000).toString(),
-          'Content-Type': 'application/json',
+          'X-RateLimit-Limit': rateLimitResult.limit.toString(),
+          'X-RateLimit-Remaining': rateLimitResult.remaining.toString(),
+          'X-RateLimit-Reset': rateLimitResult.resetTime.toString(),
+          'Retry-After': (rateLimitResult.retryAfter || 60).toString(),
         },
       }
     );
@@ -81,11 +79,7 @@ export async function GET(request: NextRequest) {
       );
 
       // Add rate limit headers to response
-      response.headers.set('X-RateLimit-Limit', limit.toString());
-      response.headers.set('X-RateLimit-Remaining', remaining.toString());
-      response.headers.set('X-RateLimit-Reset', new Date(reset).toISOString());
-
-      return response;
+      return addRateLimitHeaders(response, rateLimitResult);
     }
 
     // Validate that crimes is an array
@@ -105,11 +99,7 @@ export async function GET(request: NextRequest) {
     });
 
     // Add rate limit headers to response
-    response.headers.set('X-RateLimit-Limit', limit.toString());
-    response.headers.set('X-RateLimit-Remaining', remaining.toString());
-    response.headers.set('X-RateLimit-Reset', new Date(reset).toISOString());
-
-    return response;
+    return addRateLimitHeaders(response, rateLimitResult);
   } catch (error: any) {
     const context = getRequestContext(request);
 
@@ -117,10 +107,10 @@ export async function GET(request: NextRequest) {
     if (error instanceof z.ZodError) {
       logger.warn('Crime API validation error', {
         ...context,
-        validationErrors: error.issues.map(e => ({
+        validationErrors: error.issues.map((e) => ({
           field: e.path.join('.'),
-          message: e.message
-        }))
+          message: e.message,
+        })),
       });
 
       return NextResponse.json(
@@ -139,7 +129,9 @@ export async function GET(request: NextRequest) {
     if (error.message === 'Query timeout') {
       logger.error('Crime API query timeout', error, context);
       return NextResponse.json(
-        { error: 'Request timeout. Please try with smaller limit or different parameters.' },
+        {
+          error: 'Request timeout. Please try with smaller limit or different parameters.',
+        },
         { status: 504 }
       );
     }
