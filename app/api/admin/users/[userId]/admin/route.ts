@@ -3,8 +3,11 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '../../../../../../lib/auth';
 import { setUserAdmin } from '../../../../../../lib/users';
 
-export async function PUT(request: NextRequest, context: any) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ userId: string }> }) {
   try {
+    // Await params
+    const { userId } = await params;
+    
     // Check authentication
     const session = await getServerSession(authOptions);
 
@@ -18,7 +21,7 @@ export async function PUT(request: NextRequest, context: any) {
     }
 
     // Prevent self-demotion
-    if (session.user.id === context?.params?.userId) {
+    if (session.user.id === userId) {
       return NextResponse.json({ error: 'Cannot modify your own admin status' }, { status: 400 });
     }
 
@@ -31,7 +34,7 @@ export async function PUT(request: NextRequest, context: any) {
     }
 
     // Update user admin status
-    const updatedUser = await setUserAdmin(context?.params?.userId, isAdmin);
+    const updatedUser = await setUserAdmin(userId, isAdmin);
 
     if (!updatedUser) {
       return NextResponse.json({ error: 'User not found or update failed' }, { status: 404 });
