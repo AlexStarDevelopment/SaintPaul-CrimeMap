@@ -417,7 +417,10 @@ export default function Home() {
               commitment to Saint Paul&apos;s most reliable crime data resource:
             </Typography>
             <Typography variant="body2" sx={{ mb: 1 }}>
-              08/18/25 3.1.0 - NEW: User accounts now available! Create an account to save your preferred theme settings, access personalized dashboard features, and get a customized experience. Also includes major performance improvements: faster page loading, quicker map rendering, cleaner navigation, and enhanced reliability across all devices.
+              08/18/25 3.1.0 - NEW: User accounts now available! Create an account to save your
+              preferred theme settings, access personalized dashboard features, and get a customized
+              experience. Also includes major performance improvements: faster page loading, quicker
+              map rendering, cleaner navigation, and enhanced reliability across all devices.
             </Typography>
             <Typography variant="body2" sx={{ mb: 1 }}>
               08/01/25 3.0.0 - Updates to the map component package. Updates to all 2025 crime data.
