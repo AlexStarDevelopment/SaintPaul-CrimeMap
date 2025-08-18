@@ -14,6 +14,7 @@ export interface User {
   subscriptionEndDate?: Date;
   trialEndDate?: Date;
   theme?: ThemeType;
+  isAdmin?: boolean;
   createdAt: Date;
   updatedAt: Date;
   emailVerified?: Date;
@@ -29,6 +30,7 @@ export interface UserSession {
   subscriptionEndDate?: Date;
   trialEndDate?: Date;
   theme?: ThemeType;
+  isAdmin?: boolean;
 }
 
 export const SUBSCRIPTION_TIERS: Record<

@@ -45,7 +45,7 @@ export class ErrorBoundary extends Component<Props, State> {
 
     // TODO: Send error to monitoring service (e.g., Sentry, LogRocket)
     // if (process.env.NODE_ENV === 'production') {
-    //   captureException(error, { 
+    //   captureException(error, {
     //     extra: errorInfo,
     //     tags: { boundary: 'ErrorBoundary' },
     //     user: { id: userId }

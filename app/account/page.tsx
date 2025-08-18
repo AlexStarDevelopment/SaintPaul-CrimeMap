@@ -48,6 +48,7 @@ export default function AccountPage() {
   const [selectedTheme, setSelectedTheme] = useState<ThemeType>('light');
   const [saving, setSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
+  const [dashboardEnabled, setDashboardEnabled] = useState<boolean>(true);
 
   useEffect(() => {
     if (authenticated && session?.user?.theme) {
@@ -56,6 +57,23 @@ export default function AccountPage() {
       setSelectedTheme('light'); // Default to light theme
     }
   }, [authenticated, session]);
+
+  useEffect(() => {
+    const loadFlags = async () => {
+      try {
+        const res = await fetch('/api/feature-flags');
+        if (res.ok) {
+          const data = await res.json();
+          setDashboardEnabled(Boolean(data.flags?.dashboard));
+        } else {
+          setDashboardEnabled(false);
+        }
+      } catch {
+        setDashboardEnabled(false);
+      }
+    };
+    loadFlags();
+  }, []);
 
   const handleThemeChange = async (event: SelectChangeEvent<ThemeType>) => {
     const newTheme = event.target.value as ThemeType;
@@ -94,8 +112,14 @@ export default function AccountPage() {
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     if (newValue === 0) {
       router.push('/');
-    } else if (newValue === 1) {
+    } else if (dashboardEnabled && newValue === 1) {
       router.push('/dashboard');
+    } else if (!dashboardEnabled && newValue === 1) {
+      // If dashboard is disabled, tab 1 becomes account (this tab)
+      // No navigation needed since we're already on account page
+    } else if (dashboardEnabled && newValue === 2) {
+      // If dashboard is enabled, tab 2 is account (this tab)
+      // No navigation needed since we're already on account page
     }
   };
 
@@ -123,9 +147,11 @@ export default function AccountPage() {
             <IconButton onClick={() => router.push('/')} sx={{ mr: 2 }}>
               <ArrowBackIcon />
             </IconButton>
-            <Tabs value={2} onChange={handleTabChange} sx={{ flexGrow: 1 }}>
+            <Tabs value={dashboardEnabled ? 2 : 1} onChange={handleTabChange} sx={{ flexGrow: 1 }}>
               <Tab icon={<MapIcon />} label="Map" iconPosition="start" />
-              <Tab icon={<DashboardIcon />} label="Dashboard" iconPosition="start" />
+              {dashboardEnabled && (
+                <Tab icon={<DashboardIcon />} label="Dashboard" iconPosition="start" />
+              )}
               <Tab icon={<PersonIcon />} label="Account" iconPosition="start" />
             </Tabs>
           </Box>
@@ -180,15 +206,6 @@ export default function AccountPage() {
                     {user.email}
                   </Typography>
                 </Box>
-              </Box>
-
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="subtitle2" color="text.secondary">
-                  User ID
-                </Typography>
-                <Typography variant="body2" sx={{ fontFamily: 'monospace' }}>
-                  {user.id}
-                </Typography>
               </Box>
             </Paper>
           </Grid>

@@ -37,46 +37,51 @@ export async function warmPopularData(): Promise<void> {
   }
 
   console.log('🔥 Starting cache warming for popular crime data...');
-  
+
   const startTime = Date.now();
-  const results: Array<{ dataset: string; status: 'success' | 'error'; time: number; error?: string }> = [];
+  const results: Array<{
+    dataset: string;
+    status: 'success' | 'error';
+    time: number;
+    error?: string;
+  }> = [];
 
   for (const { type, year } of CACHE_WARMING_CONFIG.popularDataSets) {
     const datasetName = `${type} ${year}`;
     const datasetStartTime = Date.now();
-    
+
     try {
       console.log(`🔥 Warming cache for ${datasetName}...`);
-      
+
       // Warm the cache by fetching the data
       await CrimeCacheService.getCrimeData(type, year);
-      
+
       const datasetTime = Date.now() - datasetStartTime;
       results.push({
         dataset: datasetName,
         status: 'success',
         time: datasetTime,
       });
-      
+
       console.log(`✅ Cache warmed for ${datasetName} (${datasetTime}ms)`);
     } catch (error) {
       const datasetTime = Date.now() - datasetStartTime;
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      
+
       results.push({
         dataset: datasetName,
         status: 'error',
         time: datasetTime,
         error: errorMessage,
       });
-      
+
       console.error(`❌ Failed to warm cache for ${datasetName}: ${errorMessage}`);
     }
   }
 
   const totalTime = Date.now() - startTime;
-  const successCount = results.filter(r => r.status === 'success').length;
-  const errorCount = results.filter(r => r.status === 'error').length;
+  const successCount = results.filter((r) => r.status === 'success').length;
+  const errorCount = results.filter((r) => r.status === 'error').length;
 
   console.log(`🔥 Cache warming completed in ${totalTime}ms:`);
   console.log(`✅ Successfully warmed: ${successCount} datasets`);
@@ -84,7 +89,9 @@ export async function warmPopularData(): Promise<void> {
 
   // Log cache statistics after warming
   const cacheStats = CrimeCacheService.getCacheStats();
-  console.log(`📊 Cache stats: ${cacheStats.entries} entries, ${(cacheStats.totalSize / 1024).toFixed(2)}KB, ${cacheStats.hitRate.toFixed(1)}% hit rate`);
+  console.log(
+    `📊 Cache stats: ${cacheStats.entries} entries, ${(cacheStats.totalSize / 1024).toFixed(2)}KB, ${cacheStats.hitRate.toFixed(1)}% hit rate`
+  );
 }
 
 /**
@@ -96,7 +103,7 @@ export function scheduleInitialCacheWarming(): void {
   }
 
   console.log(`🔥 Cache warming scheduled to run in ${CACHE_WARMING_CONFIG.delay}ms`);
-  
+
   setTimeout(async () => {
     try {
       await warmPopularData();
@@ -107,15 +114,17 @@ export function scheduleInitialCacheWarming(): void {
 }
 
 /**
- * Periodic cache warming (for long-running applications)
+ * Periodic cache warming and background refresh (for long-running applications)
  */
 export function schedulePeriodicCacheWarming(): void {
   if (!CACHE_WARMING_CONFIG.enabled) {
     return;
   }
 
-  const interval = parseInt(process.env.CACHE_WARMING_INTERVAL || '3600000'); // 1 hour default
-  
+  const warmingInterval = parseInt(process.env.CACHE_WARMING_INTERVAL || '3600000'); // 1 hour default
+  const refreshInterval = parseInt(process.env.CACHE_BACKGROUND_REFRESH_INTERVAL || '1800000'); // 30 minutes default
+
+  // Schedule full cache warming (less frequent)
   setInterval(async () => {
     console.log('🔥 Running periodic cache warming...');
     try {
@@ -123,9 +132,24 @@ export function schedulePeriodicCacheWarming(): void {
     } catch (error) {
       console.error('❌ Periodic cache warming failed:', error);
     }
-  }, interval);
-  
-  console.log(`🔥 Periodic cache warming scheduled every ${interval}ms`);
+  }, warmingInterval);
+
+  // Schedule background refresh (more frequent)
+  setInterval(async () => {
+    console.log('🔄 Running periodic background refresh...');
+    try {
+      const { CacheInvalidationService } = await import('./cacheInvalidation');
+      const result = await CacheInvalidationService.backgroundRefresh();
+      console.log(
+        `🔄 Background refresh result: ${result.refreshed.length} refreshed, ${result.failed.length} failed`
+      );
+    } catch (error) {
+      console.error('❌ Periodic background refresh failed:', error);
+    }
+  }, refreshInterval);
+
+  console.log(`🔥 Periodic cache warming scheduled every ${warmingInterval}ms`);
+  console.log(`🔄 Periodic background refresh scheduled every ${refreshInterval}ms`);
 }
 
 /**
@@ -137,16 +161,21 @@ export async function warmSpecificPeriods(periods: Array<{ type: string; year: s
   results: Array<{ dataset: string; status: 'success' | 'error'; time: number; error?: string }>;
 }> {
   console.log(`🔥 Warming cache for ${periods.length} specific periods...`);
-  
-  const results: Array<{ dataset: string; status: 'success' | 'error'; time: number; error?: string }> = [];
+
+  const results: Array<{
+    dataset: string;
+    status: 'success' | 'error';
+    time: number;
+    error?: string;
+  }> = [];
 
   for (const { type, year } of periods) {
     const datasetName = `${type} ${year}`;
     const startTime = Date.now();
-    
+
     try {
       await CrimeCacheService.getCrimeData(type, year);
-      
+
       const time = Date.now() - startTime;
       results.push({
         dataset: datasetName,
@@ -156,7 +185,7 @@ export async function warmSpecificPeriods(periods: Array<{ type: string; year: s
     } catch (error) {
       const time = Date.now() - startTime;
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      
+
       results.push({
         dataset: datasetName,
         status: 'error',
@@ -166,8 +195,8 @@ export async function warmSpecificPeriods(periods: Array<{ type: string; year: s
     }
   }
 
-  const successful = results.filter(r => r.status === 'success').length;
-  const failed = results.filter(r => r.status === 'error').length;
+  const successful = results.filter((r) => r.status === 'success').length;
+  const failed = results.filter((r) => r.status === 'error').length;
 
   console.log(`🔥 Specific period warming completed: ${successful} successful, ${failed} failed`);
 
@@ -178,13 +207,23 @@ export async function warmSpecificPeriods(periods: Array<{ type: string; year: s
   };
 }
 
+// Use global to prevent multiple initializations in development
+const globalForCacheWarming = global as typeof globalThis & {
+  _cacheWarmingInitialized?: boolean;
+};
+
 // Auto-start cache warming in development/production
-if (typeof window === 'undefined') { // Server-side only
-  // Schedule initial cache warming
-  scheduleInitialCacheWarming();
-  
-  // Only enable periodic warming in production
+if (typeof window === 'undefined' && !globalForCacheWarming._cacheWarmingInitialized) {
+  globalForCacheWarming._cacheWarmingInitialized = true;
+
+  // Only enable cache warming in production
+  // In development, cache warming causes too many MongoDB connections
   if (process.env.NODE_ENV === 'production') {
+    scheduleInitialCacheWarming();
     schedulePeriodicCacheWarming();
+  } else {
+    console.log(
+      '⚠️ Cache warming disabled in development mode to prevent excessive MongoDB connections'
+    );
   }
 }

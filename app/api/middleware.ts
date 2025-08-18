@@ -1,17 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../lib/auth';
-import { 
-  handleApiError, 
-  createAuthenticationError, 
-  createRateLimitError 
+import {
+  handleApiError,
+  createAuthenticationError,
+  createRateLimitError,
 } from '../../lib/apiErrorHandler';
 
 // Rate limiting storage (in production, use Redis or similar)
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
 
 // Simple rate limiting function
-function checkRateLimit(identifier: string, limit: number = 100, windowMs: number = 60000): boolean {
+function checkRateLimit(
+  identifier: string,
+  limit: number = 100,
+  windowMs: number = 60000
+): boolean {
   const now = Date.now();
   const key = identifier;
   const current = rateLimitMap.get(key);
@@ -51,14 +55,14 @@ export function withApiMiddleware(
       // Method validation
       if (allowedMethods && !allowedMethods.includes(req.method || '')) {
         return NextResponse.json(
-          { 
-            success: false, 
-            error: { 
+          {
+            success: false,
+            error: {
               type: 'METHOD_NOT_ALLOWED',
               message: `Method ${req.method} not allowed`,
-              timestamp: new Date().toISOString()
-            }
-          }, 
+              timestamp: new Date().toISOString(),
+            },
+          },
           { status: 405 }
         );
       }
@@ -67,7 +71,7 @@ export function withApiMiddleware(
       if (rateLimit) {
         const identifier = req.ip || req.headers.get('x-forwarded-for') || 'unknown';
         const allowed = checkRateLimit(identifier, rateLimit.limit, rateLimit.windowMs);
-        
+
         if (!allowed) {
           throw createRateLimitError('Too many requests. Please try again later.');
         }
@@ -83,7 +87,6 @@ export function withApiMiddleware(
 
       // Call the actual handler
       return await handler(req, context);
-
     } catch (error) {
       return handleApiError(error, {
         endpoint: req.url,
@@ -109,11 +112,11 @@ export function addSecurityHeaders(response: NextResponse): NextResponse {
   response.headers.set('X-Frame-Options', 'DENY');
   response.headers.set('X-XSS-Protection', '1; mode=block');
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
-  
+
   if (process.env.NODE_ENV === 'production') {
     response.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
   }
-  
+
   return response;
 }
 
@@ -130,15 +133,15 @@ export function withComprehensiveMiddleware(
 ) {
   return withApiMiddleware(async (req: NextRequest, context?: any) => {
     let response = await handler(req, context);
-    
+
     if (options.addCors) {
       response = addCorsHeaders(response);
     }
-    
+
     if (options.addSecurity) {
       response = addSecurityHeaders(response);
     }
-    
+
     return response;
   }, options);
 }

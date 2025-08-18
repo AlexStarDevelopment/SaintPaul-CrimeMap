@@ -1,13 +1,13 @@
 'use client';
 
-import { 
-  Box, 
-  CircularProgress, 
-  Typography, 
+import {
+  Box,
+  CircularProgress,
+  Typography,
   LinearProgress,
   Skeleton,
   Card,
-  CardContent
+  CardContent,
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 
@@ -93,13 +93,13 @@ export function LoadingSpinner({
     <Box sx={containerSx}>
       <CircularProgress size={getSizeValue()} color={color} />
       {message && (
-        <Typography 
-          variant="body2" 
+        <Typography
+          variant="body2"
           color="text.secondary"
-          sx={{ 
+          sx={{
             textAlign: 'center',
             maxWidth: 300,
-            fontSize: size === 'small' ? '0.875rem' : '1rem'
+            fontSize: size === 'small' ? '0.875rem' : '1rem',
           }}
         >
           {message}
@@ -111,77 +111,44 @@ export function LoadingSpinner({
 
 // Predefined loading states for common scenarios
 export const CommonLoadingStates = {
-  pageLoading: () => (
-    <LoadingSpinner
-      size="large"
-      message="Loading page..."
-      fullScreen
-    />
-  ),
-  
-  dataLoading: () => (
-    <LoadingSpinner
-      size="medium"
-      message="Loading data..."
-    />
-  ),
-  
-  submitting: () => (
-    <LoadingSpinner
-      size="small"
-      message="Submitting..."
-      variant="linear"
-    />
-  ),
-  
+  pageLoading: () => <LoadingSpinner size="large" message="Loading page..." fullScreen />,
+
+  dataLoading: () => <LoadingSpinner size="medium" message="Loading data..." />,
+
+  submitting: () => <LoadingSpinner size="small" message="Submitting..." variant="linear" />,
+
   crimeDataLoading: () => (
-    <LoadingSpinner
-      size="medium"
-      message="Loading crime data from Saint Paul..."
-    />
+    <LoadingSpinner size="medium" message="Loading crime data from Saint Paul..." />
   ),
-  
-  mapLoading: () => (
-    <LoadingSpinner
-      size="large"
-      message="Preparing interactive map..."
-    />
-  ),
-  
-  dashboardLoading: () => (
-    <LoadingSpinner
-      variant="skeleton"
-    />
-  ),
-  
+
+  mapLoading: () => <LoadingSpinner size="large" message="Preparing interactive map..." />,
+
+  dashboardLoading: () => <LoadingSpinner variant="skeleton" />,
+
   authenticating: () => (
-    <LoadingSpinner
-      size="medium"
-      message="Signing you in..."
-      variant="linear"
-    />
+    <LoadingSpinner size="medium" message="Signing you in..." variant="linear" />
   ),
 };
 
 // Card-based loading component for content areas
-export function LoadingCard({ 
-  title = "Loading...", 
-  height = 200 
-}: { 
-  title?: string; 
+export function LoadingCard({
+  title = 'Loading...',
+  height = 200,
+}: {
+  title?: string;
   height?: number;
 }) {
   return (
     <Card>
       <CardContent>
-        <Box 
-          sx={{ 
-            height, 
-            display: 'flex', 
-            alignItems: 'center', 
+        <Box
+          sx={{
+            height,
+            display: 'flex',
+            alignItems: 'center',
             justifyContent: 'center',
             flexDirection: 'column',
-            gap: 2
+            gap: 2,
           }}
         >
           <CircularProgress />

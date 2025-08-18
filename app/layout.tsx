@@ -9,11 +9,10 @@ import './globals.css';
 import ThemeProvider from './components/ThemeProvider';
 import SessionProvider from './components/SessionProvider';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import GlobalHeader from './components/GlobalHeader';
 
-// Initialize cache warming on server startup
-if (typeof window === 'undefined') {
-  import('../lib/cacheWarming');
-}
+// Cache warming disabled in layout to prevent multiple initializations
+// Cache warming will only run in production via the cacheWarming module itself
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -63,7 +62,10 @@ export default function RootLayout({
       <body className={inter.className}>
         <ErrorBoundary>
           <SessionProvider>
-            <ThemeProvider>{children}</ThemeProvider>
+            <ThemeProvider>
+              <GlobalHeader />
+              {children}
+            </ThemeProvider>
           </SessionProvider>
         </ErrorBoundary>
       </body>

@@ -1,22 +1,14 @@
 'use client';
 
-import { 
-  Alert, 
-  AlertTitle, 
-  Box, 
-  Button, 
-  Collapse,
-  IconButton,
-  Typography 
-} from '@mui/material';
-import { 
-  ExpandMore, 
-  ExpandLess, 
+import { Alert, AlertTitle, Box, Button, Collapse, IconButton, Typography } from '@mui/material';
+import {
+  ExpandMore,
+  ExpandLess,
   Refresh,
   Warning,
   Error as ErrorIcon,
   Info,
-  CheckCircle
+  CheckCircle,
 } from '@mui/icons-material';
 import { useState } from 'react';
 
@@ -60,7 +52,7 @@ export function ErrorMessage({
 
   const getTitle = () => {
     if (title) return title;
-    
+
     switch (severity) {
       case 'error':
         return 'Error';
@@ -77,7 +69,7 @@ export function ErrorMessage({
 
   return (
     <Box className={className} sx={{ my: 2 }}>
-      <Alert 
+      <Alert
         severity={severity}
         icon={getIcon()}
         action={
@@ -108,15 +100,19 @@ export function ErrorMessage({
       >
         <AlertTitle>{getTitle()}</AlertTitle>
         <Typography variant="body2">{message}</Typography>
-        
+
         {showDetails && details && (
           <Collapse in={expanded}>
             <Box sx={{ mt: 2, p: 2, bgcolor: 'rgba(0,0,0,0.1)', borderRadius: 1 }}>
-              <Typography variant="body2" component="pre" sx={{ 
-                whiteSpace: 'pre-wrap',
-                fontSize: '0.875rem',
-                fontFamily: 'monospace'
-              }}>
+              <Typography
+                variant="body2"
+                component="pre"
+                sx={{
+                  whiteSpace: 'pre-wrap',
+                  fontSize: '0.875rem',
+                  fontFamily: 'monospace',
+                }}
+              >
                 {details}
               </Typography>
             </Box>
@@ -136,7 +132,7 @@ export const CommonErrors = {
       severity="warning"
     />
   ),
-  
+
   loadingError: (retryFn?: () => void) => (
     <ErrorMessage
       title="Loading Failed"
@@ -145,7 +141,7 @@ export const CommonErrors = {
       onRetry={retryFn}
     />
   ),
-  
+
   authenticationError: () => (
     <ErrorMessage
       title="Authentication Required"
@@ -153,7 +149,7 @@ export const CommonErrors = {
       severity="info"
     />
   ),
-  
+
   permissionError: () => (
     <ErrorMessage
       title="Access Denied"
@@ -161,7 +157,7 @@ export const CommonErrors = {
       severity="warning"
     />
   ),
-  
+
   notFoundError: (resource: string = 'Resource') => (
     <ErrorMessage
       title="Not Found"
@@ -169,7 +165,7 @@ export const CommonErrors = {
       severity="info"
     />
   ),
-  
+
   validationError: (fieldName: string) => (
     <ErrorMessage
       title="Invalid Input"

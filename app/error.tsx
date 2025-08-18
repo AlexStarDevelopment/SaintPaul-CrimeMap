@@ -1,16 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { 
-  Box, 
-  Container, 
-  Typography, 
-  Button, 
-  Card, 
-  CardContent,
-  Alert,
-  Stack
-} from '@mui/material';
+import { Box, Container, Typography, Button, Card, CardContent, Alert, Stack } from '@mui/material';
 import { ErrorOutline, Home, Refresh } from '@mui/icons-material';
 import { useTheme } from '@mui/material/styles';
 
@@ -57,7 +48,7 @@ export default function Error({ error, reset }: ErrorProps) {
                 mb: 2,
               }}
             />
-            
+
             <Typography
               variant="h3"
               component="h1"
@@ -70,7 +61,7 @@ export default function Error({ error, reset }: ErrorProps) {
             >
               Oops! Something went wrong
             </Typography>
-            
+
             <Typography
               variant="h6"
               color="text.secondary"
@@ -110,7 +101,7 @@ export default function Error({ error, reset }: ErrorProps) {
               >
                 Try Again
               </Button>
-              
+
               <Button
                 variant="outlined"
                 startIcon={<Home />}
@@ -125,11 +116,7 @@ export default function Error({ error, reset }: ErrorProps) {
               </Button>
             </Stack>
 
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{ mt: 4, fontStyle: 'italic' }}
-            >
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 4, fontStyle: 'italic' }}>
               If this problem persists, please contact support or try refreshing the page.
             </Typography>
           </CardContent>

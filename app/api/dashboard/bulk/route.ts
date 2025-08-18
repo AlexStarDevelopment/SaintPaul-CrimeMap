@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '../../../../lib/auth';
 import { rateLimit, addRateLimitHeaders } from '../../../../lib/rateLimit';
 import { MockDashboardService } from '../../../../lib/mockData.js';
+import { isDashboardEnabledCached } from '../../../../lib/featureFlags';
 
 // Using mock data service to avoid MongoDB calls during development
 
@@ -32,6 +33,11 @@ export async function GET(request: NextRequest) {
   }
 
   try {
+    const enabled = await isDashboardEnabledCached();
+    if (!enabled) {
+      return NextResponse.json({ error: 'Dashboard is disabled' }, { status: 404 });
+    }
+
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.id) {

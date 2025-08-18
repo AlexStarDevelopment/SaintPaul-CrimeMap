@@ -24,76 +24,76 @@ interface ApiErrorResponse {
 export function useErrorHandler() {
   const { showNotification } = useNotification();
 
-  const handleError = useCallback((
-    error: unknown,
-    context: ErrorContext = {}
-  ) => {
-    let userMessage = 'An unexpected error occurred. Please try again.';
-    let severity: 'error' | 'warning' | 'info' = 'error';
+  const handleError = useCallback(
+    (error: unknown, context: ErrorContext = {}) => {
+      let userMessage = 'An unexpected error occurred. Please try again.';
+      let severity: 'error' | 'warning' | 'info' = 'error';
 
-    // Parse different types of errors
-    if (isApiErrorResponse(error)) {
-      // Handle API error responses
-      userMessage = getUserFriendlyMessage(error.error.type, error.error.message);
-      severity = getSeverityFromErrorType(error.error.type);
-      
-      // Log detailed error for debugging
-      console.error('API Error:', {
-        ...error.error,
-        context,
+      // Parse different types of errors
+      if (isApiErrorResponse(error)) {
+        // Handle API error responses
+        userMessage = getUserFriendlyMessage(error.error.type, error.error.message);
+        severity = getSeverityFromErrorType(error.error.type);
+
+        // Log detailed error for debugging
+        console.error('API Error:', {
+          ...error.error,
+          context,
+          userMessage,
+        });
+      } else if (error instanceof Error) {
+        // Handle JavaScript errors
+        userMessage = getUserFriendlyMessage('UNKNOWN', error.message);
+
+        console.error('JavaScript Error:', {
+          message: error.message,
+          stack: error.stack,
+          context,
+          timestamp: new Date().toISOString(),
+        });
+      } else if (typeof error === 'string') {
+        // Handle string errors
+        userMessage = error;
+
+        console.error('String Error:', {
+          message: error,
+          context,
+          timestamp: new Date().toISOString(),
+        });
+      } else {
+        // Handle unknown error types
+        console.error('Unknown Error:', {
+          error,
+          context,
+          timestamp: new Date().toISOString(),
+        });
+      }
+
+      // Show user notification
+      showNotification(userMessage, severity);
+
+      // Return processed error info for further handling if needed
+      return {
         userMessage,
-      });
-    } else if (error instanceof Error) {
-      // Handle JavaScript errors
-      userMessage = getUserFriendlyMessage('UNKNOWN', error.message);
-      
-      console.error('JavaScript Error:', {
-        message: error.message,
-        stack: error.stack,
+        severity,
+        originalError: error,
         context,
-        timestamp: new Date().toISOString(),
-      });
-    } else if (typeof error === 'string') {
-      // Handle string errors
-      userMessage = error;
-      
-      console.error('String Error:', {
-        message: error,
-        context,
-        timestamp: new Date().toISOString(),
-      });
-    } else {
-      // Handle unknown error types
-      console.error('Unknown Error:', {
-        error,
-        context,
-        timestamp: new Date().toISOString(),
-      });
-    }
+      };
+    },
+    [showNotification]
+  );
 
-    // Show user notification
-    showNotification(userMessage, severity);
-
-    // Return processed error info for further handling if needed
-    return {
-      userMessage,
-      severity,
-      originalError: error,
-      context,
-    };
-  }, [showNotification]);
-
-  const handleAsyncError = useCallback(async (
-    asyncOperation: () => Promise<any>,
-    context: ErrorContext = {}
-  ) => {
-    try {
-      return await asyncOperation();
-    } catch (error) {
-      handleError(error, context);
-      throw error; // Re-throw so calling code can handle it appropriately
-    }
-  }, [handleError]);
+  const handleAsyncError = useCallback(
+    async (asyncOperation: () => Promise<any>, context: ErrorContext = {}) => {
+      try {
+        return await asyncOperation();
+      } catch (error) {
+        handleError(error, context);
+        throw error; // Re-throw so calling code can handle it appropriately
+      }
+    },
+    [handleError]
+  );
 
   return {
     handleError,
@@ -117,10 +117,10 @@ function getUserFriendlyMessage(errorType: string, originalMessage: string): str
   const friendlyMessages: Record<string, string> = {
     VALIDATION_ERROR: 'Please check your input and try again.',
     AUTHENTICATION_ERROR: 'Please sign in to continue.',
-    AUTHORIZATION_ERROR: 'You don\'t have permission to perform this action.',
+    AUTHORIZATION_ERROR: "You don't have permission to perform this action.",
     NOT_FOUND: 'The requested item could not be found.',
     RATE_LIMIT_ERROR: 'Too many requests. Please wait a moment and try again.',
-    DATABASE_ERROR: 'We\'re experiencing technical difficulties. Please try again later.',
+    DATABASE_ERROR: "We're experiencing technical difficulties. Please try again later.",
     EXTERNAL_API_ERROR: 'Unable to connect to external service. Please try again later.',
     INTERNAL_SERVER_ERROR: 'Something went wrong on our end. Please try again later.',
     NETWORK_ERROR: 'Please check your internet connection and try again.',

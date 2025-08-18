@@ -32,12 +32,12 @@ export class ApiError extends Error {
     this.statusCode = statusCode;
     this.isOperational = isOperational;
     this.context = context;
-    
+
     // Maintain proper stack trace
     if (Error.captureStackTrace) {
       Error.captureStackTrace(this, ApiError);
     }
-    
+
     Object.setPrototypeOf(this, ApiError.prototype);
   }
 }
@@ -59,13 +59,7 @@ export const createRateLimitError = (message: string = 'Rate limit exceeded') =>
   new ApiError(message, ErrorType.RATE_LIMIT, 429, true);
 
 export const createDatabaseError = (message: string, originalError?: Error) =>
-  new ApiError(
-    message,
-    ErrorType.DATABASE,
-    500,
-    true,
-    { originalError: originalError?.message }
-  );
+  new ApiError(message, ErrorType.DATABASE, 500, true, { originalError: originalError?.message });
 
 export const createExternalApiError = (message: string, service?: string) =>
   new ApiError(message, ErrorType.EXTERNAL_API, 502, true, { service });
@@ -82,12 +76,9 @@ interface ErrorResponse {
   };
 }
 
-export function formatErrorResponse(
-  error: ApiError | Error,
-  requestId?: string
-): ErrorResponse {
+export function formatErrorResponse(error: ApiError | Error, requestId?: string): ErrorResponse {
   const isApiError = error instanceof ApiError;
-  
+
   const response: ErrorResponse = {
     success: false,
     error: {
@@ -111,22 +102,19 @@ export function formatErrorResponse(
 }
 
 // Central error handler
-export function handleApiError(
-  error: unknown,
-  context?: Record<string, unknown>
-): NextResponse {
+export function handleApiError(error: unknown, context?: Record<string, unknown>): NextResponse {
   // Generate a request ID for tracking
   const requestId = Math.random().toString(36).substring(2, 15);
-  
+
   let apiError: ApiError;
-  
+
   if (error instanceof ApiError) {
     apiError = error;
   } else if (error instanceof z.ZodError) {
     // Handle Zod validation errors
     apiError = createValidationError(
       'Invalid request data',
-      error.errors.map(err => ({
+      error.errors.map((err) => ({
         path: err.path.join('.'),
         message: err.message,
       }))
@@ -138,23 +126,17 @@ export function handleApiError(
     } else if (error.message.includes('not found')) {
       apiError = createNotFoundError();
     } else {
-      apiError = new ApiError(
-        'An unexpected error occurred',
-        ErrorType.INTERNAL,
-        500,
-        false,
-        { originalMessage: error.message, ...context }
-      );
+      apiError = new ApiError('An unexpected error occurred', ErrorType.INTERNAL, 500, false, {
+        originalMessage: error.message,
+        ...context,
+      });
     }
   } else {
     // Handle unknown error types
-    apiError = new ApiError(
-      'An unexpected error occurred',
-      ErrorType.INTERNAL,
-      500,
-      false,
-      { error: String(error), ...context }
-    );
+    apiError = new ApiError('An unexpected error occurred', ErrorType.INTERNAL, 500, false, {
+      error: String(error),
+      ...context,
+    });
   }
 
   // Log error for monitoring

@@ -44,6 +44,7 @@ export const authOptions: NextAuthOptions = {
             subscriptionEndDate: dbUser.subscriptionEndDate,
             trialEndDate: dbUser.trialEndDate,
             theme: dbUser.theme,
+            isAdmin: dbUser.isAdmin || false,
           };
 
           // Extend the session with our custom user data
@@ -99,6 +100,7 @@ declare module 'next-auth' {
       subscriptionEndDate?: Date;
       trialEndDate?: Date;
       theme?: 'light' | 'dark' | 'sage' | 'slate';
+      isAdmin?: boolean;
     };
   }
 

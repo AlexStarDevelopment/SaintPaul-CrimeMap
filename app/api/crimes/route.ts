@@ -53,7 +53,7 @@ export async function GET(request: NextRequest) {
     // Add cache headers
     response.headers.set('Cache-Control', 'public, max-age=300'); // 5 minute browser cache
     response.headers.set('X-Cache-Status', result.crimes.length > 0 ? 'hit' : 'miss');
-    
+
     // Add rate limit headers to response
     return addRateLimitHeaders(response, rateLimitResult);
   } catch (error: any) {

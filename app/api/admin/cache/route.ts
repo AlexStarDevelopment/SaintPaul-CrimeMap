@@ -2,10 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../../../lib/auth';
 import { CrimeCacheService } from '../../../../lib/cacheService';
-import { 
-  handleApiError, 
+import {
+  handleApiError,
   createAuthenticationError,
-  createAuthorizationError
+  createAuthorizationError,
 } from '../../../../lib/apiErrorHandler';
 
 // GET /api/admin/cache - Get cache statistics and status
@@ -59,11 +59,11 @@ export async function DELETE(request: NextRequest) {
 
     // For now, any authenticated user can clear cache
     // In production, you might want to restrict this to admin users only
-    
+
     const statsBeforeClear = CrimeCacheService.getCacheStats();
-    
+
     CrimeCacheService.clearCrimeCache();
-    
+
     const statsAfterClear = CrimeCacheService.getCacheStats();
 
     return NextResponse.json({
@@ -97,7 +97,7 @@ export async function POST(request: NextRequest) {
 
     // Start cache warming in background
     const warmingPromise = CrimeCacheService.warmCache();
-    
+
     // Don't wait for completion, return immediately
     const response = NextResponse.json({
       success: true,
@@ -109,7 +109,7 @@ export async function POST(request: NextRequest) {
     });
 
     // Warm cache in background
-    warmingPromise.catch(error => {
+    warmingPromise.catch((error) => {
       console.error('Cache warming failed:', error);
     });
 

@@ -21,13 +21,15 @@ import {
   Logout,
   Person,
   Dashboard as DashboardIcon,
+  AdminPanelSettings,
+  Home,
 } from '@mui/icons-material';
 import { SelectChangeEvent } from '@mui/material/Select';
 import { useTheme as useMUITheme } from '@mui/material/styles';
-import { dataSelection } from '../const';
 import { useSession, signIn, signOut } from 'next-auth/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { dataSelection } from '../const';
 
 interface NavigationProps {
   option: number;
@@ -40,6 +42,25 @@ export default function Navigation({ option, onOptionChange, onFilterClick }: Na
   const { data: session, status } = useSession();
   const router = useRouter();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [dashboardEnabled, setDashboardEnabled] = useState<boolean>(true);
+
+  useEffect(() => {
+    // Fetch feature flags to determine if dashboard is enabled
+    const loadFlags = async () => {
+      try {
+        const res = await fetch('/api/feature-flags');
+        if (res.ok) {
+          const data = await res.json();
+          setDashboardEnabled(Boolean(data.flags?.dashboard));
+        } else {
+          setDashboardEnabled(false);
+        }
+      } catch {
+        setDashboardEnabled(false);
+      }
+    };
+    loadFlags();
+  }, []);
 
   return (
     <AppBar
@@ -53,11 +74,11 @@ export default function Navigation({ option, onOptionChange, onFilterClick }: Na
         <Toolbar
           sx={{
             display: 'flex',
-            flexDirection: { xs: 'column', sm: 'row' }, // Stack vertically on mobile
-            justifyContent: { xs: 'center', sm: 'space-between' }, // Center on mobile, space-between on desktop
+            flexDirection: { xs: 'column', sm: 'row' },
+            justifyContent: { xs: 'center', sm: 'space-between' },
             alignItems: 'center',
-            gap: { xs: 1, sm: 0 }, // Add gap between stacked items on mobile
-            py: { xs: 1, sm: 0 }, // Add some vertical padding on mobile
+            gap: { xs: 1, sm: 0 },
+            py: { xs: 1, sm: 0 },
           }}
         >
           <Typography
@@ -67,9 +88,9 @@ export default function Navigation({ option, onOptionChange, onFilterClick }: Na
               fontWeight: 'bold',
               color: muiTheme.palette.primary.contrastText,
               textShadow: '0 2px 4px rgba(0,0,0,0.1)',
-              fontSize: { xs: '1.25rem', sm: '1.5rem' }, // Smaller text on mobile
-              textAlign: { xs: 'center', sm: 'left' }, // Center text on mobile
-              mb: { xs: 1, sm: 0 }, // Add margin bottom on mobile
+              fontSize: { xs: '1.25rem', sm: '1.5rem' },
+              textAlign: { xs: 'center', sm: 'left' },
+              mb: { xs: 1, sm: 0 },
             }}
           >
             Saint Paul Crime Map
@@ -78,18 +99,18 @@ export default function Navigation({ option, onOptionChange, onFilterClick }: Na
           <Box
             sx={{
               display: 'flex',
-              flexDirection: { xs: 'column', sm: 'row' }, // Stack controls vertically on mobile
+              flexDirection: { xs: 'column', sm: 'row' },
               alignItems: 'center',
-              gap: { xs: 1, sm: 2 }, // Less gap on mobile
-              width: { xs: '100%', sm: 'auto' }, // Full width on mobile
+              gap: { xs: 1, sm: 2 },
+              width: { xs: '100%', sm: 'auto' },
             }}
           >
             <FormControl
               variant="outlined"
               size="small"
               sx={{
-                minWidth: { xs: '100%', sm: 200 }, // Full width on mobile
-                maxWidth: { xs: '300px', sm: 'none' }, // Max width on mobile for better UX
+                minWidth: { xs: '100%', sm: 200 },
+                maxWidth: { xs: '300px', sm: 'none' },
                 '& .MuiOutlinedInput-root': {
                   color: 'white',
                   '& fieldset': {
@@ -103,38 +124,33 @@ export default function Navigation({ option, onOptionChange, onFilterClick }: Na
                   },
                 },
                 '& .MuiInputLabel-root': {
-                  color: 'rgba(255, 255, 255, 0.8)',
+                  color: 'rgba(255, 255, 255, 0.7)',
                   '&.Mui-focused': {
                     color: 'white',
                   },
                 },
-                '& .MuiSvgIcon-root': {
+                '& .MuiSelect-icon': {
                   color: 'white',
                 },
               }}
             >
-              <InputLabel id="data-selection-label">Data Period</InputLabel>
+              <InputLabel id="crime-select-label">Crime Data</InputLabel>
               <Select
-                labelId="data-selection-label"
+                labelId="crime-select-label"
                 value={option}
-                label="Data Period"
                 onChange={onOptionChange}
+                label="Crime Data"
                 MenuProps={{
                   PaperProps: {
                     sx: {
-                      bgcolor: 'background.paper',
-                      '& .MuiMenuItem-root': {
-                        '&:hover': {
-                          bgcolor: 'action.hover',
-                        },
-                      },
+                      maxHeight: 300,
                     },
                   },
                 }}
               >
                 {dataSelection.map((item) => (
                   <MenuItem key={item.id} value={item.id}>
-                    {item.month.toUpperCase()} - {item.year}
+                    {item.text}
                   </MenuItem>
                 ))}
               </Select>
@@ -147,8 +163,8 @@ export default function Navigation({ option, onOptionChange, onFilterClick }: Na
               sx={{
                 color: 'white',
                 borderColor: 'rgba(255, 255, 255, 0.5)',
-                width: { xs: '100%', sm: 'auto' }, // Full width on mobile
-                maxWidth: { xs: '300px', sm: 'none' }, // Max width on mobile
+                width: { xs: '100%', sm: 'auto' },
+                maxWidth: { xs: '300px', sm: 'none' },
                 '&:hover': {
                   borderColor: 'white',
                   backgroundColor: 'rgba(255, 255, 255, 0.1)',
@@ -158,7 +174,7 @@ export default function Navigation({ option, onOptionChange, onFilterClick }: Na
               Filters
             </Button>
 
-            {/* User Account Section */}
+            {/* User Account Menu */}
             {session ? (
               <>
                 <Button
@@ -168,25 +184,21 @@ export default function Navigation({ option, onOptionChange, onFilterClick }: Na
                     display: 'flex',
                     alignItems: 'center',
                     gap: 1,
+                    minWidth: 'auto',
+                    px: 1,
                     '&:hover': {
                       backgroundColor: 'rgba(255, 255, 255, 0.1)',
                     },
                   }}
                 >
                   <Avatar
-                    component="span"
-                    sx={{ width: 32, height: 32, bgcolor: 'secondary.main' }}
-                    src={session.user?.image || undefined}
+                    sx={{ width: 28, height: 28, bgcolor: 'secondary.main' }}
+                    src={session.user?.image}
+                    alt={session.user?.name || session.user?.email || 'User'}
+                    imgProps={{ referrerPolicy: 'no-referrer' }}
                   >
-                    {session.user?.name?.[0] || session.user?.email?.[0]}
+                    {!session.user?.image && (session.user?.name?.[0] || session.user?.email?.[0])}
                   </Avatar>
-                  <Typography
-                    component="span"
-                    variant="body2"
-                    sx={{ display: { xs: 'none', sm: 'block' } }}
-                  >
-                    {session.user?.name || session.user?.email}
-                  </Typography>
                 </Button>
                 <Menu
                   anchorEl={anchorEl}
@@ -196,17 +208,19 @@ export default function Navigation({ option, onOptionChange, onFilterClick }: Na
                     sx: { mt: 1.5, minWidth: 200 },
                   }}
                 >
-                  <MenuItem
-                    onClick={() => {
-                      setAnchorEl(null);
-                      router.push('/dashboard');
-                    }}
-                  >
-                    <ListItemIcon>
-                      <DashboardIcon fontSize="small" />
-                    </ListItemIcon>
-                    Dashboard
-                  </MenuItem>
+                  {dashboardEnabled && (
+                    <MenuItem
+                      onClick={() => {
+                        setAnchorEl(null);
+                        router.push('/dashboard');
+                      }}
+                    >
+                      <ListItemIcon>
+                        <DashboardIcon fontSize="small" />
+                      </ListItemIcon>
+                      Dashboard
+                    </MenuItem>
+                  )}
                   <MenuItem
                     onClick={() => {
                       setAnchorEl(null);
@@ -218,6 +232,19 @@ export default function Navigation({ option, onOptionChange, onFilterClick }: Na
                     </ListItemIcon>
                     Account
                   </MenuItem>
+                  {session.user?.isAdmin && (
+                    <MenuItem
+                      onClick={() => {
+                        setAnchorEl(null);
+                        router.push('/admin');
+                      }}
+                    >
+                      <ListItemIcon>
+                        <AdminPanelSettings fontSize="small" />
+                      </ListItemIcon>
+                      Admin Dashboard
+                    </MenuItem>
+                  )}
                   <MenuItem disabled>
                     <Typography variant="body2" color="text.secondary">
                       {session.user?.subscriptionTier || 'Free'} Plan
@@ -245,6 +272,8 @@ export default function Navigation({ option, onOptionChange, onFilterClick }: Na
                 sx={{
                   color: 'white',
                   borderColor: 'rgba(255, 255, 255, 0.5)',
+                  width: { xs: '100%', sm: 'auto' },
+                  maxWidth: { xs: '300px', sm: 'none' },
                   '&:hover': {
                     borderColor: 'white',
                     backgroundColor: 'rgba(255, 255, 255, 0.1)',

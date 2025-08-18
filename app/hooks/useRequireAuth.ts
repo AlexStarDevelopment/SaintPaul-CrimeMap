@@ -12,15 +12,6 @@ export function useRequireAuth(redirectTo?: string) {
   const router = useRouter();
   const pathname = usePathname();
 
-  useEffect(() => {
-    if (status === 'unauthenticated') {
-      // Create sign-in URL with return URL parameter
-      const returnUrl = redirectTo || pathname || '/';
-      const signInUrl = `/auth/signin?callbackUrl=${encodeURIComponent(returnUrl)}`;
-      router.push(signInUrl);
-    }
-  }, [status, router, redirectTo, pathname]);
-
   return {
     session,
     loading: status === 'loading',

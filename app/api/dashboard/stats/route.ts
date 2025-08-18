@@ -2,16 +2,23 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../../../lib/auth';
 import { MockDashboardService } from '../../../../lib/mockData.js';
-import { 
-  handleApiError, 
-  createAuthenticationError, 
+import {
+  handleApiError,
+  createAuthenticationError,
   createValidationError,
-  createNotFoundError
+  createNotFoundError,
 } from '../../../../lib/apiErrorHandler';
+import { isDashboardEnabledCached } from '../../../../lib/featureFlags';
 
 // GET /api/dashboard/stats
 export async function GET(request: NextRequest) {
   try {
+    // Feature flag enforcement
+    const enabled = await isDashboardEnabledCached();
+    if (!enabled) {
+      return NextResponse.json({ error: 'Dashboard is disabled' }, { status: 404 });
+    }
+
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.id) {
@@ -23,10 +30,10 @@ export async function GET(request: NextRequest) {
     const period = searchParams.get('period') || '30d';
 
     if (!locationId) {
-      throw createValidationError('Location ID is required', { 
+      throw createValidationError('Location ID is required', {
         parameter: 'locationId',
         expected: 'string',
-        received: 'null'
+        received: 'null',
       });
     }
 
@@ -36,24 +43,24 @@ export async function GET(request: NextRequest) {
       throw createValidationError('Invalid period specified', {
         parameter: 'period',
         expected: validPeriods,
-        received: period
+        received: period,
       });
     }
 
     // Get dashboard data using mock service
-    const dashboardData = await MockDashboardService.getCompleteDashboardData(
+    const dashboardData: any = await MockDashboardService.getCompleteDashboardData(
       session.user.id,
       locationId,
       period
     );
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       success: true,
       data: {
         stats: dashboardData.stats,
         timestamp: new Date().toISOString(),
-        mock: dashboardData.mock || false
-      }
+        mock: dashboardData.mock || false,
+      },
     });
   } catch (error) {
     return handleApiError(error, {

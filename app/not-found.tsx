@@ -1,14 +1,6 @@
 'use client';
 
-import { 
-  Box, 
-  Container, 
-  Typography, 
-  Button, 
-  Card, 
-  CardContent,
-  Stack
-} from '@mui/material';
+import { Box, Container, Typography, Button, Card, CardContent, Stack } from '@mui/material';
 import { SearchOff, Home, ArrowBack } from '@mui/icons-material';
 import Link from 'next/link';
 
@@ -39,7 +31,7 @@ export default function NotFound() {
                 mb: 2,
               }}
             />
-            
+
             <Typography
               variant="h1"
               component="h1"
@@ -53,7 +45,7 @@ export default function NotFound() {
             >
               404
             </Typography>
-            
+
             <Typography
               variant="h4"
               component="h2"
@@ -66,12 +58,12 @@ export default function NotFound() {
             >
               Page Not Found
             </Typography>
-            
+
             <Typography
               variant="h6"
               color="text.secondary"
-              sx={{ 
-                mb: 4, 
+              sx={{
+                mb: 4,
                 fontSize: { xs: '1rem', sm: '1.25rem' },
                 maxWidth: '600px',
                 mx: 'auto',
@@ -80,11 +72,7 @@ export default function NotFound() {
               The page you&apos;re looking for doesn&apos;t exist or has been moved.
             </Typography>
 
-            <Stack
-              direction={{ xs: 'column', sm: 'row' }}
-              spacing={2}
-              justifyContent="center"
-            >
+            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} justifyContent="center">
               <Button
                 component={Link}
                 href="/"
@@ -98,7 +86,7 @@ export default function NotFound() {
               >
                 Go Home
               </Button>
-              
+
               <Button
                 onClick={() => window.history.back()}
                 variant="outlined"
@@ -113,11 +101,7 @@ export default function NotFound() {
               </Button>
             </Stack>
 
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{ mt: 4, fontStyle: 'italic' }}
-            >
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 4, fontStyle: 'italic' }}>
               Looking for crime data? Visit our{' '}
               <Link href="/" style={{ color: 'inherit', textDecoration: 'underline' }}>
                 interactive crime map
@@ -125,7 +109,8 @@ export default function NotFound() {
               or{' '}
               <Link href="/dashboard" style={{ color: 'inherit', textDecoration: 'underline' }}>
                 dashboard
-              </Link>.
+              </Link>
+              .
             </Typography>
           </CardContent>
         </Card>

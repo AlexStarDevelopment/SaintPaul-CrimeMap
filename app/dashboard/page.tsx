@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useRequireAuth } from '../hooks/useRequireAuth';
+import { useFeatureFlags } from '../hooks/useFeatureFlags';
 import {
   Container,
   Box,
@@ -32,11 +33,20 @@ import IncidentsFeed from './components/IncidentsFeed';
 import AddLocation from './components/AddLocation';
 import { SavedLocation } from '../models/location';
 import { LOCATION_LIMITS } from '../models/location';
+import { useEffect as useEffectReact } from 'react';
+import { useState as useStateReact } from 'react';
 
 export default function DashboardPage() {
   const { session, loading: authLoading, authenticated } = useRequireAuth();
   const router = useRouter();
   const theme = useTheme();
+  const { flags, isEnabled, loading: flagsLoading } = useFeatureFlags();
+  // Redirect away if dashboard is disabled
+  useEffect(() => {
+    if (!flagsLoading && !isEnabled('dashboard')) {
+      router.push('/');
+    }
+  }, [flagsLoading, flags, isEnabled, router]);
   const [locations, setLocations] = useState<SavedLocation[]>([]);
   const [locationsLoading, setLocationsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

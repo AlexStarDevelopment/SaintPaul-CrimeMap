@@ -9,8 +9,6 @@ import {
   MenuItem,
   Typography,
   Alert,
-  FormControlLabel,
-  Switch,
   Chip,
   Stack,
 } from '@mui/material';
@@ -36,7 +34,6 @@ export default function AddLocation({ onAdd, onCancel, onSuccess }: AddLocationP
   const [customLabel, setCustomLabel] = useState('');
   const [address, setAddress] = useState('');
   const [radius, setRadius] = useState(0.5);
-  const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [coordinates, setCoordinates] = useState<{
@@ -131,8 +128,8 @@ export default function AddLocation({ onAdd, onCancel, onSuccess }: AddLocationP
         coordinates,
         radius,
         notifications: {
-          enabled: notificationsEnabled,
-          types: [], // Will be configured later
+          enabled: false,
+          types: [],
           severity: 'all',
         },
         isActive: true,
@@ -274,18 +271,6 @@ export default function AddLocation({ onAdd, onCancel, onSuccess }: AddLocationP
           ))}
         </Select>
       </FormControl>
-
-      {/* Notifications Toggle */}
-      <FormControlLabel
-        control={
-          <Switch
-            checked={notificationsEnabled}
-            onChange={(e) => setNotificationsEnabled(e.target.checked)}
-          />
-        }
-        label="Enable notifications for this location (coming soon)"
-        sx={{ mb: 3 }}
-      />
 
       {/* Action Buttons */}
       <Stack direction="row" spacing={2}>

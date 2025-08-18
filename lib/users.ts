@@ -193,3 +193,84 @@ export const initializeUserIndexes = async (): Promise<void> => {
     logger.error('Error creating user indexes', error);
   }
 };
+
+// Admin functions for user management
+export const getAllUsers = async (): Promise<User[]> => {
+  try {
+    const client = await connectToDatabase();
+    const db = client.db();
+    const users = db.collection('users');
+
+    const userList = await users.find({}).sort({ createdAt: -1 }).toArray();
+
+    // Deduplicate users by email, keeping the most recent one
+    const seenEmails = new Set<string>();
+    const uniqueUsers = [];
+
+    for (const user of userList as User[]) {
+      if (user.email && !seenEmails.has(user.email)) {
+        seenEmails.add(user.email);
+        uniqueUsers.push(user);
+      }
+    }
+
+    return uniqueUsers;
+  } catch (error) {
+    logger.error('Error fetching all users', error);
+    return [];
+  }
+};
+
+export const updateUserTier = async (
+  userId: string,
+  tier: SubscriptionTier
+): Promise<User | null> => {
+  try {
+    const client = await connectToDatabase();
+    const db = client.db();
+    const users = db.collection('users');
+
+    const result = await users.findOneAndUpdate(
+      { _id: new ObjectId(userId) },
+      {
+        $set: {
+          subscriptionTier: tier,
+          subscriptionStatus: 'active',
+          updatedAt: new Date(),
+        },
+      },
+      { returnDocument: 'after' }
+    );
+
+    logger.info('User tier updated by admin', { userId, newTier: tier });
+    return result as User | null;
+  } catch (error) {
+    logger.error('Error updating user tier', error, { userId });
+    return null;
+  }
+};
+
+export const setUserAdmin = async (userId: string, isAdmin: boolean): Promise<User | null> => {
+  try {
+    const client = await connectToDatabase();
+    const db = client.db();
+    const users = db.collection('users');
+
+    const result = await users.findOneAndUpdate(
+      { _id: new ObjectId(userId) },
+      {
+        $set: {
+          isAdmin,
+          updatedAt: new Date(),
+        },
+      },
+      { returnDocument: 'after' }
+    );
+
+    logger.info('User admin status updated', { userId, isAdmin });
+    return result as User | null;
+  } catch (error) {
+    logger.error('Error updating user admin status', error, { userId });
+    return null;
+  }
+};

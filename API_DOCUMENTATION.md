@@ -421,7 +421,7 @@ Gets database connection and performance statistics.
 {
   "databaseStats": {
     "totalConnections": "number",
-    "activeConnections": "number", 
+    "activeConnections": "number",
     "cacheHits": "number",
     "cacheMisses": "number",
     "poolSize": "number",

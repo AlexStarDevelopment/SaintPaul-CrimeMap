@@ -2,10 +2,16 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../../../lib/auth';
 import { MockDashboardService } from '../../../../lib/mockData.js';
+import { isDashboardEnabledCached } from '../../../../lib/featureFlags';
 
 // GET /api/dashboard/safety-score
 export async function GET(request: NextRequest) {
   try {
+    const enabled = await isDashboardEnabledCached();
+    if (!enabled) {
+      return NextResponse.json({ error: 'Dashboard is disabled' }, { status: 404 });
+    }
+
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.id) {
@@ -20,7 +26,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Get dashboard data using mock service
-    const dashboardData = await MockDashboardService.getCompleteDashboardData(
+    const dashboardData: any = await MockDashboardService.getCompleteDashboardData(
       session.user.id,
       locationId,
       '30d'
