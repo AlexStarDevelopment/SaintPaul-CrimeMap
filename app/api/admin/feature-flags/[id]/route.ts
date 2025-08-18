@@ -3,8 +3,11 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '../../../../../lib/auth';
 import { toggleFeatureFlag, updateFeatureFlag } from '../../../../../lib/featureFlags';
 
-export async function PUT(request: NextRequest, context: any) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    // Await params
+    const { id } = await params;
+
     // Check authentication
     const session = await getServerSession(authOptions);
 
@@ -24,10 +27,10 @@ export async function PUT(request: NextRequest, context: any) {
 
     // If only toggling enabled status
     if (enabled !== undefined && Object.keys(otherUpdates).length === 0) {
-      updatedFlag = await toggleFeatureFlag(context?.params?.id, enabled);
+      updatedFlag = await toggleFeatureFlag(id, enabled);
     } else {
       // Update other properties
-      updatedFlag = await updateFeatureFlag(context?.params?.id, body);
+      updatedFlag = await updateFeatureFlag(id, body);
     }
 
     if (!updatedFlag) {

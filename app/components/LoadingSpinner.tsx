@@ -53,14 +53,14 @@ export function LoadingSpinner({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        flexDirection: 'column',
+        flexDirection: 'column' as const,
         gap: 2,
       }
     : {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        flexDirection: 'column',
+        flexDirection: 'column' as const,
         gap: 2,
         p: 3,
       };

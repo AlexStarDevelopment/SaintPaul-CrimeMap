@@ -69,7 +69,8 @@ export function withApiMiddleware(
 
       // Rate limiting
       if (rateLimit) {
-        const identifier = req.ip || req.headers.get('x-forwarded-for') || 'unknown';
+        const identifier =
+          req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown';
         const allowed = checkRateLimit(identifier, rateLimit.limit, rateLimit.windowMs);
 
         if (!allowed) {
@@ -92,7 +93,7 @@ export function withApiMiddleware(
         endpoint: req.url,
         method: req.method,
         userAgent: req.headers.get('user-agent'),
-        ip: req.ip || req.headers.get('x-forwarded-for'),
+        ip: req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip'),
       });
     }
   };

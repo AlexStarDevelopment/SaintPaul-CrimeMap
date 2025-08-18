@@ -3,11 +3,14 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '../../../../../../lib/auth';
 import { setUserAdmin } from '../../../../../../lib/users';
 
-export async function PUT(request: NextRequest, { params }: { params: Promise<{ userId: string }> }) {
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: Promise<{ userId: string }> }
+) {
   try {
     // Await params
     const { userId } = await params;
-    
+
     // Check authentication
     const session = await getServerSession(authOptions);
 

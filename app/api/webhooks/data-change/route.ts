@@ -39,7 +39,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Process the data change event
-    const result = await CacheInvalidationService.invalidateByDataChange(payload);
+    const result = await CacheInvalidationService.invalidateByDataChange({
+      ...payload,
+      timestamp: payload.timestamp!,
+    });
 
     // Log the results
     console.log('🔄 Cache invalidation results:', result);

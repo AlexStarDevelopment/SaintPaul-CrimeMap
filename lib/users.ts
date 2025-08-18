@@ -207,7 +207,7 @@ export const getAllUsers = async (): Promise<User[]> => {
     const seenEmails = new Set<string>();
     const uniqueUsers = [];
 
-    for (const user of userList as User[]) {
+    for (const user of userList as unknown as User[]) {
       if (user.email && !seenEmails.has(user.email)) {
         seenEmails.add(user.email);
         uniqueUsers.push(user);
@@ -242,7 +242,7 @@ export const updateUserTier = async (
       { returnDocument: 'after' }
     );
 
-    logger.info('User tier updated by admin', { userId, newTier: tier });
+    logger.info('User tier updated by admin', { userId });
     return result as User | null;
   } catch (error) {
     logger.error('Error updating user tier', error, { userId });
@@ -267,7 +267,7 @@ export const setUserAdmin = async (userId: string, isAdmin: boolean): Promise<Us
       { returnDocument: 'after' }
     );
 
-    logger.info('User admin status updated', { userId, isAdmin });
+    logger.info('User admin status updated', { userId });
     return result as User | null;
   } catch (error) {
     logger.error('Error updating user admin status', error, { userId });

@@ -114,7 +114,7 @@ export function handleApiError(error: unknown, context?: Record<string, unknown>
     // Handle Zod validation errors
     apiError = createValidationError(
       'Invalid request data',
-      error.errors.map((err) => ({
+      error.issues.map((err) => ({
         path: err.path.join('.'),
         message: err.message,
       }))
