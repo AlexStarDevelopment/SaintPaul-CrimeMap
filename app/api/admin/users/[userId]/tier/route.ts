@@ -4,8 +4,11 @@ import { authOptions } from '../../../../../../lib/auth';
 import { updateUserTier } from '../../../../../../lib/users';
 import { SubscriptionTier } from '../../../../../models/user';
 
-export async function PUT(request: NextRequest, { params }: { params: { userId: string } }) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ userId: string }> }) {
   try {
+    // Await params
+    const { userId } = await params;
+    
     // Check authentication
     const session = await getServerSession(authOptions);
 
@@ -31,7 +34,7 @@ export async function PUT(request: NextRequest, { params }: { params: { userId: 
     }
 
     // Update user tier
-    const updatedUser = await updateUserTier(params.userId, tier as SubscriptionTier);
+    const updatedUser = await updateUserTier(userId, tier as SubscriptionTier);
 
     if (!updatedUser) {
       return NextResponse.json({ error: 'User not found or update failed' }, { status: 404 });
