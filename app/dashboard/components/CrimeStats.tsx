@@ -15,8 +15,8 @@ import {
   Assessment as AssessmentIcon,
   Warning as WarningIcon,
 } from '@mui/icons-material';
-import { SavedLocation } from '../../models/location';
-import { SubscriptionTier } from '../../models/user';
+import { SavedLocation } from '@/types';
+import { SubscriptionTier } from '@/types';
 
 interface CrimeStatsProps {
   location: SavedLocation;

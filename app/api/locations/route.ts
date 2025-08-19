@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '../../../lib/auth';
+import { authOptions } from '@/lib/auth';
 import { MockLocationService } from '../../../lib/mockData.js';
-import { SavedLocation } from '../../models/location';
+import { SavedLocation } from '@/types';
 import { z } from 'zod';
 
 // Validation schema for creating a location

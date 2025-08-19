@@ -17,7 +17,7 @@ import {
   MyLocation as MyLocationIcon,
   Cancel as CancelIcon,
 } from '@mui/icons-material';
-import { SavedLocation, RADIUS_OPTIONS } from '../../models/location';
+import { SavedLocation, RADIUS_OPTIONS } from '@/types';
 
 interface AddLocationProps {
   onAdd: (

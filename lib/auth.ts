@@ -2,9 +2,9 @@ import { NextAuthOptions } from 'next-auth';
 import { MongoDBAdapter } from '@auth/mongodb-adapter';
 import GoogleProvider from 'next-auth/providers/google';
 import { MongoClient } from 'mongodb';
-import { clientPromise as sharedClientPromise } from './mongodb';
-import { getUserById, createUser, updateUser } from './users';
-import { User, UserSession } from '../app/models/user';
+import { clientPromise as sharedClientPromise } from './db/mongodb';
+import { getUserById, createUser, updateUser } from './services/users';
+import { User, UserSession } from '@/types';
 
 // Reuse the shared Mongo client promise to prevent extra connections
 const clientPromise = sharedClientPromise as unknown as Promise<MongoClient>;

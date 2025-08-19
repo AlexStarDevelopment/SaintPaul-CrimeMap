@@ -1,4 +1,4 @@
-import { CrimeCacheService } from './cacheService';
+import { CrimeCacheService } from './service';
 
 /**
  * Cache invalidation strategies for handling data freshness

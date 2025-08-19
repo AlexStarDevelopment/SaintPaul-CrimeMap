@@ -1,12 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../../../lib/auth';
-import { CrimeCacheService } from '../../../../lib/cacheService';
-import {
-  handleApiError,
-  createAuthenticationError,
-  createAuthorizationError,
-} from '../../../../lib/apiErrorHandler';
+import { CrimeCacheService } from '@/lib/cache';
+import { handleApiError, createAuthenticationError, createAuthorizationError } from '@/lib/api';
 
 // GET /api/admin/cache - Get cache statistics and status
 export async function GET(request: NextRequest) {

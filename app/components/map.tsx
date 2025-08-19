@@ -8,7 +8,7 @@ import 'leaflet.markercluster/dist/MarkerCluster.css';
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 import 'leaflet.markercluster';
 import './map.css';
-import { Crime } from '../models/models';
+import { Crime } from '@/types';
 import { CircularProgress, Box, Typography } from '@mui/material';
 import {
   faCar,

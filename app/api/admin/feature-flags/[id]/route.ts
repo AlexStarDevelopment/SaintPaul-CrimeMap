@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '../../../../../lib/auth';
-import { toggleFeatureFlag, updateFeatureFlag } from '../../../../../lib/featureFlags';
+import { authOptions } from '@/lib/auth';
+import { toggleFeatureFlag, updateFeatureFlag } from '@/lib';
 
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {

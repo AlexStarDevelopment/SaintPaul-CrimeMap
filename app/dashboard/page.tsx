@@ -31,8 +31,7 @@ import LocationCard from './components/LocationCard';
 import CrimeStats from './components/CrimeStats';
 import IncidentsFeed from './components/IncidentsFeed';
 import AddLocation from './components/AddLocation';
-import { SavedLocation } from '../models/location';
-import { LOCATION_LIMITS } from '../models/location';
+import { SavedLocation, LOCATION_LIMITS } from '@/types';
 import { useEffect as useEffectReact } from 'react';
 import { useState as useStateReact } from 'react';
 

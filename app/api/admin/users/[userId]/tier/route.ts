@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '../../../../../../lib/auth';
-import { updateUserTier } from '../../../../../../lib/users';
-import { SubscriptionTier } from '../../../../../models/user';
+import { authOptions } from '@/lib/auth';
+import { updateUserTier } from '@/lib/services';
+import { SubscriptionTier } from '@/types';
 
 export async function PUT(
   request: NextRequest,

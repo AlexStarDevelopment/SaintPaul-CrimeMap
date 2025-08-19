@@ -1,11 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '../../lib/auth';
-import {
-  handleApiError,
-  createAuthenticationError,
-  createRateLimitError,
-} from '../../lib/apiErrorHandler';
+import { authOptions } from '@/lib/auth';
+import { handleApiError, createAuthenticationError, createRateLimitError } from '@/lib/api';
 
 // Rate limiting storage (in production, use Redis or similar)
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>();

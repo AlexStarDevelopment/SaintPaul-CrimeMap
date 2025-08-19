@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../../../lib/auth';
-import { getRateLimitStats, clearRateLimitStore } from '../../../../lib/rateLimit';
+import { getRateLimitStats, clearRateLimitStore } from '@/lib/api';
 
 /**
  * GET /api/admin/rate-limit-stats

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { CacheInvalidationService } from '@/lib/cacheInvalidation';
+import { CacheInvalidationService } from '@/lib/cache';
 
 interface DataChangeWebhookPayload {
   collection: string;

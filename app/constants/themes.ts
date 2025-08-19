@@ -1,5 +1,5 @@
 import { createTheme } from '@mui/material/styles';
-import { ThemeType } from '../models/user';
+import { ThemeType } from '@/types';
 
 // Light Theme
 export const lightTheme = createTheme({

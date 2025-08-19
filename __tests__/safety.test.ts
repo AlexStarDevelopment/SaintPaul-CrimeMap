@@ -1,5 +1,5 @@
 import { computeSafetyScore } from '../lib/safety';
-import type { Crime } from '../app/models/models';
+import type { Crime } from '@/types';
 
 function makeCrime(overrides: Partial<Crime> = {}): Crime {
   const now = Date.now().toString();

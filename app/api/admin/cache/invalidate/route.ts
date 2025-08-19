@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import { CacheInvalidationService } from '@/lib/cacheInvalidation';
+import { CacheInvalidationService } from '@/lib/cache';
 
 export async function POST(request: NextRequest) {
   try {
@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
 
       case 'full':
         // Full cache clear
-        const { CrimeCacheService } = await import('@/lib/cacheService');
+        const { CrimeCacheService } = await import('@/lib/cache');
         CrimeCacheService.clearCrimeCache();
         result = {
           invalidated: ['all'],

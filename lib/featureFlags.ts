@@ -1,5 +1,5 @@
-import { connectToDatabase } from './mongodb';
-import { FeatureFlag, DEFAULT_FEATURE_FLAGS } from '../app/models/featureFlag';
+import { connectToDatabase } from './db/mongodb';
+import { FeatureFlag, DEFAULT_FEATURE_FLAGS } from '@/types';
 import { ObjectId } from 'mongodb';
 import { logger } from './logger';
 

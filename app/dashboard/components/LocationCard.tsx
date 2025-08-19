@@ -17,8 +17,7 @@ import {
   Shield as ShieldIcon,
   LocationOn as LocationIcon,
 } from '@mui/icons-material';
-import { SavedLocation } from '../../models/location';
-import { Crime } from '../../models/models';
+import { SavedLocation, Crime } from '@/types';
 
 interface LocationCardProps {
   location: SavedLocation;

@@ -1,5 +1,5 @@
-import type { Crime } from '../app/models/models';
-import { calculateSeverityWeight } from '../app/models/location';
+import type { Crime } from '@/types';
+import { calculateSeverityWeight } from '@/types';
 
 export type SafetyRating = 'safe' | 'moderate' | 'caution' | 'high-risk';
 

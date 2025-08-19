@@ -1,4 +1,4 @@
-import { CrimeCacheService } from './cacheService';
+import { CrimeCacheService } from './service';
 
 /**
  * Cache warming utilities for optimizing application performance
@@ -138,7 +138,7 @@ export function schedulePeriodicCacheWarming(): void {
   setInterval(async () => {
     console.log('🔄 Running periodic background refresh...');
     try {
-      const { CacheInvalidationService } = await import('./cacheInvalidation');
+      const { CacheInvalidationService } = await import('./invalidation');
       const result = await CacheInvalidationService.backgroundRefresh();
       console.log(
         `🔄 Background refresh result: ${result.refreshed.length} refreshed, ${result.failed.length} failed`

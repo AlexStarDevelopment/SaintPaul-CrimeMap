@@ -1,7 +1,7 @@
-import { connectToDatabase } from './mongodb.js';
-import { User, SubscriptionTier, SubscriptionStatus } from '../app/models/user';
+import { connectToDatabase } from '../db/mongodb.js';
+import { User, SubscriptionTier, SubscriptionStatus } from '@/types';
 import { ObjectId } from 'mongodb';
-import { logger, sanitizeUserForLogging } from './logger';
+import { logger, sanitizeUserForLogging } from '../logger';
 
 export const getUserById = async (id: string): Promise<User | null> => {
   try {

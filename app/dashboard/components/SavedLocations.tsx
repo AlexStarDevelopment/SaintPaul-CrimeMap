@@ -21,8 +21,7 @@ import {
   RadioButtonChecked as ActiveIcon,
   RadioButtonUnchecked as InactiveIcon,
 } from '@mui/icons-material';
-import { SavedLocation, RADIUS_OPTIONS } from '../../models/location';
-import { SubscriptionTier } from '../../models/user';
+import { SavedLocation, RADIUS_OPTIONS, SubscriptionTier } from '@/types';
 
 interface SavedLocationsProps {
   locations: SavedLocation[];

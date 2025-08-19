@@ -1,4 +1,4 @@
-import { connectToDatabase } from './mongodb.js';
+import { connectToDatabase } from '../db/mongodb.js';
 
 /**
  * Enhanced caching service for crime data with multiple caching strategies

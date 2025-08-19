@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import { CacheInvalidationService } from '@/lib/cacheInvalidation';
+import { CacheInvalidationService } from '@/lib/cache';
 
 export async function POST(request: NextRequest) {
   try {
@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
 
       case 'warm':
         // Full cache warming (refresh all popular data)
-        const { warmPopularData } = await import('@/lib/cacheWarming');
+        const { warmPopularData } = await import('@/lib/cache');
         await warmPopularData();
         result = {
           action: 'cache_warming',

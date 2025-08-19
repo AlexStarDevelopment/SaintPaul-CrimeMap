@@ -1,4 +1,4 @@
-import { GetCrimesResponse, GetTotalCrimesResponse } from '../models/models';
+import { GetCrimesResponse, GetTotalCrimesResponse } from '@/types';
 
 /**
  * Fetches crime data from the API.

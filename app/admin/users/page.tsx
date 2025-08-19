@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { User, SubscriptionTier, SUBSCRIPTION_TIERS } from '../../models/user';
+import { User, SubscriptionTier, SUBSCRIPTION_TIERS } from '@/types';
 
 export default function AdminUsersPage() {
   const { data: session, status } = useSession();

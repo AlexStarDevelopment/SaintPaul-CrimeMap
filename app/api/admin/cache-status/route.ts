@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../../../lib/auth';
 import { getMockCacheStatus, clearMockCache } from '../../../../lib/mockData.js';
-import { CrimeCacheService } from '../../../../lib/cacheService';
-import { getCacheStatus, clearCrimeCache } from '../../../../lib/crimeDataService.js';
+import { CrimeCacheService } from '@/lib/cache';
+import { getCacheStatus, clearCrimeCache } from '@/lib/services';
 
 // GET /api/admin/cache-status
 export async function GET(request: NextRequest) {

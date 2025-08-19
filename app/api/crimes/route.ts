@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { crimeQuerySchema } from '../../lib/validation';
-import { rateLimit, addRateLimitHeaders } from '../../../lib/rateLimit';
-import { logger, getRequestContext } from '../../../lib/logger';
-import { CrimeCacheService } from '../../../lib/cacheService';
+import { rateLimit, addRateLimitHeaders } from '@/lib/api';
+import { logger, getRequestContext } from '@/lib';
+import { CrimeCacheService } from '@/lib/cache';
 import { z } from 'zod';
 
 export async function GET(request: NextRequest) {

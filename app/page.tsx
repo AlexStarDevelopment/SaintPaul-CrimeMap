@@ -2,7 +2,7 @@
 import dynamic from 'next/dynamic';
 import { ChangeEvent, useEffect, useState } from 'react';
 import { dataSelection } from './const';
-import { Crime } from './models/models';
+import { Crime } from '@/types';
 import DrawerBasic from './components/drawer';
 import Navigation from './components/Navigation';
 import { getCrimes, getTotalCrimes } from './api/getCrimes';
@@ -417,7 +417,10 @@ export default function Home() {
               commitment to Saint Paul&apos;s most reliable crime data resource:
             </Typography>
             <Typography variant="body2" sx={{ mb: 1 }}>
-              08/18/25 3.1.0 - NEW: User accounts now available! Create an account to save your
+              08/18/25 3.1.1 - Small bug fixes to account themes.
+            </Typography>
+            <Typography variant="body2" sx={{ mb: 1 }}>
+              08/17/25 3.1.0 - NEW: User accounts now available! Create an account to save your
               preferred theme settings, access personalized dashboard features, and get a customized
               experience. Also includes major performance improvements: faster page loading, quicker
               map rendering, cleaner navigation, and enhanced reliability across all devices.

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '../../../lib/auth';
-import { connectToDatabase } from '../../../lib/mongodb';
+import { authOptions } from '@/lib/auth';
+import { connectToDatabase } from '@/lib/db';
 
 export async function GET() {
   // Multiple security checks for debug endpoint

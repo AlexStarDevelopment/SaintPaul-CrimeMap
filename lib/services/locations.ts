@@ -1,8 +1,7 @@
-import { connectToDatabase } from './mongodb.js';
-import { SavedLocation, LOCATION_LIMITS } from '../app/models/location';
-import { SubscriptionTier } from '../app/models/user';
+import { connectToDatabase } from '../db/mongodb.js';
+import { SavedLocation, LOCATION_LIMITS, SubscriptionTier } from '@/types';
 import { ObjectId } from 'mongodb';
-import { logger } from './logger';
+import { logger } from '../logger';
 
 export const getUserLocations = async (userId: string): Promise<SavedLocation[]> => {
   try {

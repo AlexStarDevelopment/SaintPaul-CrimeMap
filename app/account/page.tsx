@@ -37,9 +37,9 @@ import {
   Dashboard as DashboardIcon,
   ArrowBack as ArrowBackIcon,
 } from '@mui/icons-material';
-import { ThemeType } from '../models/user';
+import { ThemeType } from '@/types';
 import { themeMetadata } from '../constants/themes';
-import { SUBSCRIPTION_TIERS } from '../models/user';
+import { SUBSCRIPTION_TIERS } from '@/types';
 
 export default function AccountPage() {
   const { session, loading: authLoading, authenticated } = useRequireAuth();
@@ -338,61 +338,6 @@ export default function AccountPage() {
                 </Typography>
               </Box>
             </Paper>
-          </Grid>
-
-          {/* Theme Preview Cards */}
-          <Grid item xs={12}>
-            <Typography variant="h6" gutterBottom>
-              Theme Previews
-            </Typography>
-            <Grid container spacing={2}>
-              {Object.entries(themeMetadata).map(([key, meta]) => (
-                <Grid item xs={12} sm={6} md={3} key={key}>
-                  <Card
-                    variant="outlined"
-                    sx={{
-                      cursor: 'pointer',
-                      border: selectedTheme === key ? 2 : 1,
-                      borderColor: selectedTheme === key ? 'primary.main' : 'divider',
-                      transition: 'all 0.3s',
-                      '&:hover': {
-                        transform: 'translateY(-2px)',
-                        boxShadow: 2,
-                      },
-                    }}
-                    onClick={() =>
-                      handleThemeChange({
-                        target: { value: key },
-                      } as SelectChangeEvent<ThemeType>)
-                    }
-                  >
-                    <CardContent>
-                      <Box
-                        sx={{
-                          height: 60,
-                          mb: 2,
-                          borderRadius: 1,
-                          background:
-                            key === 'light'
-                              ? 'linear-gradient(135deg, #fafafa 0%, #ffffff 100%)'
-                              : key === 'dark'
-                                ? 'linear-gradient(135deg, #121212 0%, #1e1e1e 100%)'
-                                : key === 'sage'
-                                  ? 'linear-gradient(135deg, #1e2e2e 0%, #263838 100%)'
-                                  : 'linear-gradient(135deg, #1a1f2e 0%, #232937 100%)',
-                        }}
-                      />
-                      <Typography variant="subtitle1" fontWeight="bold">
-                        {meta.name}
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        {meta.description}
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                </Grid>
-              ))}
-            </Grid>
           </Grid>
         </Grid>
       </Container>

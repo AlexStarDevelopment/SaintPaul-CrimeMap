@@ -1,4 +1,4 @@
-import { User, SubscriptionTier, hasFeatureAccess, isSubscriptionActive } from '../app/models/user';
+import { User, SubscriptionTier, hasFeatureAccess, isSubscriptionActive } from '@/types';
 import { getUserById, updateUserSubscription } from './users';
 
 export interface SubscriptionCheckResult {

@@ -280,7 +280,7 @@ export default function OpenGraphImage() {
                 display: 'flex',
                 alignItems: 'center',
                 marginTop: '32px',
-                padding: '12px 24px',
+                padding: '12px',
                 background: 'rgba(120, 144, 156, 0.2)',
                 borderRadius: '8px',
                 border: '1px solid rgba(120, 144, 156, 0.3)',

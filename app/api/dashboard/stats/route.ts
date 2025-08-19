@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '../../../../lib/auth';
+import { authOptions } from '@/lib/auth';
 import { MockDashboardService } from '../../../../lib/mockData.js';
 import {
   handleApiError,
   createAuthenticationError,
   createValidationError,
   createNotFoundError,
-} from '../../../../lib/apiErrorHandler';
-import { isDashboardEnabledCached } from '../../../../lib/featureFlags';
+} from '@/lib/api';
+import { isDashboardEnabledCached } from '@/lib';
 
 // GET /api/dashboard/stats
 export async function GET(request: NextRequest) {

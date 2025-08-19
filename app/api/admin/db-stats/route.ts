@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '../../../../lib/auth';
-import { getDbServiceStats } from '../../../../lib/dbService.js';
+import { authOptions } from '@/lib/auth';
+import { getDbServiceStats } from '@/lib/db';
 
 /**
  * GET /api/admin/db-stats

@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '../../../../lib/auth';
-import { updateUser } from '../../../../lib/users';
-import { ThemeType } from '../../../models/user';
-import { logger, getRequestContext, sanitizeUserForLogging } from '../../../../lib/logger';
+import { authOptions } from '@/lib/auth';
+import { updateUser } from '@/lib/services';
+import { ThemeType } from '@/types';
+import { logger, getRequestContext, sanitizeUserForLogging } from '@/lib';
 
 export async function PUT(request: NextRequest) {
   const context = getRequestContext(request);

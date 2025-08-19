@@ -4,7 +4,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { ReactNode, createContext, useContext, useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { getTheme } from '../constants/themes';
-import { ThemeType } from '../models/user';
+import { ThemeType } from '@/types';
 
 /**
  * Type definitions for theme context

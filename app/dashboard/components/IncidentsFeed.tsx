@@ -20,9 +20,7 @@ import {
   Refresh as RefreshIcon,
   OpenInNew as OpenIcon,
 } from '@mui/icons-material';
-import { SavedLocation } from '../../models/location';
-import { Crime } from '../../models/models';
-import { SubscriptionTier } from '../../models/user';
+import { SavedLocation, Crime, SubscriptionTier } from '@/types';
 import { calculateDistanceMiles } from '../../../lib/geo';
 
 interface IncidentsFeedProps {

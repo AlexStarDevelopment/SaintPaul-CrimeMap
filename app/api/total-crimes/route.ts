@@ -1,27 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { totalCrimesQuerySchema } from '../../lib/validation';
-import { apiRateLimiter } from '../../lib/rateLimit';
-import { CrimeCacheService } from '../../../lib/cacheService';
+import { rateLimit, addRateLimitHeaders } from '@/lib/api';
+import { CrimeCacheService } from '@/lib/cache';
 import { z } from 'zod';
 
 export async function GET(request: NextRequest) {
   // Check rate limit and get headers
-  const { allowed, limit, remaining, reset } = await apiRateLimiter.isAllowed(request);
+  const rateLimitResult = await rateLimit(request);
 
-  if (!allowed) {
+  if (!rateLimitResult.success) {
     return new Response(
       JSON.stringify({
         error: 'Too many requests',
         message: 'Rate limit exceeded. Please try again later.',
-        retryAfter: Math.ceil((reset - Date.now()) / 1000),
+        retryAfter: rateLimitResult.retryAfter || 60,
       }),
       {
         status: 429,
         headers: {
-          'X-RateLimit-Limit': limit.toString(),
-          'X-RateLimit-Remaining': remaining.toString(),
-          'X-RateLimit-Reset': new Date(reset).toISOString(),
-          'Retry-After': Math.ceil((reset - Date.now()) / 1000).toString(),
+          'X-RateLimit-Limit': rateLimitResult.limit.toString(),
+          'X-RateLimit-Remaining': rateLimitResult.remaining.toString(),
+          'X-RateLimit-Reset': new Date(rateLimitResult.resetTime).toISOString(),
+          'Retry-After': (rateLimitResult.retryAfter || 60).toString(),
           'Content-Type': 'application/json',
         },
       }
@@ -53,9 +53,7 @@ export async function GET(request: NextRequest) {
     response.headers.set('X-Cache-Status', result.totalItems > 0 ? 'hit' : 'miss');
 
     // Add rate limit headers to response
-    response.headers.set('X-RateLimit-Limit', limit.toString());
-    response.headers.set('X-RateLimit-Remaining', remaining.toString());
-    response.headers.set('X-RateLimit-Reset', new Date(reset).toISOString());
+    addRateLimitHeaders(response, rateLimitResult);
 
     return response;
   } catch (error: any) {

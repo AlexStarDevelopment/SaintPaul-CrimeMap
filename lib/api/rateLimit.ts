@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from './auth';
+import { authOptions } from '../auth';
 
 /**
  * Rate limit tracking - using in-memory store for simplicity
