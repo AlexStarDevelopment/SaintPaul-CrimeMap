@@ -302,7 +302,7 @@ export default function DashboardPage() {
         {!canAddMore && (
           <Alert severity="info" sx={{ mb: 2 }}>
             You&apos;ve reached the maximum number of saved locations for your {userTier} plan.
-            {userTier !== 'pro' && ' Upgrade to save more locations.'}
+            {userTier !== 'pro' && ' Upgrade to save more locations (coming soon).'}
           </Alert>
         )}
 
