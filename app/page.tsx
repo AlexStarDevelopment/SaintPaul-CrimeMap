@@ -224,19 +224,17 @@ export default function Home() {
             variant="outlined"
             onClick={handleClick}
             sx={{
-              borderColor: (theme) => theme.palette.mode === 'light' 
-                ? 'rgba(0, 0, 0, 0.23)' 
-                : 'rgba(255, 255, 255, 0.5)',
-              color: (theme) => theme.palette.mode === 'light'
-                ? theme.palette.text.primary
-                : 'white',
+              borderColor: (theme) =>
+                theme.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.23)' : 'rgba(255, 255, 255, 0.5)',
+              color: (theme) =>
+                theme.palette.mode === 'light' ? theme.palette.text.primary : 'white',
               '&:hover': {
-                borderColor: (theme) => theme.palette.mode === 'light'
-                  ? theme.palette.primary.main
-                  : 'white',
-                backgroundColor: (theme) => theme.palette.mode === 'light'
-                  ? 'rgba(0, 0, 0, 0.04)'
-                  : 'rgba(255, 255, 255, 0.1)',
+                borderColor: (theme) =>
+                  theme.palette.mode === 'light' ? theme.palette.primary.main : 'white',
+                backgroundColor: (theme) =>
+                  theme.palette.mode === 'light'
+                    ? 'rgba(0, 0, 0, 0.04)'
+                    : 'rgba(255, 255, 255, 0.1)',
               },
             }}
           >
@@ -368,19 +366,19 @@ export default function Home() {
                 size="large"
                 sx={{
                   minWidth: { xs: '100%', sm: '250px' },
-                  borderColor: (theme) => theme.palette.mode === 'light' 
-                    ? 'rgba(0, 0, 0, 0.23)' 
-                    : 'rgba(255, 255, 255, 0.5)',
-                  color: (theme) => theme.palette.mode === 'light'
-                    ? theme.palette.text.primary
-                    : 'white',
+                  borderColor: (theme) =>
+                    theme.palette.mode === 'light'
+                      ? 'rgba(0, 0, 0, 0.23)'
+                      : 'rgba(255, 255, 255, 0.5)',
+                  color: (theme) =>
+                    theme.palette.mode === 'light' ? theme.palette.text.primary : 'white',
                   '&:hover': {
-                    borderColor: (theme) => theme.palette.mode === 'light'
-                      ? theme.palette.primary.main
-                      : 'white',
-                    backgroundColor: (theme) => theme.palette.mode === 'light'
-                      ? 'rgba(0, 0, 0, 0.04)'
-                      : 'rgba(255, 255, 255, 0.1)',
+                    borderColor: (theme) =>
+                      theme.palette.mode === 'light' ? theme.palette.primary.main : 'white',
+                    backgroundColor: (theme) =>
+                      theme.palette.mode === 'light'
+                        ? 'rgba(0, 0, 0, 0.04)'
+                        : 'rgba(255, 255, 255, 0.1)',
                   },
                 }}
               >

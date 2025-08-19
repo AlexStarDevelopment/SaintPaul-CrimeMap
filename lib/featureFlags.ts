@@ -46,11 +46,11 @@ export const migrateShowInDevField = async (): Promise<void> => {
     // Update flags that don't have showInDev field
     const result = await flags.updateMany(
       { showInDev: { $exists: false } },
-      { 
-        $set: { 
+      {
+        $set: {
           showInDev: false, // Default to false for existing flags
-          updatedAt: new Date()
-        } 
+          updatedAt: new Date(),
+        },
       }
     );
 
@@ -170,18 +170,18 @@ export const getUserFeatureFlags = async (): Promise<Record<string, boolean>> =>
   try {
     const allFlags = await getAllFeatureFlags();
     const isProduction = process.env.NODE_ENV === 'production';
-    
+
     // Filter and process flags based on environment
     const flagMap: Record<string, boolean> = {};
-    
-    allFlags.forEach(flag => {
+
+    allFlags.forEach((flag) => {
       if (isProduction) {
         // In production: only show if enabled (showInDev doesn't matter)
         if (flag.enabled) {
           flagMap[flag.key] = true;
         }
       } else {
-        // In development: 
+        // In development:
         // - If showInDev is true, always show as enabled regardless of enabled flag
         // - If showInDev is false, hide the flag completely
         // - If showInDev is undefined, respect the enabled flag
@@ -197,7 +197,7 @@ export const getUserFeatureFlags = async (): Promise<Record<string, boolean>> =>
         }
       }
     });
-    
+
     return flagMap;
   } catch (error) {
     logger.error('Error getting user feature flags', error);
