@@ -17,6 +17,7 @@ import {
 } from '@mui/icons-material';
 import { SavedLocation } from '@/types';
 import { SubscriptionTier } from '@/types';
+import { useCrimeData } from '../../contexts/CrimeDataContext';
 
 interface CrimeStatsProps {
   location: SavedLocation;
@@ -49,6 +50,7 @@ export default function CrimeStats({ location, userTier }: CrimeStatsProps) {
   const [loading, setLoading] = useState(false);
   const [stats, setStats] = useState<StatsShape | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const { crimeData, loadDefaultData, getCrimesForLocation, getCrimeStats } = useCrimeData();
 
   const handlePeriodChange = (
     event: React.MouseEvent<HTMLElement>,
@@ -69,77 +71,141 @@ export default function CrimeStats({ location, userTier }: CrimeStatsProps) {
   const canAccessPeriod = (p: PeriodType) => availablePeriods[userTier].includes(p);
 
   useEffect(() => {
-    const fetchStats = async () => {
-      if (!location._id) return;
+    const calculateStats = () => {
+      if (!location.coordinates.lat || !location.coordinates.lng) {
+        setLoading(false);
+        return;
+      }
+
+      if (crimeData.isLoading) {
+        setLoading(true);
+        return;
+      }
+
+      if (!crimeData.items.length) {
+        if (!crimeData.isLoading) {
+          // Only trigger loading if not already in progress
+          loadDefaultData();
+        }
+        setLoading(true);
+        return;
+      }
 
       setLoading(true);
       setError(null);
 
       try {
-        const response = await fetch(
-          `/api/dashboard/stats?locationId=${location._id}&period=${period}`
+        // Get crimes within radius of the location
+        const radiusKm =
+          period === '7d' ? 0.5 : period === '30d' ? 1.0 : period === '90d' ? 1.5 : 2.0;
+        const localCrimes = getCrimesForLocation(
+          location.coordinates.lat,
+          location.coordinates.lng,
+          radiusKm
         );
-        if (!response.ok) {
-          throw new Error('Failed to fetch statistics');
-        }
 
-        const data = await response.json();
+        // Filter by time period relative to the most recent data
+        const allDates = localCrimes
+          .map((crime) => parseInt(crime.DATE || '0'))
+          .filter((date) => date > 0);
+        const mostRecentDate = allDates.length > 0 ? Math.max(...allDates) : Date.now();
+        const daysAgo = period === '7d' ? 7 : period === '30d' ? 30 : period === '90d' ? 90 : 365;
+        const cutoffTime = mostRecentDate - daysAgo * 24 * 60 * 60 * 1000;
 
-        // Transform API data to component format
-        const crimeTypes = Object.entries(data.stats.crimesByType)
-          .map(([type, count]) => {
-            const total = data.stats.totalCrimes;
-            return {
-              type,
-              count: count as number,
-              percentage: total > 0 ? Math.round(((count as number) / total) * 100) : 0,
-            };
-          })
+        const filteredCrimes = localCrimes.filter((crime) => {
+          if (!crime.DATE) return false;
+          return parseInt(crime.DATE) >= cutoffTime;
+        });
+
+        // Calculate statistics using shared function
+        const crimeStats = getCrimeStats(filteredCrimes);
+
+        // Transform to component format
+        const crimeTypes = Object.entries(crimeStats.crimesByType)
+          .map(([type, count]) => ({
+            type,
+            count,
+            percentage:
+              crimeStats.totalCrimes > 0 ? Math.round((count / crimeStats.totalCrimes) * 100) : 0,
+          }))
           .sort((a, b) => b.count - a.count);
 
         const topIncident = crimeTypes.length > 0 ? crimeTypes[0].type : 'None';
 
+        // Calculate time distribution percentages
+        const timeStats = crimeStats.crimesByTimeOfDay;
+        const totalTimeEntries = Object.values(timeStats).reduce((sum, count) => sum + count, 0);
+
+        const timeDistribution = {
+          morning:
+            totalTimeEntries > 0
+              ? Math.round(((timeStats.morning || 0) / totalTimeEntries) * 100)
+              : 0,
+          afternoon:
+            totalTimeEntries > 0
+              ? Math.round(((timeStats.afternoon || 0) / totalTimeEntries) * 100)
+              : 0,
+          evening:
+            totalTimeEntries > 0
+              ? Math.round(((timeStats.evening || 0) / totalTimeEntries) * 100)
+              : 0,
+          night:
+            totalTimeEntries > 0
+              ? Math.round(((timeStats.night || 0) / totalTimeEntries) * 100)
+              : 0,
+        };
+
+        // Find safest and riskiest times
+        const timeEntries = Object.entries(timeStats);
+        const sortedByCount = timeEntries.sort(([, a], [, b]) => a - b);
+        const safestTime = sortedByCount[0] ? formatTimeOfDay(sortedByCount[0][0]) : 'Morning';
+        const riskiestTime = sortedByCount[sortedByCount.length - 1]
+          ? formatTimeOfDay(sortedByCount[sortedByCount.length - 1][0])
+          : 'Evening';
+
         setStats({
           crimeTypes,
-          timeDistribution: {
-            morning: 15, // Will be calculated from timeDistribution data
-            afternoon: 25,
-            evening: 35,
-            night: 25,
-          },
+          timeDistribution,
           topIncident,
-          safestTime: '10 AM - 2 PM', // Will be calculated from time patterns
-          riskiestTime: '8 PM - 12 AM',
+          safestTime,
+          riskiestTime,
         });
       } catch (err: any) {
-        console.error('Error fetching stats:', err);
+        console.error('Error calculating stats:', err);
         setError(err.message);
-        // Fall back to mock data
-        setStats({
-          crimeTypes: [
-            { type: 'Theft', count: 12, percentage: 35 },
-            { type: 'Vandalism', count: 8, percentage: 23 },
-            { type: 'Assault', count: 6, percentage: 18 },
-            { type: 'Auto Theft', count: 5, percentage: 15 },
-            { type: 'Other', count: 3, percentage: 9 },
-          ],
-          timeDistribution: {
-            morning: 15,
-            afternoon: 25,
-            evening: 35,
-            night: 25,
-          },
-          topIncident: 'Theft',
-          safestTime: '10 AM - 2 PM',
-          riskiestTime: '8 PM - 12 AM',
-        });
+        setStats(null);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchStats();
-  }, [location._id, period]); // Re-fetch when location or period changes
+    calculateStats();
+  }, [
+    location.coordinates.lat,
+    location.coordinates.lng,
+    period,
+    crimeData.items,
+    crimeData.isLoading,
+    loadDefaultData,
+    getCrimesForLocation,
+    getCrimeStats,
+  ]);
+
+  // Helper function to format time of day
+  const formatTimeOfDay = (timeOfDay: string): string => {
+    switch (timeOfDay) {
+      case 'morning':
+        return '6 AM - 12 PM';
+      case 'afternoon':
+        return '12 PM - 6 PM';
+      case 'evening':
+        return '6 PM - 10 PM';
+      case 'night':
+        return '10 PM - 6 AM';
+      default:
+        return timeOfDay;
+    }
+  };
 
   if (!stats) {
     return (
@@ -324,12 +390,12 @@ export default function CrimeStats({ location, userTier }: CrimeStatsProps) {
                 >
                   <CalendarIcon fontSize="small" />
                   {period === '7d'
-                    ? 'Last 7 Days'
+                    ? 'Past 7 Days'
                     : period === '30d'
-                      ? 'Last 30 Days'
+                      ? 'Past 30 Days'
                       : period === '90d'
-                        ? 'Last 90 Days'
-                        : 'Last Year'}
+                        ? 'Past 90 Days'
+                        : 'Past Year'}
                 </Typography>
               </Box>
             </Grid>

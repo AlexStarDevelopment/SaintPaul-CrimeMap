@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../../../lib/auth';
-import { MockLocationService } from '../../../../lib/mockData.js';
+import { getLocationById, updateLocation, deleteLocation } from '@/lib/services/locations';
 import { z } from 'zod';
 
 // Validation schema for updating a location
@@ -42,7 +42,7 @@ export async function GET(request: NextRequest, context: any) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const location = await MockLocationService.getLocationById(id, session.user.id);
+    const location = await getLocationById(id, session.user.id);
 
     if (!location) {
       return NextResponse.json({ error: 'Location not found' }, { status: 404 });
@@ -82,11 +82,7 @@ export async function PUT(request: NextRequest, context: any) {
       );
     }
 
-    const updatedLocation = await MockLocationService.updateLocation(
-      id,
-      session.user.id,
-      validationResult.data
-    );
+    const updatedLocation = await updateLocation(id, session.user.id, validationResult.data);
 
     return NextResponse.json({ location: updatedLocation });
   } catch (error) {
@@ -111,7 +107,7 @@ export async function DELETE(request: NextRequest, context: any) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    await MockLocationService.deleteLocation(id, session.user.id);
+    await deleteLocation(id, session.user.id);
 
     return NextResponse.json({ success: true });
   } catch (error) {

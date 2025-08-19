@@ -22,6 +22,7 @@ import {
 } from '@mui/icons-material';
 import { SavedLocation, Crime, SubscriptionTier } from '@/types';
 import { calculateDistanceMiles } from '../../../lib/geo';
+import { useCrimeData } from '../../contexts/CrimeDataContext';
 
 interface IncidentsFeedProps {
   location: SavedLocation;
@@ -67,6 +68,7 @@ export default function IncidentsFeed({ location, userTier, onViewOnMap }: Incid
   const [incidents, setIncidents] = useState<Crime[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { crimeData, loadDefaultData, getCrimesForLocation } = useCrimeData();
 
   // Generate mock incidents for display
   const generateMockIncidents = useCallback((): Crime[] => {
@@ -95,28 +97,70 @@ export default function IncidentsFeed({ location, userTier, onViewOnMap }: Incid
     );
   }, [location.coordinates]);
 
-  const fetchIncidents = useCallback(async () => {
+  const fetchIncidents = useCallback(() => {
     try {
       setLoading(true);
       setError(null);
 
-      // Fetch recent crimes data
-      const response = await fetch(`/api/dashboard/incidents?locationId=${location._id}&limit=20`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch incidents');
+      if (!location.coordinates.lat || !location.coordinates.lng) {
+        setLoading(false);
+        return;
       }
 
-      const data = await response.json();
-      setIncidents(data.incidents || []);
+      if (crimeData.isLoading) {
+        setLoading(true);
+        return;
+      }
+
+      if (!crimeData.items.length) {
+        if (!crimeData.isLoading) {
+          // Only trigger loading if not already in progress
+          loadDefaultData();
+        }
+        setLoading(true);
+        return;
+      }
+
+      // Get crimes within 1 mile radius of the location
+      const localCrimes = getCrimesForLocation(
+        location.coordinates.lat,
+        location.coordinates.lng,
+        1.0
+      );
+
+      // Sort by date (most recent first) and limit to recent incidents
+      // Use the most recent date from the dataset instead of current time
+      const allDates = localCrimes
+        .map((crime) => parseInt(crime.DATE || '0'))
+        .filter((date) => date > 0);
+      const mostRecentDate = allDates.length > 0 ? Math.max(...allDates) : Date.now();
+      const thirtyDaysAgo = mostRecentDate - 30 * 24 * 60 * 60 * 1000;
+
+      const recentIncidents = localCrimes
+        .filter((crime) => crime.DATE && parseInt(crime.DATE) >= thirtyDaysAgo)
+        .sort((a, b) => {
+          const dateA = parseInt(a.DATE || '0');
+          const dateB = parseInt(b.DATE || '0');
+          return dateB - dateA; // Most recent first
+        })
+        .slice(0, 20); // Limit to 20 most recent
+
+      setIncidents(recentIncidents);
     } catch (err: any) {
-      console.error('Error fetching incidents:', err);
+      console.error('Error processing incidents:', err);
       setError(err.message);
-      // For now, use mock data
-      setIncidents(generateMockIncidents());
+      setIncidents([]);
     } finally {
       setLoading(false);
     }
-  }, [location._id, generateMockIncidents]);
+  }, [
+    location.coordinates.lat,
+    location.coordinates.lng,
+    crimeData.items,
+    crimeData.isLoading,
+    loadDefaultData,
+    getCrimesForLocation,
+  ]);
 
   useEffect(() => {
     fetchIncidents();
@@ -179,8 +223,8 @@ export default function IncidentsFeed({ location, userTier, onViewOnMap }: Incid
               const distance = calculateDistanceMiles(
                 location.coordinates.lat,
                 location.coordinates.lng,
-                Number(incident.LAT || 0),
-                Number(incident.LON || 0)
+                incident.LAT || 0,
+                incident.LON || 0
               );
 
               return (

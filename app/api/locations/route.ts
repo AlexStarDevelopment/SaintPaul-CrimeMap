@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import { MockLocationService } from '../../../lib/mockData.js';
+import { getUserLocations, createLocation } from '@/lib/services/locations';
 import { SavedLocation } from '@/types';
 import { z } from 'zod';
 
@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const locations = await MockLocationService.getUserLocations(session.user.id);
+    const locations = await getUserLocations(session.user.id);
 
     return NextResponse.json({ locations });
   } catch (error) {
@@ -60,13 +60,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create the location using mock service
+    // Create the location using database service
     const locationData: Omit<SavedLocation, '_id' | 'createdAt' | 'updatedAt'> = {
       userId: session.user.id,
       ...validationResult.data,
     };
 
-    const newLocation = await MockLocationService.createLocation(locationData);
+    const userTier = session.user.subscriptionTier || 'free';
+    const newLocation = await createLocation(locationData, userTier);
 
     return NextResponse.json({ location: newLocation }, { status: 201 });
   } catch (error) {

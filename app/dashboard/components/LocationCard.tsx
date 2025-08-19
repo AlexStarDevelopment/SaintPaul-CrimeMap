@@ -18,6 +18,7 @@ import {
   LocationOn as LocationIcon,
 } from '@mui/icons-material';
 import { SavedLocation, Crime } from '@/types';
+import { useCrimeData } from '../../contexts/CrimeDataContext';
 
 interface LocationCardProps {
   location: SavedLocation;
@@ -31,52 +32,117 @@ export default function LocationCard({ location, period }: LocationCardProps) {
   const [totalCrimes, setTotalCrimes] = useState(0);
   const [percentChange, setPercentChange] = useState(0);
   const [trend, setTrend] = useState<'up' | 'down' | 'stable'>('stable');
+  const { crimeData, loadDefaultData, getCrimesForLocation } = useCrimeData();
 
   useEffect(() => {
-    const fetchLocationData = async () => {
-      if (!location._id) return;
+    const calculateLocationData = () => {
+      if (!location.coordinates.lat || !location.coordinates.lng) {
+        setLoading(false);
+        return;
+      }
+
+      if (crimeData.isLoading) {
+        setLoading(true);
+        return;
+      }
+
+      if (!crimeData.items.length) {
+        if (!crimeData.isLoading) {
+          // Only trigger loading if not already in progress
+          loadDefaultData();
+        }
+        setLoading(true);
+        return;
+      }
 
       setLoading(true);
       setError(null);
 
       try {
-        // Fetch both stats and safety score in parallel
-        const [statsResponse, safetyResponse] = await Promise.all([
-          fetch(`/api/dashboard/stats?locationId=${location._id}&period=${period}`),
-          fetch(`/api/dashboard/safety-score?locationId=${location._id}`),
-        ]);
+        // Get crimes within radius of the location
+        const radiusKm = location.radius || 1.0;
+        const localCrimes = getCrimesForLocation(
+          location.coordinates.lat,
+          location.coordinates.lng,
+          radiusKm
+        );
 
-        if (!statsResponse.ok) {
-          throw new Error('Failed to fetch location stats');
+        // Filter by time period relative to the most recent data
+        // Find the most recent crime date in the dataset
+        const allDates = localCrimes
+          .map((crime) => parseInt(crime.DATE || '0'))
+          .filter((date) => date > 0);
+        const mostRecentDate = Math.max(...allDates);
+        const daysAgo = period === '7d' ? 7 : period === '30d' ? 30 : 90;
+        const cutoffTime = mostRecentDate - daysAgo * 24 * 60 * 60 * 1000;
+
+        const currentPeriodCrimes = localCrimes.filter((crime) => {
+          if (!crime.DATE) return false;
+          return parseInt(crime.DATE) >= cutoffTime;
+        });
+
+        // Calculate previous period for trend
+        const previousCutoffTime = cutoffTime - daysAgo * 24 * 60 * 60 * 1000;
+        const previousPeriodCrimes = localCrimes.filter((crime) => {
+          if (!crime.DATE) return false;
+          const crimeTime = parseInt(crime.DATE);
+          return crimeTime >= previousCutoffTime && crimeTime < cutoffTime;
+        });
+
+        const currentCount = currentPeriodCrimes.length;
+        const previousCount = previousPeriodCrimes.length;
+
+        // Calculate trend
+        let calculatedTrend: 'up' | 'down' | 'stable' = 'stable';
+        let calculatedPercentChange = 0;
+
+        if (previousCount > 0) {
+          calculatedPercentChange = Math.round(
+            ((currentCount - previousCount) / previousCount) * 100
+          );
+          if (calculatedPercentChange > 5) {
+            calculatedTrend = 'up';
+          } else if (calculatedPercentChange < -5) {
+            calculatedTrend = 'down';
+          }
+        } else if (currentCount > 0) {
+          calculatedTrend = 'up';
+          calculatedPercentChange = 100;
         }
 
-        if (!safetyResponse.ok) {
-          throw new Error('Failed to fetch safety score');
-        }
+        // Calculate safety score (inverse relationship with crime count)
+        // Higher crime count = lower safety score
+        const maxExpectedCrimes = 50; // Adjust based on your data
+        const crimeRatio = Math.min(currentCount / maxExpectedCrimes, 1);
+        const calculatedSafetyScore = Math.max(10, Math.round((1 - crimeRatio) * 100));
 
-        const statsData = await statsResponse.json();
-        const safetyData = await safetyResponse.json();
-
-        // Update state with real data
-        setTotalCrimes(statsData.stats.totalCrimes);
-        setPercentChange(statsData.stats.trendsData.percentChange);
-        setTrend(statsData.stats.trendsData.direction);
-        setSafetyScore(safetyData.safetyScore.score);
+        setTotalCrimes(currentCount);
+        setPercentChange(Math.abs(calculatedPercentChange));
+        setTrend(calculatedTrend);
+        setSafetyScore(calculatedSafetyScore);
       } catch (err: any) {
-        console.error('Error fetching location data:', err);
+        console.error('Error calculating location data:', err);
         setError(err.message);
-        // Fall back to mock data on error
-        setSafetyScore(78);
-        setTotalCrimes(24);
-        setPercentChange(-5);
-        setTrend('down');
+        setSafetyScore(0);
+        setTotalCrimes(0);
+        setPercentChange(0);
+        setTrend('stable');
       } finally {
         setLoading(false);
       }
     };
 
-    fetchLocationData();
-  }, [location._id, period]); // Re-fetch when location or period changes
+    calculateLocationData();
+  }, [
+    location.coordinates.lat,
+    location.coordinates.lng,
+    location.radius,
+    period,
+    crimeData.items,
+    crimeData.isLoading,
+    loadDefaultData,
+    getCrimesForLocation,
+  ]);
 
   const getSafetyColor = (score: number) => {
     if (score >= 80) return 'success';
@@ -103,9 +169,9 @@ export default function LocationCard({ location, period }: LocationCardProps) {
   };
 
   const periodLabel = {
-    '7d': 'Last 7 Days',
-    '30d': 'Last 30 Days',
-    '90d': 'Last 90 Days',
+    '7d': 'Past 7 Days',
+    '30d': 'Past 30 Days',
+    '90d': 'Past 90 Days',
   }[period];
 
   if (loading) {

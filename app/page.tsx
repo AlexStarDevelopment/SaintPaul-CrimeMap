@@ -1,6 +1,6 @@
 'use client';
 import dynamic from 'next/dynamic';
-import { ChangeEvent, useEffect, useState } from 'react';
+import { ChangeEvent, useEffect, useState, useMemo } from 'react';
 import { dataSelection } from './const';
 import { Crime } from '@/types';
 import DrawerBasic from './components/drawer';
@@ -12,6 +12,7 @@ import { Dayjs } from 'dayjs';
 import { Container, Card, CardContent, Box, Button, Typography } from '@mui/material';
 import { SelectChangeEvent } from '@mui/material/Select';
 import { useTheme } from '@mui/material/styles';
+import { useCrimeData } from './contexts/CrimeDataContext';
 
 // Declare gtag for TypeScript
 declare global {
@@ -26,6 +27,7 @@ const MyMap = dynamic(() => import('./components/map'), {
 
 export default function Home() {
   const theme = useTheme();
+  const { updateCrimeData } = useCrimeData();
 
   const handleClick = () => {
     // Track analytics event using modern gtag
@@ -60,7 +62,7 @@ export default function Home() {
   const [crimeType, setCrimeType] = useState('ALL');
   const [neighborhood, setNeighborhood] = useState('ALL');
 
-  const filteredItems = (): Crime[] => {
+  const filteredItems = useMemo((): Crime[] => {
     const filteredItems =
       crimeType === 'ALL'
         ? items
@@ -83,7 +85,7 @@ export default function Home() {
         ? filteredItemsStartDate
         : filteredItemsStartDate.filter((i) => Number(i.DATE) <= endDate.valueOf() + 86399000);
     return filteredItemsEndDate;
-  };
+  }, [items, crimeType, neighborhood, startDate, endDate]);
 
   useEffect(() => {
     const fetchCrimeData = async () => {
@@ -117,9 +119,26 @@ export default function Home() {
           });
         });
         setItems(crimesArray);
+
+        // Update shared crime data context
+        updateCrimeData({
+          items: crimesArray,
+          isLoading: false,
+          selectedMonth: selectedData.month,
+          selectedYear: selectedData.year,
+        });
       } catch (error) {
         console.error('Error fetching crime data:', error);
         setItems([]); // Clear items on error
+
+        // Update context with empty data on error
+        const selectedData = dataSelection.find((i) => i.id === option);
+        updateCrimeData({
+          items: [],
+          isLoading: false,
+          selectedMonth: selectedData?.month || '',
+          selectedYear: selectedData?.year || new Date().getFullYear(),
+        });
       } finally {
         setIsLoading(false);
       }
@@ -130,7 +149,7 @@ export default function Home() {
     setNeighborhood('ALL');
     setStartDate(null);
     setEndDate(null);
-  }, [currentPage, option]);
+  }, [currentPage, option, updateCrimeData]);
 
   return (
     <Box
@@ -210,7 +229,7 @@ export default function Home() {
                 },
               }}
             >
-              <MyMap items={filteredItems()} isLoading={isLoading} />
+              <MyMap items={filteredItems} isLoading={isLoading} />
             </Box>
           </CardContent>
         </Card>

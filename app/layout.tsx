@@ -10,6 +10,7 @@ import ThemeProvider from './components/ThemeProvider';
 import SessionProvider from './components/SessionProvider';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import GlobalHeader from './components/GlobalHeader';
+import { CrimeDataProvider } from './contexts/CrimeDataContext';
 
 // Cache warming disabled in layout to prevent multiple initializations
 // Cache warming will only run in production via the cacheWarming module itself
@@ -63,8 +64,10 @@ export default function RootLayout({
         <ErrorBoundary>
           <SessionProvider>
             <ThemeProvider>
-              <GlobalHeader />
-              {children}
+              <CrimeDataProvider>
+                <GlobalHeader />
+                {children}
+              </CrimeDataProvider>
             </ThemeProvider>
           </SessionProvider>
         </ErrorBoundary>
