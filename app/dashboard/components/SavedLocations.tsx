@@ -18,8 +18,6 @@ import {
   Home as HomeIcon,
   Work as WorkIcon,
   Place as PlaceIcon,
-  RadioButtonChecked as ActiveIcon,
-  RadioButtonUnchecked as InactiveIcon,
 } from '@mui/icons-material';
 import { SavedLocation, RADIUS_OPTIONS, SubscriptionTier } from '@/types';
 
@@ -53,11 +51,6 @@ export default function SavedLocations({
   const handleMenuClose = () => {
     setAnchorEl(null);
     setMenuLocation(null);
-  };
-
-  const handleToggleActive = (location: SavedLocation) => {
-    onUpdateLocation(location._id!, { isActive: !location.isActive });
-    handleMenuClose();
   };
 
   const handleDelete = async () => {
@@ -119,16 +112,7 @@ export default function SavedLocations({
                 {getLocationIcon(location.label)}
               </Box>
               <ListItemText
-                primary={
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Typography variant="subtitle1">{location.label}</Typography>
-                    {location.isActive ? (
-                      <ActiveIcon sx={{ fontSize: 16, color: 'success.main' }} />
-                    ) : (
-                      <InactiveIcon sx={{ fontSize: 16, color: 'text.disabled' }} />
-                    )}
-                  </Box>
-                }
+                primary={<Typography variant="subtitle1">{location.label}</Typography>}
                 secondary={
                   <Box>
                     <Typography variant="caption" display="block" noWrap>
@@ -163,9 +147,6 @@ export default function SavedLocations({
       </List>
 
       <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
-        <MenuItem onClick={() => menuLocation && handleToggleActive(menuLocation)}>
-          {menuLocation?.isActive ? 'Hide from Map' : 'Show on Map'}
-        </MenuItem>
         <MenuItem
           onClick={() => {
             // TODO: Implement edit functionality

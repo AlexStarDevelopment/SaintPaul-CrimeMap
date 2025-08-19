@@ -33,7 +33,7 @@ export default function AddLocation({ onAdd, onCancel, onSuccess }: AddLocationP
   const [label, setLabel] = useState('Home');
   const [customLabel, setCustomLabel] = useState('');
   const [address, setAddress] = useState('');
-  const [radius, setRadius] = useState(0.5);
+  const [radius, setRadius] = useState(0.25);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [coordinates, setCoordinates] = useState<{

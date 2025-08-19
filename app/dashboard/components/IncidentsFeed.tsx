@@ -157,6 +157,7 @@ export default function IncidentsFeed({ location, userTier, onViewOnMap }: Incid
   }, [
     location.coordinates.lat,
     location.coordinates.lng,
+    location.radius,
     crimeData.items,
     crimeData.isLoading,
     loadDefaultData,

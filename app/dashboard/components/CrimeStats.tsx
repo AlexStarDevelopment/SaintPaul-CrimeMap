@@ -182,6 +182,7 @@ export default function CrimeStats({ location, userTier }: CrimeStatsProps) {
   }, [
     location.coordinates.lat,
     location.coordinates.lng,
+    location.radius,
     period,
     crimeData.items,
     crimeData.isLoading,
