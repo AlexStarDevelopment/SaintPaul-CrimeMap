@@ -4,6 +4,7 @@ export interface FeatureFlag {
   key: string;
   description: string;
   enabled: boolean;
+  showInDev?: boolean; // Show only in development environment
   createdAt?: Date;
   updatedAt?: Date;
   // Optional: track who can see this feature
@@ -18,5 +19,6 @@ export const DEFAULT_FEATURE_FLAGS: Omit<FeatureFlag, '_id' | 'createdAt' | 'upd
     key: 'dashboard',
     description: 'Enable the user dashboard.',
     enabled: true,
+    showInDev: false, // Show in both dev and production
   },
 ];

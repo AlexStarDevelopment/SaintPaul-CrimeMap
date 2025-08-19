@@ -160,6 +160,32 @@ export default function AdminPage() {
     }
   };
 
+  const updateShowInDev = async (flagId: string, showInDev: boolean) => {
+    try {
+      setUpdatingFlagId(flagId);
+      const response = await fetch(`/api/admin/feature-flags/${flagId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ showInDev }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update feature flag');
+      }
+
+      const data = await response.json();
+
+      // Update local state
+      setFeatureFlags(featureFlags.map((flag) => (flag._id === flagId ? data.flag : flag)));
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Failed to update feature flag');
+    } finally {
+      setUpdatingFlagId(null);
+    }
+  };
+
   const cleanupFeatureFlags = async () => {
     if (
       !confirm(
@@ -427,19 +453,40 @@ export default function AdminPage() {
                       </div>
                     )}
                   </div>
-                  <button
-                    onClick={() => toggleFeatureFlag(flag._id!, flag.enabled)}
-                    disabled={updatingFlagId === flag._id}
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-                      flag.enabled ? 'bg-green-600' : 'bg-gray-200 dark:bg-gray-600'
-                    } ${updatingFlagId === flag._id ? 'opacity-50' : ''}`}
-                  >
-                    <span
-                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                        flag.enabled ? 'translate-x-6' : 'translate-x-1'
-                      }`}
-                    />
-                  </button>
+                  <div className="flex flex-col items-end gap-3">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-gray-600 dark:text-gray-400">Prod</span>
+                      <button
+                        onClick={() => toggleFeatureFlag(flag._id!, flag.enabled)}
+                        disabled={updatingFlagId === flag._id}
+                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                          flag.enabled ? 'bg-green-600' : 'bg-gray-200 dark:bg-gray-600'
+                        } ${updatingFlagId === flag._id ? 'opacity-50' : ''}`}
+                      >
+                        <span
+                          className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                            flag.enabled ? 'translate-x-6' : 'translate-x-1'
+                          }`}
+                        />
+                      </button>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-gray-600 dark:text-gray-400">Dev</span>
+                      <button
+                        onClick={() => updateShowInDev(flag._id!, !flag.showInDev)}
+                        disabled={updatingFlagId === flag._id}
+                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 ${
+                          flag.showInDev ? 'bg-orange-600' : 'bg-gray-200 dark:bg-gray-600'
+                        } ${updatingFlagId === flag._id ? 'opacity-50' : ''}`}
+                      >
+                        <span
+                          className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                            flag.showInDev ? 'translate-x-6' : 'translate-x-1'
+                          }`}
+                        />
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
             ))}

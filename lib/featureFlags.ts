@@ -24,12 +24,41 @@ export const initializeFeatureFlags = async (): Promise<void> => {
 
       await flags.insertMany(flagsToInsert);
       logger.info('Feature flags initialized with defaults');
+    } else {
+      // Migration: Add showInDev field to existing flags that don't have it
+      await migrateShowInDevField();
     }
 
     // Create index on key for fast lookups
     await flags.createIndex({ key: 1 }, { unique: true });
   } catch (error) {
     logger.error('Error initializing feature flags', error);
+  }
+};
+
+// Migration function to add showInDev field to existing flags
+export const migrateShowInDevField = async (): Promise<void> => {
+  try {
+    const client = await connectToDatabase();
+    const db = client.db();
+    const flags = db.collection('featureFlags');
+
+    // Update flags that don't have showInDev field
+    const result = await flags.updateMany(
+      { showInDev: { $exists: false } },
+      { 
+        $set: { 
+          showInDev: false, // Default to false for existing flags
+          updatedAt: new Date()
+        } 
+      }
+    );
+
+    if (result.modifiedCount > 0) {
+      logger.info(`Migrated ${result.modifiedCount} feature flags to include showInDev field`);
+    }
+  } catch (error) {
+    logger.error('Error migrating showInDev field', error);
   }
 };
 
@@ -139,8 +168,37 @@ export const updateFeatureFlag = async (
 // Get feature flags for a specific user
 export const getUserFeatureFlags = async (): Promise<Record<string, boolean>> => {
   try {
-    const dashboard = await isFeatureEnabled('dashboard');
-    return { dashboard };
+    const allFlags = await getAllFeatureFlags();
+    const isProduction = process.env.NODE_ENV === 'production';
+    
+    // Filter and process flags based on environment
+    const flagMap: Record<string, boolean> = {};
+    
+    allFlags.forEach(flag => {
+      if (isProduction) {
+        // In production: only show if enabled (showInDev doesn't matter)
+        if (flag.enabled) {
+          flagMap[flag.key] = true;
+        }
+      } else {
+        // In development: 
+        // - If showInDev is true, always show as enabled regardless of enabled flag
+        // - If showInDev is false, hide the flag completely
+        // - If showInDev is undefined, respect the enabled flag
+        if (flag.showInDev === true) {
+          flagMap[flag.key] = true; // Always enabled in dev
+        } else if (flag.showInDev === false) {
+          // Don't add to flagMap (hidden in dev)
+        } else {
+          // showInDev is undefined, respect enabled flag
+          if (flag.enabled) {
+            flagMap[flag.key] = true;
+          }
+        }
+      }
+    });
+    
+    return flagMap;
   } catch (error) {
     logger.error('Error getting user feature flags', error);
     return { dashboard: false } as Record<string, boolean>;
