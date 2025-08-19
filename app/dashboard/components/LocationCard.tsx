@@ -59,8 +59,8 @@ export default function LocationCard({ location, period }: LocationCardProps) {
       setError(null);
 
       try {
-        // Get crimes within radius of the location
-        const radiusKm = location.radius || 1.0;
+        // Get crimes within radius of the location (convert miles to km)
+        const radiusKm = (location.radius || 1.0) * 1.609344;
         const localCrimes = getCrimesForLocation(
           location.coordinates.lat,
           location.coordinates.lng,

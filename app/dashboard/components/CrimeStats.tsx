@@ -95,9 +95,8 @@ export default function CrimeStats({ location, userTier }: CrimeStatsProps) {
       setError(null);
 
       try {
-        // Get crimes within radius of the location
-        const radiusKm =
-          period === '7d' ? 0.5 : period === '30d' ? 1.0 : period === '90d' ? 1.5 : 2.0;
+        // Get crimes within the location's saved radius (convert miles to km)
+        const radiusKm = location.radius * 1.609344; // Convert miles to kilometers
         const localCrimes = getCrimesForLocation(
           location.coordinates.lat,
           location.coordinates.lng,

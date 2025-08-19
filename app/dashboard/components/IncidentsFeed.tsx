@@ -121,11 +121,12 @@ export default function IncidentsFeed({ location, userTier, onViewOnMap }: Incid
         return;
       }
 
-      // Get crimes within 1 mile radius of the location
+      // Get crimes within the location's saved radius (convert miles to km)
+      const radiusKm = location.radius * 1.609344;
       const localCrimes = getCrimesForLocation(
         location.coordinates.lat,
         location.coordinates.lng,
-        1.0
+        radiusKm
       );
 
       // Sort by date (most recent first) and limit to recent incidents
