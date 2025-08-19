@@ -5,6 +5,8 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { User, SubscriptionTier, SUBSCRIPTION_TIERS, FeatureFlag } from '@/types';
+import SupportDialog from '@/app/components/SupportDialog';
+import AccountBenefitsDialog from '@/app/components/AccountBenefitsDialog';
 
 export default function AdminPage() {
   const { data: session, status } = useSession();
@@ -21,6 +23,10 @@ export default function AdminPage() {
   const [flagsLoading, setFlagsLoading] = useState(true);
   const [updatingFlagId, setUpdatingFlagId] = useState<string | null>(null);
   const [cleanupLoading, setCleanupLoading] = useState(false);
+
+  // Dialog states
+  const [supportDialogOpen, setSupportDialogOpen] = useState(false);
+  const [accountDialogOpen, setAccountDialogOpen] = useState(false);
 
   const [error, setError] = useState<string | null>(null);
 
@@ -248,8 +254,28 @@ export default function AdminPage() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
       <div className="max-w-7xl mx-auto">
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Admin Dashboard</h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-2">Manage users and feature flags</p>
+          <div className="flex justify-between items-start">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Admin Dashboard</h1>
+              <p className="text-gray-600 dark:text-gray-400 mt-2">
+                Manage users and feature flags
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setSupportDialogOpen(true)}
+                className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+              >
+                Test Support Dialog
+              </button>
+              <button
+                onClick={() => setAccountDialogOpen(true)}
+                className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+              >
+                Test Account Dialog
+              </button>
+            </div>
+          </div>
         </div>
 
         {error && (
@@ -499,6 +525,9 @@ export default function AdminPage() {
             : `Total flags: ${featureFlags.length}`}
         </div>
       </div>
+
+      <SupportDialog open={supportDialogOpen} onClose={() => setSupportDialogOpen(false)} />
+      <AccountBenefitsDialog open={accountDialogOpen} onClose={() => setAccountDialogOpen(false)} />
     </div>
   );
 }

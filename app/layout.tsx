@@ -10,6 +10,7 @@ import ThemeProvider from './components/ThemeProvider';
 import SessionProvider from './components/SessionProvider';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import GlobalHeader from './components/GlobalHeader';
+import GlobalSupportDialog from './components/GlobalSupportDialog';
 import { CrimeDataProvider } from './contexts/CrimeDataContext';
 
 // Cache warming disabled in layout to prevent multiple initializations
@@ -67,6 +68,7 @@ export default function RootLayout({
               <CrimeDataProvider>
                 <GlobalHeader />
                 {children}
+                <GlobalSupportDialog />
               </CrimeDataProvider>
             </ThemeProvider>
           </SessionProvider>

@@ -15,7 +15,6 @@ import { useTheme } from '@mui/material/styles';
 import { useCrimeData } from './contexts/CrimeDataContext';
 import { useSession } from 'next-auth/react';
 import AccountBenefitsDialog from './components/AccountBenefitsDialog';
-import SupportDialog from './components/SupportDialog';
 
 // Declare gtag for TypeScript
 declare global {
@@ -66,7 +65,6 @@ export default function Home() {
   const [crimeType, setCrimeType] = useState('ALL');
   const [neighborhood, setNeighborhood] = useState('ALL');
   const [showAccountDialog, setShowAccountDialog] = useState(false);
-  const [showSupportDialog, setShowSupportDialog] = useState(false);
 
   const filteredItems = useMemo((): Crime[] => {
     const filteredItems =
@@ -112,32 +110,6 @@ export default function Home() {
     setShowAccountDialog(false);
     // Mark that user has seen the dialog so it doesn't show again
     localStorage.setItem('hasSeenAccountDialog', 'true');
-  };
-
-  // Show support dialog after 3 minutes
-  useEffect(() => {
-    const hasSeenSupportDialog = localStorage.getItem('hasSeenSupportDialog');
-    const lastSupportDialogDate = localStorage.getItem('lastSupportDialogDate');
-    const today = new Date().toDateString();
-
-    // Only show once per day and after user has been on site for 3 minutes
-    if (!hasSeenSupportDialog || lastSupportDialogDate !== today) {
-      const timer = setTimeout(
-        () => {
-          setShowSupportDialog(true);
-        },
-        3 * 60 * 1000
-      ); // 3 minutes in milliseconds
-
-      return () => clearTimeout(timer);
-    }
-  }, []);
-
-  const handleCloseSupportDialog = () => {
-    setShowSupportDialog(false);
-    // Mark that user has seen the dialog today
-    localStorage.setItem('hasSeenSupportDialog', 'true');
-    localStorage.setItem('lastSupportDialogDate', new Date().toDateString());
   };
 
   useEffect(() => {
@@ -664,9 +636,6 @@ export default function Home() {
 
       {/* Account Benefits Dialog */}
       <AccountBenefitsDialog open={showAccountDialog} onClose={handleCloseAccountDialog} />
-
-      {/* Support Dialog - Shows after 3 minutes */}
-      <SupportDialog open={showSupportDialog} onClose={handleCloseSupportDialog} />
     </Box>
   );
 }

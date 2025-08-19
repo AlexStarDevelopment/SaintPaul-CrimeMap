@@ -9,7 +9,6 @@ import {
   Button,
   Typography,
   Box,
-  LinearProgress,
 } from '@mui/material';
 import {
   Favorite as FavoriteIcon,
@@ -124,24 +123,10 @@ export default function SupportDialog({ open, onClose }: SupportDialogProps) {
         </Box>
 
         <Box sx={{ mb: 2 }}>
-          <Typography variant="caption" color="text.secondary" gutterBottom>
-            Community Support Progress
-          </Typography>
-          <LinearProgress
-            variant="determinate"
-            value={68}
-            sx={{
-              height: 8,
-              borderRadius: 4,
-              backgroundColor: 'grey.300',
-              '& .MuiLinearProgress-bar': {
-                backgroundColor: 'success.main',
-              },
-            }}
-          />
-          <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: 'block' }}>
-            100% of development and server costs are covered by me (Alex! Nice to meet you.), can
-            you help out?
+          <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center' }}>
+            100% of development and server costs are currently covered by me (Alex! Nice to meet
+            you.), but your support helps ensure this resource continues to grow and improve for our
+            community.
           </Typography>
         </Box>
 
