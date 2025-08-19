@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
 import { Crime } from '@/types';
+import { dataSelection } from '../const';
 
 interface CrimeDataState {
   items: Crime[];
@@ -130,7 +131,7 @@ export function CrimeDataProvider({ children }: CrimeDataProviderProps) {
       setCrimeData((prev) => ({ ...prev, isLoading: true }));
 
       // Use the same default data selection as the main page (first item = most recent)
-      const defaultSelection = { month: 'june', year: 2025 }; // Most recent data
+      const defaultSelection = dataSelection[0]; // Most recent data from dropdown
 
       // Get total crimes first to determine pagination
       const totalResponse = await fetch(

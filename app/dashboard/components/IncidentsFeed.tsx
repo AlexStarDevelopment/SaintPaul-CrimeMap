@@ -68,7 +68,7 @@ export default function IncidentsFeed({ location, userTier, onViewOnMap }: Incid
   const [incidents, setIncidents] = useState<Crime[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { crimeData, loadDefaultData, getCrimesForLocation } = useCrimeData();
+  const { crimeData, getCrimesForLocation } = useCrimeData();
 
   // Generate mock incidents for display
   const generateMockIncidents = useCallback((): Crime[] => {
@@ -113,11 +113,7 @@ export default function IncidentsFeed({ location, userTier, onViewOnMap }: Incid
       }
 
       if (!crimeData.items.length) {
-        if (!crimeData.isLoading) {
-          // Only trigger loading if not already in progress
-          loadDefaultData();
-        }
-        setLoading(true);
+        setLoading(false);
         return;
       }
 
@@ -160,7 +156,6 @@ export default function IncidentsFeed({ location, userTier, onViewOnMap }: Incid
     location.radius,
     crimeData.items,
     crimeData.isLoading,
-    loadDefaultData,
     getCrimesForLocation,
   ]);
 
@@ -276,7 +271,7 @@ export default function IncidentsFeed({ location, userTier, onViewOnMap }: Incid
                       secondary={
                         <Box>
                           <Typography variant="caption" display="block" color="text.secondary">
-                            {incident.BLOCK}
+                            {incident.BLOCK_VIEW}
                           </Typography>
                           <Box
                             sx={{

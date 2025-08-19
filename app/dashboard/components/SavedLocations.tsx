@@ -25,9 +25,10 @@ interface SavedLocationsProps {
   locations: SavedLocation[];
   selectedLocation: SavedLocation | null;
   onSelectLocation: (location: SavedLocation) => void;
-  onUpdateLocation: (id: string, updates: Partial<SavedLocation>) => void;
+  onUpdateLocation: (id: string, updates: Partial<SavedLocation>) => Promise<void>;
   onDeleteLocation: (id: string) => Promise<void>;
   userTier: SubscriptionTier;
+  onEditLocation?: (location: SavedLocation) => void;
 }
 
 export default function SavedLocations({
@@ -37,6 +38,7 @@ export default function SavedLocations({
   onUpdateLocation,
   onDeleteLocation,
   userTier,
+  onEditLocation,
 }: SavedLocationsProps) {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [menuLocation, setMenuLocation] = React.useState<SavedLocation | null>(null);
@@ -149,7 +151,9 @@ export default function SavedLocations({
       <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
         <MenuItem
           onClick={() => {
-            // TODO: Implement edit functionality
+            if (menuLocation && onEditLocation) {
+              onEditLocation(menuLocation);
+            }
             handleMenuClose();
           }}
         >

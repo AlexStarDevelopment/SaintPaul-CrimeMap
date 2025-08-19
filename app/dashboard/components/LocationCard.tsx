@@ -32,7 +32,7 @@ export default function LocationCard({ location, period }: LocationCardProps) {
   const [totalCrimes, setTotalCrimes] = useState(0);
   const [percentChange, setPercentChange] = useState(0);
   const [trend, setTrend] = useState<'up' | 'down' | 'stable'>('stable');
-  const { crimeData, loadDefaultData, getCrimesForLocation } = useCrimeData();
+  const { crimeData, getCrimesForLocation } = useCrimeData();
 
   useEffect(() => {
     const calculateLocationData = () => {
@@ -47,11 +47,7 @@ export default function LocationCard({ location, period }: LocationCardProps) {
       }
 
       if (!crimeData.items.length) {
-        if (!crimeData.isLoading) {
-          // Only trigger loading if not already in progress
-          loadDefaultData();
-        }
-        setLoading(true);
+        setLoading(false);
         return;
       }
 
@@ -140,7 +136,6 @@ export default function LocationCard({ location, period }: LocationCardProps) {
     period,
     crimeData.items,
     crimeData.isLoading,
-    loadDefaultData,
     getCrimesForLocation,
   ]);
 

@@ -50,7 +50,7 @@ export default function CrimeStats({ location, userTier }: CrimeStatsProps) {
   const [loading, setLoading] = useState(false);
   const [stats, setStats] = useState<StatsShape | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const { crimeData, loadDefaultData, getCrimesForLocation, getCrimeStats } = useCrimeData();
+  const { crimeData, getCrimesForLocation, getCrimeStats } = useCrimeData();
 
   const handlePeriodChange = (
     event: React.MouseEvent<HTMLElement>,
@@ -83,11 +83,7 @@ export default function CrimeStats({ location, userTier }: CrimeStatsProps) {
       }
 
       if (!crimeData.items.length) {
-        if (!crimeData.isLoading) {
-          // Only trigger loading if not already in progress
-          loadDefaultData();
-        }
-        setLoading(true);
+        setLoading(false);
         return;
       }
 
@@ -186,7 +182,6 @@ export default function CrimeStats({ location, userTier }: CrimeStatsProps) {
     period,
     crimeData.items,
     crimeData.isLoading,
-    loadDefaultData,
     getCrimesForLocation,
     getCrimeStats,
   ]);

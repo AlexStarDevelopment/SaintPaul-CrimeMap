@@ -5,6 +5,9 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useRequireAuth } from '../hooks/useRequireAuth';
 import { useFeatureFlags } from '../hooks/useFeatureFlags';
+import { dataSelection } from '../const';
+import { getCrimes, getTotalCrimes } from '../api/getCrimes';
+import { useCrimeData } from '../contexts/CrimeDataContext';
 import {
   Container,
   Box,
@@ -31,6 +34,7 @@ import LocationCard from './components/LocationCard';
 import CrimeStats from './components/CrimeStats';
 import IncidentsFeed from './components/IncidentsFeed';
 import AddLocation from './components/AddLocation';
+import EditLocation from './components/EditLocation';
 import { SavedLocation, LOCATION_LIMITS } from '@/types';
 
 export default function DashboardPage() {
@@ -38,17 +42,82 @@ export default function DashboardPage() {
   const router = useRouter();
   const theme = useTheme();
   const { flags, isEnabled, loading: flagsLoading } = useFeatureFlags();
+  const { updateCrimeData } = useCrimeData();
+
   // Redirect away if dashboard is disabled
   useEffect(() => {
     if (!flagsLoading && !isEnabled('dashboard')) {
       router.push('/');
     }
   }, [flagsLoading, flags, isEnabled, router]);
+
   const [locations, setLocations] = useState<SavedLocation[]>([]);
   const [locationsLoading, setLocationsLoading] = useState(true);
+  const [crimeDataLoading, setCrimeDataLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedLocation, setSelectedLocation] = useState<SavedLocation | null>(null);
   const [tabValue, setTabValue] = useState(0);
+  const [editingLocation, setEditingLocation] = useState<SavedLocation | null>(null);
+
+  // Fetch crime data using the same method as the main page
+  const fetchCrimeData = useCallback(async () => {
+    setCrimeDataLoading(true);
+    try {
+      // Use All 2025 dataset for dashboard
+      const dashboardData = dataSelection.find(
+        (data) => data.month === 'all' && data.year === 2025
+      );
+
+      if (!dashboardData) {
+        console.error('All 2025 data selection not found.');
+        setCrimeDataLoading(false);
+        return;
+      }
+
+      const totalCrimesResponse = await getTotalCrimes(
+        dashboardData.month,
+        dashboardData.year,
+        20000
+      );
+
+      const numPages = totalCrimesResponse.totalPages;
+      const promises = [];
+
+      for (let i = 1; i <= numPages; i++) {
+        promises.push(getCrimes(dashboardData.month, dashboardData.year, i, 20000));
+      }
+
+      const allCrimesResponses = await Promise.all(promises);
+      const crimesArray = [];
+      allCrimesResponses.forEach((res) => {
+        res.crimes.forEach((crime) => {
+          crimesArray.push(crime);
+        });
+      });
+
+      // Update shared crime data context
+      updateCrimeData({
+        items: crimesArray,
+        isLoading: false,
+        selectedMonth: dashboardData.month,
+        selectedYear: dashboardData.year,
+      });
+    } catch (error) {
+      console.error('Error fetching crime data:', error);
+      // Update context with empty data on error
+      const dashboardData = dataSelection.find(
+        (data) => data.month === 'all' && data.year === 2025
+      );
+      updateCrimeData({
+        items: [],
+        isLoading: false,
+        selectedMonth: dashboardData?.month || 'all',
+        selectedYear: dashboardData?.year || 2025,
+      });
+    } finally {
+      setCrimeDataLoading(false);
+    }
+  }, [updateCrimeData]);
 
   const fetchLocations = useCallback(async () => {
     try {
@@ -74,8 +143,9 @@ export default function DashboardPage() {
   useEffect(() => {
     if (authenticated && session?.user?.id) {
       fetchLocations();
+      fetchCrimeData();
     }
-  }, [authenticated, session, fetchLocations]);
+  }, [authenticated, session, fetchLocations, fetchCrimeData]);
 
   const handleAddLocation = async (
     locationData: Omit<SavedLocation, '_id' | 'userId' | 'createdAt' | 'updatedAt'>
@@ -146,6 +216,11 @@ export default function DashboardPage() {
     }
   };
 
+  const handleEditLocation = (location: SavedLocation) => {
+    setEditingLocation(location);
+    setTabValue(2); // Switch to edit tab
+  };
+
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     if (newValue === 0) {
       router.push('/');
@@ -154,7 +229,7 @@ export default function DashboardPage() {
     }
   };
 
-  if (authLoading || locationsLoading) {
+  if (authLoading || locationsLoading || crimeDataLoading) {
     return (
       <Container maxWidth="xl" sx={{ mt: 4, display: 'flex', justifyContent: 'center' }}>
         <CircularProgress />
@@ -238,6 +313,7 @@ export default function DashboardPage() {
               <Tabs value={tabValue} onChange={(e, v) => setTabValue(v)} variant="fullWidth">
                 <Tab label="My Locations" />
                 <Tab label="Add New" disabled={!canAddMore} />
+                <Tab label="Edit" disabled={!editingLocation} />
               </Tabs>
               <Box sx={{ mt: 2 }}>
                 {tabValue === 0 ? (
@@ -248,14 +324,28 @@ export default function DashboardPage() {
                     onUpdateLocation={handleUpdateLocation}
                     onDeleteLocation={handleDeleteLocation}
                     userTier={userTier}
+                    onEditLocation={handleEditLocation}
                   />
-                ) : (
+                ) : tabValue === 1 ? (
                   <AddLocation
                     onAdd={handleAddLocation}
                     onCancel={() => setTabValue(0)}
                     onSuccess={() => setTabValue(0)}
                   />
-                )}
+                ) : editingLocation ? (
+                  <EditLocation
+                    location={editingLocation}
+                    onUpdate={handleUpdateLocation}
+                    onCancel={() => {
+                      setEditingLocation(null);
+                      setTabValue(0);
+                    }}
+                    onSuccess={() => {
+                      setEditingLocation(null);
+                      setTabValue(0);
+                    }}
+                  />
+                ) : null}
               </Box>
             </Paper>
           </Grid>
