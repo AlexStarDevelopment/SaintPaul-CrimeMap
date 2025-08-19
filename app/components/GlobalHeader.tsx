@@ -87,7 +87,7 @@ export default function GlobalHeader() {
           >
             <Typography
               variant="h6"
-              component="div"
+              component="h1"
               sx={{
                 fontWeight: 'bold',
                 textShadow: '0 2px 4px rgba(0,0,0,0.1)',

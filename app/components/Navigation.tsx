@@ -82,13 +82,13 @@ export default function Navigation({ option, onOptionChange, onFilterClick }: Na
           }}
         >
           <Typography
-            variant="h5"
-            component="div"
+            variant="h6"
+            component="h1"
             sx={{
               fontWeight: 'bold',
               color: muiTheme.palette.primary.contrastText,
               textShadow: '0 2px 4px rgba(0,0,0,0.1)',
-              fontSize: { xs: '1.25rem', sm: '1.5rem' },
+              fontSize: { xs: '1.1rem', sm: '1.25rem' },
               textAlign: { xs: 'center', sm: 'left' },
               mb: { xs: 1, sm: 0 },
             }}

@@ -183,9 +183,9 @@ export default function Home() {
         )}
 
         {/* Map Card */}
-        <Card sx={{ mb: { xs: 2, sm: 3 } }}>
+        <Card sx={{ mb: { xs: 1, sm: 1.5 } }}>
           {/* Less margin on mobile */}
-          <CardContent sx={{ p: 0 }}>
+          <CardContent sx={{ p: 0, '&:last-child': { pb: 0 } }}>
             <Box
               sx={{
                 display: 'flex',
@@ -222,14 +222,22 @@ export default function Home() {
           </Typography>
           <Button
             variant="outlined"
-            color="primary"
             onClick={handleClick}
-            size="medium"
             sx={{
-              fontSize: { xs: '0.8rem', sm: '0.9rem' },
-              px: { xs: 2, sm: 2.5 },
-              py: { xs: 0.75, sm: 1 },
-              borderRadius: 2,
+              borderColor: (theme) => theme.palette.mode === 'light' 
+                ? 'rgba(0, 0, 0, 0.23)' 
+                : 'rgba(255, 255, 255, 0.5)',
+              color: (theme) => theme.palette.mode === 'light'
+                ? theme.palette.text.primary
+                : 'white',
+              '&:hover': {
+                borderColor: (theme) => theme.palette.mode === 'light'
+                  ? theme.palette.primary.main
+                  : 'white',
+                backgroundColor: (theme) => theme.palette.mode === 'light'
+                  ? 'rgba(0, 0, 0, 0.04)'
+                  : 'rgba(255, 255, 255, 0.1)',
+              },
             }}
           >
             Support This Resource
@@ -355,19 +363,24 @@ export default function Home() {
               }}
             >
               <Button
-                variant="contained"
-                color="primary"
+                variant="outlined"
                 onClick={handleClick}
                 size="large"
                 sx={{
-                  fontSize: { xs: '1rem', sm: '1.1rem' },
-                  px: { xs: 3, sm: 4 },
-                  py: { xs: 1.5, sm: 2 },
-                  fontWeight: 'bold',
-                  minWidth: { xs: '100%', sm: '200px' },
-                  backgroundColor: 'primary.light',
+                  minWidth: { xs: '100%', sm: '250px' },
+                  borderColor: (theme) => theme.palette.mode === 'light' 
+                    ? 'rgba(0, 0, 0, 0.23)' 
+                    : 'rgba(255, 255, 255, 0.5)',
+                  color: (theme) => theme.palette.mode === 'light'
+                    ? theme.palette.text.primary
+                    : 'white',
                   '&:hover': {
-                    backgroundColor: 'primary.dark',
+                    borderColor: (theme) => theme.palette.mode === 'light'
+                      ? theme.palette.primary.main
+                      : 'white',
+                    backgroundColor: (theme) => theme.palette.mode === 'light'
+                      ? 'rgba(0, 0, 0, 0.04)'
+                      : 'rgba(255, 255, 255, 0.1)',
                   },
                 }}
               >

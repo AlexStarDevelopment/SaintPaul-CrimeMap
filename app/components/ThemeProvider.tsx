@@ -48,9 +48,8 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     if (session?.user?.theme) {
       setCurrentTheme(session.user.theme);
     } else {
-      // Check for system preference if no user theme is set
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      setCurrentTheme(prefersDark ? 'dark' : 'light');
+      // Default to light theme if no user preference is set
+      setCurrentTheme('light');
     }
   }, [session]);
 

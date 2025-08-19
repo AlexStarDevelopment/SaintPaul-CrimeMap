@@ -62,14 +62,14 @@ export const sageTheme = createTheme({
   palette: {
     mode: 'dark',
     primary: {
-      main: '#7cb342',
-      light: '#aed581',
-      dark: '#558b2f',
+      main: '#2d3f2d',  // Very dark green, almost black
+      light: '#3a4f3a', // Slightly lighter but still very dark
+      dark: '#1a2a1a',  // Even darker, nearly black
     },
     secondary: {
-      main: '#66bb6a',
-      light: '#98ee99',
-      dark: '#338a3e',
+      main: '#263326',  // Very dark green
+      light: '#334433', // Dark muted green
+      dark: '#0d1a0d',  // Almost black with green tint
     },
     background: {
       default: '#1e2e2e',
@@ -86,10 +86,10 @@ export const sageTheme = createTheme({
       main: '#ffd93d',
     },
     info: {
-      main: '#6bcf7f',
+      main: '#4a5f4a',  // Muted dark green
     },
     success: {
-      main: '#51cf66',
+      main: '#3d4f3d',  // Dark muted green
     },
   },
   typography: {
