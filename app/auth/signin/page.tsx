@@ -4,8 +4,12 @@ import { signIn } from 'next-auth/react';
 import { Button, Card, CardContent, Typography, Box } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGoogle } from '@fortawesome/free-brands-svg-icons';
+import { useRouter } from 'next/navigation';
+import { ArrowBack } from '@mui/icons-material';
 
 export default function SignInPage() {
+  const router = useRouter();
+
   return (
     <Box
       sx={{
@@ -18,6 +22,17 @@ export default function SignInPage() {
     >
       <Card sx={{ maxWidth: 400, width: '100%', m: 2 }}>
         <CardContent sx={{ p: 4 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+            <Button
+              variant="text"
+              startIcon={<ArrowBack />}
+              onClick={() => router.push('/')}
+              sx={{ color: 'text.secondary' }}
+            >
+              Return to Map
+            </Button>
+          </Box>
+          
           <Typography variant="h4" gutterBottom align="center">
             Sign In
           </Typography>

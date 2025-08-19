@@ -13,6 +13,8 @@ import { Container, Card, CardContent, Box, Button, Typography } from '@mui/mate
 import { SelectChangeEvent } from '@mui/material/Select';
 import { useTheme } from '@mui/material/styles';
 import { useCrimeData } from './contexts/CrimeDataContext';
+import { useSession } from 'next-auth/react';
+import AccountBenefitsDialog from './components/AccountBenefitsDialog';
 
 // Declare gtag for TypeScript
 declare global {
@@ -28,6 +30,7 @@ const MyMap = dynamic(() => import('./components/map'), {
 export default function Home() {
   const theme = useTheme();
   const { updateCrimeData } = useCrimeData();
+  const { data: session, status } = useSession();
 
   const handleClick = () => {
     // Track analytics event using modern gtag
@@ -61,6 +64,7 @@ export default function Home() {
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [crimeType, setCrimeType] = useState('ALL');
   const [neighborhood, setNeighborhood] = useState('ALL');
+  const [showAccountDialog, setShowAccountDialog] = useState(false);
 
   const filteredItems = useMemo((): Crime[] => {
     const filteredItems =
@@ -86,6 +90,27 @@ export default function Home() {
         : filteredItemsStartDate.filter((i) => Number(i.DATE) <= endDate.valueOf() + 86399000);
     return filteredItemsEndDate;
   }, [items, crimeType, neighborhood, startDate, endDate]);
+
+  // Show account benefits dialog for new, non-signed-in users
+  useEffect(() => {
+    // Only show if user is not signed in and hasn't seen the dialog before
+    if (status !== 'loading' && !session) {
+      const hasSeenDialog = localStorage.getItem('hasSeenAccountDialog');
+      if (!hasSeenDialog) {
+        // Delay showing the dialog slightly to let the page load
+        const timer = setTimeout(() => {
+          setShowAccountDialog(true);
+        }, 1500);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [session, status]);
+
+  const handleCloseAccountDialog = () => {
+    setShowAccountDialog(false);
+    // Mark that user has seen the dialog so it doesn't show again
+    localStorage.setItem('hasSeenAccountDialog', 'true');
+  };
 
   useEffect(() => {
     const fetchCrimeData = async () => {
@@ -163,6 +188,7 @@ export default function Home() {
         option={option}
         onOptionChange={handleOptionChange}
         onFilterClick={() => setIsFiltersOpen(true)}
+        currentPage="map"
       />
 
       {/* Main Content */}
@@ -600,6 +626,12 @@ export default function Home() {
           </CardContent>
         </Card>
       </Container>
+
+      {/* Account Benefits Dialog */}
+      <AccountBenefitsDialog
+        open={showAccountDialog}
+        onClose={handleCloseAccountDialog}
+      />
     </Box>
   );
 }
