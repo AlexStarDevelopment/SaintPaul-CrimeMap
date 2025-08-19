@@ -35,7 +35,7 @@ import CrimeStats from './components/CrimeStats';
 import IncidentsFeed from './components/IncidentsFeed';
 import AddLocation from './components/AddLocation';
 import EditLocation from './components/EditLocation';
-import { SavedLocation, LOCATION_LIMITS } from '@/types';
+import { SavedLocation, LOCATION_LIMITS, Crime } from '@/types';
 
 export default function DashboardPage() {
   const { session, loading: authLoading, authenticated } = useRequireAuth();
@@ -88,7 +88,7 @@ export default function DashboardPage() {
       }
 
       const allCrimesResponses = await Promise.all(promises);
-      const crimesArray = [];
+      const crimesArray: Crime[] = [];
       allCrimesResponses.forEach((res) => {
         res.crimes.forEach((crime) => {
           crimesArray.push(crime);

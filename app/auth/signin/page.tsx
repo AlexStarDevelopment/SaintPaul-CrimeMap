@@ -22,7 +22,9 @@ export default function SignInPage() {
     >
       <Card sx={{ maxWidth: 400, width: '100%', m: 2 }}>
         <CardContent sx={{ p: 4 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+          <Box
+            sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}
+          >
             <Button
               variant="text"
               startIcon={<ArrowBack />}
@@ -32,7 +34,7 @@ export default function SignInPage() {
               Return to Map
             </Button>
           </Box>
-          
+
           <Typography variant="h4" gutterBottom align="center">
             Sign In
           </Typography>

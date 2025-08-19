@@ -39,12 +39,14 @@ export default function AccountBenefitsDialog({ open, onClose }: AccountBenefits
     {
       icon: <DashboardIcon sx={{ color: 'primary.main' }} />,
       title: 'Personal Crime Dashboard',
-      description: 'Save multiple locations and get detailed crime statistics for areas you care about',
+      description:
+        'Save multiple locations and get detailed crime statistics for areas you care about',
     },
     {
       icon: <BookmarkIcon sx={{ color: 'secondary.main' }} />,
       title: 'Save Your Locations',
-      description: 'Track crime activity around your home, work, or any location that matters to you',
+      description:
+        'Track crime activity around your home, work, or any location that matters to you',
     },
     {
       icon: <PaletteIcon sx={{ color: 'info.main' }} />,
@@ -59,7 +61,8 @@ export default function AccountBenefitsDialog({ open, onClose }: AccountBenefits
     {
       icon: <NotificationsIcon sx={{ color: 'warning.main' }} />,
       title: 'Enhanced Features (Coming Soon)',
-      description: 'Get notified about crime activity in your saved locations and more premium features',
+      description:
+        'Get notified about crime activity in your saved locations and more premium features',
     },
   ];
 
@@ -103,7 +106,8 @@ export default function AccountBenefitsDialog({ open, onClose }: AccountBenefits
             Why Create an Account?
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-            The crime map is completely free to use, but an account unlocks powerful personalized features:
+            The crime map is completely free to use, but an account unlocks powerful personalized
+            features:
           </Typography>
         </Box>
 
@@ -111,9 +115,7 @@ export default function AccountBenefitsDialog({ open, onClose }: AccountBenefits
           {benefits.map((benefit, index) => (
             <React.Fragment key={index}>
               <ListItem sx={{ px: 0, py: 1.5 }}>
-                <ListItemIcon sx={{ minWidth: 40 }}>
-                  {benefit.icon}
-                </ListItemIcon>
+                <ListItemIcon sx={{ minWidth: 40 }}>{benefit.icon}</ListItemIcon>
                 <ListItemText
                   primary={
                     <Typography variant="subtitle2" fontWeight="medium">
@@ -131,20 +133,19 @@ export default function AccountBenefitsDialog({ open, onClose }: AccountBenefits
             </React.Fragment>
           ))}
         </List>
-
       </DialogContent>
 
       <DialogActions sx={{ px: 3, pb: 3, pt: 1, gap: 1 }}>
         <Button
           onClick={onClose}
           variant="outlined"
-          sx={{ 
+          sx={{
             flex: 1,
             color: 'text.secondary',
             borderColor: 'divider',
             '&:hover': {
               borderColor: 'text.secondary',
-            }
+            },
           }}
         >
           No Thanks, Continue
@@ -153,7 +154,7 @@ export default function AccountBenefitsDialog({ open, onClose }: AccountBenefits
           onClick={handleCreateAccount}
           variant="contained"
           size="large"
-          sx={{ 
+          sx={{
             flex: 1,
             fontWeight: 'bold',
             py: 1.5,

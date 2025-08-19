@@ -628,10 +628,7 @@ export default function Home() {
       </Container>
 
       {/* Account Benefits Dialog */}
-      <AccountBenefitsDialog
-        open={showAccountDialog}
-        onClose={handleCloseAccountDialog}
-      />
+      <AccountBenefitsDialog open={showAccountDialog} onClose={handleCloseAccountDialog} />
     </Box>
   );
 }
