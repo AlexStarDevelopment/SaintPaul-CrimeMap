@@ -310,7 +310,8 @@ export default function IncidentsFeed({ location, userTier, onViewOnMap }: Incid
 
           {userTier === 'free' && incidents.length > 5 && (
             <Alert severity="info" sx={{ mt: 2 }}>
-              Showing 5 most recent incidents. Upgrade to see more incidents and get alerts (coming soon).
+              Showing 5 most recent incidents. Upgrade to see more incidents and get alerts (coming
+              soon).
             </Alert>
           )}
         </>

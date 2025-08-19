@@ -57,27 +57,27 @@ export const darkTheme = createTheme({
   },
 });
 
-// Sage Theme (VS Code inspired)
+// Sage Theme (Modern sage green theme)
 export const sageTheme = createTheme({
   palette: {
     mode: 'dark',
     primary: {
-      main: '#2d3f2d', // Very dark green, almost black
-      light: '#3a4f3a', // Slightly lighter but still very dark
-      dark: '#1a2a1a', // Even darker, nearly black
+      main: '#7fb069', // Sage green
+      light: '#9bc786', // Light sage
+      dark: '#5d8a4a', // Darker sage
     },
     secondary: {
-      main: '#263326', // Very dark green
-      light: '#334433', // Dark muted green
-      dark: '#0d1a0d', // Almost black with green tint
+      main: '#a8dadc', // Soft blue-green
+      light: '#c5e7e8', // Light mint
+      dark: '#7fb5b8', // Darker mint
     },
     background: {
-      default: '#1e2e2e',
-      paper: '#263838',
+      default: '#1a1f1a', // Dark green-gray background
+      paper: '#242b24', // Slightly lighter green-gray
     },
     text: {
-      primary: '#d4e5d4',
-      secondary: '#a8c7a8',
+      primary: '#e8f3e8', // Very light green-white
+      secondary: '#b8d4b8', // Light sage for secondary text
     },
     error: {
       main: '#ff6b6b',
@@ -86,10 +86,10 @@ export const sageTheme = createTheme({
       main: '#ffd93d',
     },
     info: {
-      main: '#4a5f4a', // Muted dark green
+      main: '#7fb069', // Sage green for info
     },
     success: {
-      main: '#3d4f3d', // Dark muted green
+      main: '#66bb6a', // Vibrant green for success
     },
   },
   typography: {
@@ -231,7 +231,7 @@ export const themeMetadata: Record<ThemeType, { name: string; description: strin
   },
   sage: {
     name: 'Sage',
-    description: 'Sage inspired theme with green accents',
+    description: 'Modern sage green theme with improved contrast',
   },
   slate: {
     name: 'Slate',

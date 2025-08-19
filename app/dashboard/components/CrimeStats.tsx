@@ -257,7 +257,8 @@ export default function CrimeStats({ location, userTier }: CrimeStatsProps) {
       {/* Upgrade prompt for free users */}
       {userTier === 'free' && (
         <Alert severity="info" sx={{ mb: 2 }}>
-          Upgrade to Supporter or Pro to access longer time periods and detailed analytics (coming soon)
+          Upgrade to Supporter or Pro to access longer time periods and detailed analytics (coming
+          soon)
         </Alert>
       )}
 

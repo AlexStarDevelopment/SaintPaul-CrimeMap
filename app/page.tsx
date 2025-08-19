@@ -473,6 +473,13 @@ export default function Home() {
               commitment to Saint Paul&apos;s most reliable crime data resource:
             </Typography>
             <Typography variant="body2" sx={{ mb: 1 }}>
+              08/19/25 4.0.0 - MAJOR UPDATE: Personal Crime Dashboard! Save up to 2 locations (more
+              coming soon), track crime statistics with safety scores, view recent incidents in your
+              areas, and monitor crime trends. Plus: Improved navigation with compact mobile design,
+              new account benefits dialog, foundation for upcoming subscription features. The most
+              comprehensive update yet!
+            </Typography>
+            <Typography variant="body2" sx={{ mb: 1 }}>
               08/18/25 3.1.1 - Small bug fixes to account themes.
             </Typography>
             <Typography variant="body2" sx={{ mb: 1 }}>
