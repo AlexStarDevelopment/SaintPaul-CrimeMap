@@ -45,7 +45,13 @@ export default function SignInPage() {
           <Button
             fullWidth
             variant="contained"
-            onClick={() => signIn('google', { callbackUrl: '/' })}
+            onClick={() => {
+              console.log('Sign in with Google button clicked');
+              signIn('google', { callbackUrl: '/' }).catch((error) => {
+                console.error('Sign in error:', error);
+                alert('Sign in failed. Please check the console for details.');
+              });
+            }}
             startIcon={<FontAwesomeIcon icon={faGoogle} />}
             sx={{ mb: 3, py: 1.5 }}
           >

@@ -63,7 +63,7 @@ export default function CrimeStats({ location, userTier }: CrimeStatsProps) {
 
   // Check what periods are available for user tier
   const availablePeriods: Record<SubscriptionTier, PeriodType[]> = {
-    free: ['7d'],
+    free: ['7d', '30d'],
     supporter: ['7d', '30d'],
     pro: ['7d', '30d', '90d', '1y'],
   };

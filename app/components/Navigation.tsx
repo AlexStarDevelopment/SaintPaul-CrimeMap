@@ -168,7 +168,12 @@ export default function Navigation({
                 <Button
                   variant="outlined"
                   startIcon={<AccountCircle />}
-                  onClick={() => signIn()}
+                  onClick={() => {
+                    console.log('Sign in button clicked - mobile');
+                    signIn('google', { callbackUrl: window.location.origin }).catch((error) => {
+                      console.error('Sign in error:', error);
+                    });
+                  }}
                   size="small"
                   sx={{
                     color: 'white',
@@ -376,7 +381,12 @@ export default function Navigation({
                 <Button
                   variant="outlined"
                   startIcon={<AccountCircle />}
-                  onClick={() => signIn()}
+                  onClick={() => {
+                    console.log('Sign in button clicked - desktop');
+                    signIn('google', { callbackUrl: window.location.origin }).catch((error) => {
+                      console.error('Sign in error:', error);
+                    });
+                  }}
                   sx={{
                     color: 'white',
                     borderColor: 'rgba(255, 255, 255, 0.5)',

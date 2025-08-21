@@ -9,12 +9,20 @@ export const getUserById = async (id: string): Promise<User | null> => {
     const db = client.db(); // Use default database from connection string
     const users = db.collection('users');
 
-    // Try to find user by ObjectId
+    // NextAuth passes hex string IDs, which should be converted to ObjectId
     let user = null;
-    try {
-      user = (await users.findOne({ _id: new ObjectId(id) })) as User | null;
-    } catch (e) {
-      // If ObjectId conversion fails, try string id
+
+    // If ID is 24 characters (hex string), convert to ObjectId
+    if (id.length === 24) {
+      try {
+        user = (await users.findOne({ _id: new ObjectId(id) })) as User | null;
+      } catch (e: any) {
+        // ObjectId conversion failed, continue to try as string
+      }
+    }
+
+    // If not found and not a hex string, try as-is (legacy string IDs)
+    if (!user) {
       user = (await users.findOne({ _id: id as any })) as User | null;
     }
 
@@ -230,19 +238,53 @@ export const updateUserTier = async (
     const db = client.db();
     const users = db.collection('users');
 
-    const result = await users.findOneAndUpdate(
-      { _id: new ObjectId(userId) },
-      {
-        $set: {
-          subscriptionTier: tier,
-          subscriptionStatus: 'active',
-          updatedAt: new Date(),
-        },
-      },
-      { returnDocument: 'after' }
-    );
+    let targetUser = null;
 
-    logger.info('User tier updated by admin', { userId });
+    // First, find the user to get their email
+    if (userId.length === 24) {
+      try {
+        targetUser = await users.findOne({ _id: new ObjectId(userId) });
+      } catch (e: any) {
+        // ObjectId conversion failed, continue to try as string
+      }
+    }
+
+    if (!targetUser) {
+      targetUser = await users.findOne({ _id: userId as any });
+    }
+
+    if (!targetUser) {
+      logger.error('User not found for tier update', { userId });
+      return null;
+    }
+
+    // Update ALL records with this email (to handle duplicates)
+    const updateData = {
+      subscriptionTier: tier,
+      subscriptionStatus: 'active',
+      updatedAt: new Date(),
+    };
+
+    // Update by email to catch all duplicates
+    await users.updateMany({ email: targetUser.email }, { $set: updateData });
+
+    // Also update by ID to be sure
+    if (userId.length === 24) {
+      try {
+        await users.updateOne({ _id: new ObjectId(userId) }, { $set: updateData });
+      } catch (e: any) {
+        // ObjectId conversion failed, ignore
+      }
+    }
+    await users.updateOne({ _id: userId as any }, { $set: updateData });
+
+    // Return the updated user
+    const result = await users.findOne({ _id: targetUser._id });
+
+    if (result) {
+      logger.info('User tier updated by admin (including duplicates)', { userId, email: targetUser.email });
+    }
+
     return result as User | null;
   } catch (error) {
     logger.error('Error updating user tier', error, { userId });
@@ -256,8 +298,9 @@ export const setUserAdmin = async (userId: string, isAdmin: boolean): Promise<Us
     const db = client.db();
     const users = db.collection('users');
 
-    const result = await users.findOneAndUpdate(
-      { _id: new ObjectId(userId) },
+    // Try string format first (NextAuth format)
+    let result = await users.findOneAndUpdate(
+      { _id: userId as any },
       {
         $set: {
           isAdmin,
@@ -266,6 +309,24 @@ export const setUserAdmin = async (userId: string, isAdmin: boolean): Promise<Us
       },
       { returnDocument: 'after' }
     );
+
+    // If not found with string, try ObjectId format (legacy records)
+    if (!result) {
+      try {
+        result = await users.findOneAndUpdate(
+          { _id: new ObjectId(userId) },
+          {
+            $set: {
+              isAdmin,
+              updatedAt: new Date(),
+            },
+          },
+          { returnDocument: 'after' }
+        );
+      } catch (e) {
+        // ObjectId conversion failed, ignore
+      }
+    }
 
     logger.info('User admin status updated', { userId });
     return result as User | null;

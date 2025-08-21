@@ -473,6 +473,10 @@ export default function Home() {
               commitment to Saint Paul&apos;s most reliable crime data resource:
             </Typography>
             <Typography variant="body2" sx={{ mb: 1 }}>
+              08/20/25 4.0.1 - Minor bug fixed in the dashboard preventing users from changing
+              between 7 and 30 days in crime stats.
+            </Typography>
+            <Typography variant="body2" sx={{ mb: 1 }}>
               08/19/25 4.0.0 - MAJOR UPDATE: Personal Crime Dashboard! Save up to 2 locations (more
               coming soon), track crime statistics with safety scores, view recent incidents in your
               areas, and monitor crime trends. Plus: Improved navigation with compact mobile design,

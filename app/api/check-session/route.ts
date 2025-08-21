@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../../lib/auth';
+import { getUserById } from '../../../lib/services/users';
 
 export async function GET() {
   try {
@@ -14,15 +15,28 @@ export async function GET() {
       });
     }
 
-    // Only return essential user information
+    // Fetch fresh user data from database
+    const freshUserData = await getUserById(session.user.id);
+
+    if (!freshUserData) {
+      return NextResponse.json({
+        authenticated: false,
+        user: null,
+        error: 'User not found',
+      });
+    }
+
+    // Return fresh user information from database
     return NextResponse.json({
       authenticated: true,
       user: {
-        email: session.user?.email,
-        name: session.user?.name,
-        image: session.user?.image,
-        subscriptionTier: session.user?.subscriptionTier || 'free',
-        theme: session.user?.theme,
+        email: freshUserData.email,
+        name: freshUserData.name,
+        image: freshUserData.image,
+        subscriptionTier: freshUserData.subscriptionTier || 'free',
+        subscriptionStatus: freshUserData.subscriptionStatus || 'active',
+        theme: freshUserData.theme,
+        isAdmin: freshUserData.isAdmin || false,
       },
     });
   } catch (error) {

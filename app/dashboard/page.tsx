@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useRequireAuth } from '../hooks/useRequireAuth';
+import { useCheckSessionUpdate } from '../hooks/useCheckSessionUpdate';
 import { useFeatureFlags } from '../hooks/useFeatureFlags';
 import { dataSelection } from '../const';
 import { getCrimes, getTotalCrimes } from '../api/getCrimes';
@@ -43,6 +44,9 @@ export default function DashboardPage() {
   const theme = useTheme();
   const { flags, isEnabled, loading: flagsLoading } = useFeatureFlags();
   const { updateCrimeData } = useCrimeData();
+
+  // Check for session updates when dashboard loads
+  useCheckSessionUpdate();
 
   // Redirect away if dashboard is disabled
   useEffect(() => {

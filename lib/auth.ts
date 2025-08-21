@@ -68,18 +68,8 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
   },
-  events: {
-    async createUser({ user }) {
-      // When a new user is created via NextAuth, also create them in our users collection
-      if (user.email) {
-        await createUser({
-          email: user.email,
-          name: user.name || undefined,
-          image: user.image || undefined,
-        });
-      }
-    },
-  },
+  // Removed events.createUser - NextAuth MongoDB adapter already creates users
+  // We don't need duplicate records
   session: {
     strategy: 'database',
     maxAge: 30 * 24 * 60 * 60, // 30 days
