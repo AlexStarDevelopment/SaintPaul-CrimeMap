@@ -49,7 +49,10 @@ export async function POST() {
       console.log(`Processing ${userRecords.length} duplicates for email: ${duplicate._id}`);
 
       // Sort by createdAt to keep the most recent one
-      userRecords.sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
+      userRecords.sort(
+        (a: any, b: any) =>
+          new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+      );
 
       const keepUser = userRecords[0]; // Most recent
       const deleteUsers = userRecords.slice(1); // Older duplicates
@@ -67,7 +70,11 @@ export async function POST() {
 
       // Check if any duplicate has better data
       for (const duplicate of deleteUsers) {
-        if (duplicate.subscriptionTier && duplicate.subscriptionTier !== 'free' && !mergedData.subscriptionTier) {
+        if (
+          duplicate.subscriptionTier &&
+          duplicate.subscriptionTier !== 'free' &&
+          !mergedData.subscriptionTier
+        ) {
           mergedData.subscriptionTier = duplicate.subscriptionTier;
         }
         if (duplicate.isAdmin) {

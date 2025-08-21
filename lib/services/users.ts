@@ -282,7 +282,10 @@ export const updateUserTier = async (
     const result = await users.findOne({ _id: targetUser._id });
 
     if (result) {
-      logger.info('User tier updated by admin (including duplicates)', { userId, email: targetUser.email });
+      logger.info('User tier updated by admin (including duplicates)', {
+        userId,
+        email: targetUser.email,
+      });
     }
 
     return result as User | null;
