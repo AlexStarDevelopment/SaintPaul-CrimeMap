@@ -68,8 +68,20 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
   },
-  // Removed events.createUser - NextAuth MongoDB adapter already creates users
-  // We don't need duplicate records
+  events: {
+    async createUser(message) {
+      // Patch user with createdAt and updatedAt if missing
+      const user = message.user as any;
+      const createdAt = user.createdAt;
+      // Accept Date or string, but patch if missing or invalid
+      if (!createdAt || (typeof createdAt === 'string' && isNaN(Date.parse(createdAt)))) {
+        await updateUser(user.id, {
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        });
+      }
+    },
+  },
   session: {
     strategy: 'database',
     maxAge: 30 * 24 * 60 * 60, // 30 days
