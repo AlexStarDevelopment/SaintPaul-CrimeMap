@@ -47,21 +47,9 @@ export function CrimeDataProvider({ children }: CrimeDataProviderProps) {
 
   const updateCrimeData = useCallback(
     (data: { items: Crime[]; isLoading: boolean; selectedMonth: string; selectedYear: number }) => {
-      setCrimeData((prevData) => {
-        // Only update if the data has actually changed (simplified check)
-        if (
-          prevData.items.length === data.items.length &&
-          prevData.isLoading === data.isLoading &&
-          prevData.selectedMonth === data.selectedMonth &&
-          prevData.selectedYear === data.selectedYear &&
-          prevData.items.length > 0 // Don't skip if we're going from empty to populated
-        ) {
-          return prevData; // No change, return previous state
-        }
-        return {
-          ...data,
-          lastUpdated: new Date(),
-        };
+      setCrimeData({
+        ...data,
+        lastUpdated: new Date(),
       });
     },
     []

@@ -7,7 +7,6 @@ import {
   Chip,
   LinearProgress,
   Grid,
-  CircularProgress,
   Alert,
 } from '@mui/material';
 import {
@@ -26,7 +25,6 @@ interface LocationCardProps {
 }
 
 export default function LocationCard({ location, period }: LocationCardProps) {
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [safetyScore, setSafetyScore] = useState(0);
   const [totalCrimes, setTotalCrimes] = useState(0);
@@ -37,21 +35,17 @@ export default function LocationCard({ location, period }: LocationCardProps) {
   useEffect(() => {
     const calculateLocationData = () => {
       if (!location.coordinates.lat || !location.coordinates.lng) {
-        setLoading(false);
         return;
       }
 
       if (crimeData.isLoading) {
-        setLoading(true);
         return;
       }
 
       if (!crimeData.items.length) {
-        setLoading(false);
         return;
       }
 
-      setLoading(true);
       setError(null);
 
       try {
@@ -123,8 +117,6 @@ export default function LocationCard({ location, period }: LocationCardProps) {
         setTotalCrimes(0);
         setPercentChange(0);
         setTrend('stable');
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -168,25 +160,6 @@ export default function LocationCard({ location, period }: LocationCardProps) {
     '30d': 'Past 30 Days',
     '90d': 'Past 90 Days',
   }[period];
-
-  if (loading) {
-    return (
-      <Card elevation={2}>
-        <CardContent>
-          <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              height: 200,
-            }}
-          >
-            <CircularProgress />
-          </Box>
-        </CardContent>
-      </Card>
-    );
-  }
 
   if (error) {
     return (

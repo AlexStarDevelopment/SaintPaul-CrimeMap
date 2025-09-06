@@ -47,10 +47,7 @@ async function backfillCreatedAt() {
       const user = await cursor.next();
       let newDate = user.updatedAt ? new Date(user.updatedAt) : new Date();
       if (isNaN(newDate.getTime())) newDate = new Date();
-      await users.updateOne(
-        { _id: user._id },
-        { $set: { createdAt: newDate } }
-      );
+      await users.updateOne({ _id: user._id }, { $set: { createdAt: newDate } });
       count++;
       console.log(`Patched user ${user.email || user._id} with createdAt: ${newDate}`);
     }

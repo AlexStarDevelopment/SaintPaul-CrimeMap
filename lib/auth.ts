@@ -9,14 +9,29 @@ import { User, UserSession } from '@/types';
 // Reuse the shared Mongo client promise to prevent extra connections
 const clientPromise = sharedClientPromise as unknown as Promise<MongoClient>;
 
+// Build providers conditionally to avoid runtime errors when env vars are missing
+const providers: NextAuthOptions['providers'] = [];
+if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+  providers.push(
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    })
+  );
+} else {
+  if (process.env.NODE_ENV !== 'production') {
+    console.warn(
+      '[auth] GOOGLE_CLIENT_ID/GOOGLE_CLIENT_SECRET not set. Google sign-in disabled in dev.'
+    );
+  }
+}
+
 export const authOptions: NextAuthOptions = {
   adapter: MongoDBAdapter(clientPromise) as any,
-  providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    }),
-  ],
+  secret:
+    process.env.NEXTAUTH_SECRET ||
+    (process.env.NODE_ENV !== 'production' ? 'dev-secret-change-me' : undefined),
+  providers,
   pages: {
     signIn: '/auth/signin',
     error: '/auth/error',
@@ -28,37 +43,42 @@ export const authOptions: NextAuthOptions = {
       return true;
     },
     async session({ session, token, user }) {
-      if (user) {
-        // User is available when using database sessions
-        const dbUser = await getUserById(user.id);
+      try {
+        if (user) {
+          // User is available when using database sessions
+          const dbUser = await getUserById(user.id);
 
-        if (dbUser) {
-          // Map database user to session
-          const userSession: UserSession = {
-            id: user.id, // Use the NextAuth user.id
-            email: dbUser.email,
-            name: dbUser.name,
-            image: dbUser.image,
-            subscriptionTier: dbUser.subscriptionTier || 'free',
-            subscriptionStatus: dbUser.subscriptionStatus || 'active',
-            subscriptionEndDate: dbUser.subscriptionEndDate,
-            trialEndDate: dbUser.trialEndDate,
-            theme: dbUser.theme,
-            isAdmin: dbUser.isAdmin || false,
-          };
+          if (dbUser) {
+            // Map database user to session
+            const userSession: UserSession = {
+              id: user.id, // Use the NextAuth user.id
+              email: dbUser.email,
+              name: dbUser.name,
+              image: dbUser.image,
+              subscriptionTier: dbUser.subscriptionTier || 'free',
+              subscriptionStatus: dbUser.subscriptionStatus || 'active',
+              subscriptionEndDate: dbUser.subscriptionEndDate,
+              trialEndDate: dbUser.trialEndDate,
+              theme: dbUser.theme,
+              isAdmin: dbUser.isAdmin || false,
+            };
 
-          // Extend the session with our custom user data
-          return {
-            ...session,
-            user: {
-              ...session.user,
-              ...userSession,
-            },
-          };
+            // Extend the session with our custom user data
+            return {
+              ...session,
+              user: {
+                ...session.user,
+                ...userSession,
+              },
+            };
+          }
         }
+        return session;
+      } catch (err) {
+        console.error('[auth.session] error enriching session:', err);
+        // Return base session to avoid 500 HTML error pages
+        return session;
       }
-
-      return session;
     },
     async jwt({ token, user, account }) {
       // Persist user ID in token

@@ -7,7 +7,6 @@ import {
   ToggleButton,
   Grid,
   Chip,
-  Skeleton,
   Alert,
 } from '@mui/material';
 import {
@@ -47,7 +46,6 @@ interface StatsShape {
 
 export default function CrimeStats({ location, userTier }: CrimeStatsProps) {
   const [period, setPeriod] = useState<PeriodType>('30d');
-  const [loading, setLoading] = useState(false);
   const [stats, setStats] = useState<StatsShape | null>(null);
   const [error, setError] = useState<string | null>(null);
   const { crimeData, getCrimesForLocation, getCrimeStats } = useCrimeData();
@@ -73,23 +71,14 @@ export default function CrimeStats({ location, userTier }: CrimeStatsProps) {
   useEffect(() => {
     const calculateStats = () => {
       if (!location.coordinates.lat || !location.coordinates.lng) {
-        setLoading(false);
+        setStats(null);
         return;
       }
-
-      if (crimeData.isLoading) {
-        setLoading(true);
-        return;
-      }
-
       if (!crimeData.items.length) {
-        setLoading(false);
+        setStats(null);
         return;
       }
-
-      setLoading(true);
       setError(null);
-
       try {
         // Get crimes within the location's saved radius (convert miles to km)
         const radiusKm = location.radius * 1.609344; // Convert miles to kilometers
@@ -98,7 +87,6 @@ export default function CrimeStats({ location, userTier }: CrimeStatsProps) {
           location.coordinates.lng,
           radiusKm
         );
-
         // Filter by time period relative to the most recent data
         const allDates = localCrimes
           .map((crime) => parseInt(crime.DATE || '0'))
@@ -106,15 +94,12 @@ export default function CrimeStats({ location, userTier }: CrimeStatsProps) {
         const mostRecentDate = allDates.length > 0 ? Math.max(...allDates) : Date.now();
         const daysAgo = period === '7d' ? 7 : period === '30d' ? 30 : period === '90d' ? 90 : 365;
         const cutoffTime = mostRecentDate - daysAgo * 24 * 60 * 60 * 1000;
-
         const filteredCrimes = localCrimes.filter((crime) => {
           if (!crime.DATE) return false;
           return parseInt(crime.DATE) >= cutoffTime;
         });
-
         // Calculate statistics using shared function
         const crimeStats = getCrimeStats(filteredCrimes);
-
         // Transform to component format
         const crimeTypes = Object.entries(crimeStats.crimesByType)
           .map(([type, count]) => ({
@@ -124,13 +109,10 @@ export default function CrimeStats({ location, userTier }: CrimeStatsProps) {
               crimeStats.totalCrimes > 0 ? Math.round((count / crimeStats.totalCrimes) * 100) : 0,
           }))
           .sort((a, b) => b.count - a.count);
-
         const topIncident = crimeTypes.length > 0 ? crimeTypes[0].type : 'None';
-
         // Calculate time distribution percentages
         const timeStats = crimeStats.crimesByTimeOfDay;
         const totalTimeEntries = Object.values(timeStats).reduce((sum, count) => sum + count, 0);
-
         const timeDistribution = {
           morning:
             totalTimeEntries > 0
@@ -149,7 +131,6 @@ export default function CrimeStats({ location, userTier }: CrimeStatsProps) {
               ? Math.round(((timeStats.night || 0) / totalTimeEntries) * 100)
               : 0,
         };
-
         // Find safest and riskiest times
         const timeEntries = Object.entries(timeStats);
         const sortedByCount = timeEntries.sort(([, a], [, b]) => a - b);
@@ -157,7 +138,6 @@ export default function CrimeStats({ location, userTier }: CrimeStatsProps) {
         const riskiestTime = sortedByCount[sortedByCount.length - 1]
           ? formatTimeOfDay(sortedByCount[sortedByCount.length - 1][0])
           : 'Evening';
-
         setStats({
           crimeTypes,
           timeDistribution,
@@ -169,11 +149,8 @@ export default function CrimeStats({ location, userTier }: CrimeStatsProps) {
         console.error('Error calculating stats:', err);
         setError(err.message);
         setStats(null);
-      } finally {
-        setLoading(false);
       }
     };
-
     calculateStats();
   }, [
     location.coordinates.lat,
@@ -203,13 +180,18 @@ export default function CrimeStats({ location, userTier }: CrimeStatsProps) {
   };
 
   if (!stats) {
-    return (
-      <Paper elevation={2} sx={{ p: 3 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
-          <Typography>Loading statistics...</Typography>
-        </Box>
-      </Paper>
-    );
+    // Only show loading if global loading and no data
+    if (crimeData.isLoading && !crimeData.items.length) {
+      return (
+        <Paper elevation={2} sx={{ p: 3 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+            <Typography>Loading statistics...</Typography>
+          </Box>
+        </Paper>
+      );
+    }
+    // Otherwise, show nothing until stats are ready
+    return null;
   }
 
   return (
@@ -262,220 +244,211 @@ export default function CrimeStats({ location, userTier }: CrimeStatsProps) {
         </Alert>
       )}
 
-      {loading ? (
-        <Box>
-          <Skeleton variant="rectangular" height={200} sx={{ mb: 2 }} />
-          <Skeleton variant="rectangular" height={100} />
-        </Box>
-      ) : (
-        <>
-          {/* Crime Type Breakdown */}
-          <Box sx={{ mb: 3 }}>
-            <Typography variant="subtitle2" gutterBottom color="text.secondary">
-              Crime Type Breakdown
-            </Typography>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-              {stats.crimeTypes.map((crime) => (
-                <Box key={crime.type}>
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      mb: 0.5,
-                    }}
-                  >
-                    <Typography variant="body2">{crime.type}</Typography>
-                    <Typography variant="body2" fontWeight="bold">
-                      {crime.count} ({crime.percentage}%)
-                    </Typography>
-                  </Box>
-                  <Box
-                    sx={{
-                      width: '100%',
-                      height: 8,
-                      backgroundColor: 'grey.200',
-                      borderRadius: 1,
-                      overflow: 'hidden',
-                    }}
-                  >
-                    <Box
-                      sx={{
-                        width: `${crime.percentage}%`,
-                        height: '100%',
-                        backgroundColor: 'primary.main',
-                      }}
-                    />
-                  </Box>
-                </Box>
-              ))}
+      {/* Crime Type Breakdown */}
+      <Box sx={{ mb: 3 }}>
+        <Typography variant="subtitle2" gutterBottom color="text.secondary">
+          Crime Type Breakdown
+        </Typography>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+          {stats.crimeTypes.map((crime) => (
+            <Box key={crime.type}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  mb: 0.5,
+                }}
+              >
+                <Typography variant="body2">{crime.type}</Typography>
+                <Typography variant="body2" fontWeight="bold">
+                  {crime.count} ({crime.percentage}%)
+                </Typography>
+              </Box>
+              <Box
+                sx={{
+                  width: '100%',
+                  height: 8,
+                  backgroundColor: 'grey.200',
+                  borderRadius: 1,
+                  overflow: 'hidden',
+                }}
+              >
+                <Box
+                  sx={{
+                    width: `${crime.percentage}%`,
+                    height: '100%',
+                    backgroundColor: 'primary.main',
+                  }}
+                />
+              </Box>
             </Box>
-          </Box>
+          ))}
+        </Box>
+      </Box>
 
-          {/* Key Insights */}
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
+      {/* Key Insights */}
+      <Grid container spacing={2}>
+        <Grid item xs={12} sm={6}>
+          <Box
+            sx={{
+              p: 2,
+              backgroundColor: 'background.default',
+              borderRadius: 1,
+            }}
+          >
+            <Typography variant="caption" color="text.secondary">
+              Most Common Crime
+            </Typography>
+            <Typography
+              variant="body1"
+              fontWeight="bold"
+              component="div"
+              sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
+            >
+              <WarningIcon fontSize="small" color="warning" />
+              {stats.topIncident}
+            </Typography>
+          </Box>
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <Box
+            sx={{
+              p: 2,
+              backgroundColor: 'background.default',
+              borderRadius: 1,
+            }}
+          >
+            <Typography variant="caption" color="text.secondary">
+              Safest Time
+            </Typography>
+            <Typography variant="body1" fontWeight="bold">
+              {stats.safestTime}
+            </Typography>
+          </Box>
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <Box
+            sx={{
+              p: 2,
+              backgroundColor: 'background.default',
+              borderRadius: 1,
+            }}
+          >
+            <Typography variant="caption" color="text.secondary">
+              Riskiest Time
+            </Typography>
+            <Typography variant="body1" fontWeight="bold">
+              {stats.riskiestTime}
+            </Typography>
+          </Box>
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <Box
+            sx={{
+              p: 2,
+              backgroundColor: 'background.default',
+              borderRadius: 1,
+            }}
+          >
+            <Typography variant="caption" color="text.secondary">
+              Time Period
+            </Typography>
+            <Typography
+              variant="body1"
+              fontWeight="bold"
+              component="div"
+              sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
+            >
+              <CalendarIcon fontSize="small" />
+              {period === '7d'
+                ? 'Past 7 Days'
+                : period === '30d'
+                  ? 'Past 30 Days'
+                  : period === '90d'
+                    ? 'Past 90 Days'
+                    : 'Past Year'}
+            </Typography>
+          </Box>
+        </Grid>
+      </Grid>
+
+      {/* Time Distribution (Pro only) */}
+      {userTier === 'pro' && (
+        <Box sx={{ mt: 3 }}>
+          <Typography variant="subtitle2" gutterBottom color="text.secondary">
+            Time of Day Distribution
+          </Typography>
+          <Grid container spacing={1}>
+            <Grid item xs={6} sm={3}>
               <Box
                 sx={{
-                  p: 2,
+                  textAlign: 'center',
+                  p: 1,
                   backgroundColor: 'background.default',
                   borderRadius: 1,
                 }}
               >
-                <Typography variant="caption" color="text.secondary">
-                  Most Common Crime
+                <Typography variant="caption" display="block">
+                  Morning
                 </Typography>
-                <Typography
-                  variant="body1"
-                  fontWeight="bold"
-                  component="div"
-                  sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
-                >
-                  <WarningIcon fontSize="small" color="warning" />
-                  {stats.topIncident}
+                <Typography variant="body2" fontWeight="bold">
+                  {stats.timeDistribution.morning}%
                 </Typography>
               </Box>
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={6} sm={3}>
               <Box
                 sx={{
-                  p: 2,
+                  textAlign: 'center',
+                  p: 1,
                   backgroundColor: 'background.default',
                   borderRadius: 1,
                 }}
               >
-                <Typography variant="caption" color="text.secondary">
-                  Safest Time
+                <Typography variant="caption" display="block">
+                  Afternoon
                 </Typography>
-                <Typography variant="body1" fontWeight="bold">
-                  {stats.safestTime}
+                <Typography variant="body2" fontWeight="bold">
+                  {stats.timeDistribution.afternoon}%
                 </Typography>
               </Box>
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={6} sm={3}>
               <Box
                 sx={{
-                  p: 2,
+                  textAlign: 'center',
+                  p: 1,
                   backgroundColor: 'background.default',
                   borderRadius: 1,
                 }}
               >
-                <Typography variant="caption" color="text.secondary">
-                  Riskiest Time
+                <Typography variant="caption" display="block">
+                  Evening
                 </Typography>
-                <Typography variant="body1" fontWeight="bold">
-                  {stats.riskiestTime}
+                <Typography variant="body2" fontWeight="bold">
+                  {stats.timeDistribution.evening}%
                 </Typography>
               </Box>
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={6} sm={3}>
               <Box
                 sx={{
-                  p: 2,
+                  textAlign: 'center',
+                  p: 1,
                   backgroundColor: 'background.default',
                   borderRadius: 1,
                 }}
               >
-                <Typography variant="caption" color="text.secondary">
-                  Time Period
+                <Typography variant="caption" display="block">
+                  Night
                 </Typography>
-                <Typography
-                  variant="body1"
-                  fontWeight="bold"
-                  component="div"
-                  sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
-                >
-                  <CalendarIcon fontSize="small" />
-                  {period === '7d'
-                    ? 'Past 7 Days'
-                    : period === '30d'
-                      ? 'Past 30 Days'
-                      : period === '90d'
-                        ? 'Past 90 Days'
-                        : 'Past Year'}
+                <Typography variant="body2" fontWeight="bold">
+                  {stats.timeDistribution.night}%
                 </Typography>
               </Box>
             </Grid>
           </Grid>
-
-          {/* Time Distribution (Pro only) */}
-          {userTier === 'pro' && (
-            <Box sx={{ mt: 3 }}>
-              <Typography variant="subtitle2" gutterBottom color="text.secondary">
-                Time of Day Distribution
-              </Typography>
-              <Grid container spacing={1}>
-                <Grid item xs={6} sm={3}>
-                  <Box
-                    sx={{
-                      textAlign: 'center',
-                      p: 1,
-                      backgroundColor: 'background.default',
-                      borderRadius: 1,
-                    }}
-                  >
-                    <Typography variant="caption" display="block">
-                      Morning
-                    </Typography>
-                    <Typography variant="body2" fontWeight="bold">
-                      {stats.timeDistribution.morning}%
-                    </Typography>
-                  </Box>
-                </Grid>
-                <Grid item xs={6} sm={3}>
-                  <Box
-                    sx={{
-                      textAlign: 'center',
-                      p: 1,
-                      backgroundColor: 'background.default',
-                      borderRadius: 1,
-                    }}
-                  >
-                    <Typography variant="caption" display="block">
-                      Afternoon
-                    </Typography>
-                    <Typography variant="body2" fontWeight="bold">
-                      {stats.timeDistribution.afternoon}%
-                    </Typography>
-                  </Box>
-                </Grid>
-                <Grid item xs={6} sm={3}>
-                  <Box
-                    sx={{
-                      textAlign: 'center',
-                      p: 1,
-                      backgroundColor: 'background.default',
-                      borderRadius: 1,
-                    }}
-                  >
-                    <Typography variant="caption" display="block">
-                      Evening
-                    </Typography>
-                    <Typography variant="body2" fontWeight="bold">
-                      {stats.timeDistribution.evening}%
-                    </Typography>
-                  </Box>
-                </Grid>
-                <Grid item xs={6} sm={3}>
-                  <Box
-                    sx={{
-                      textAlign: 'center',
-                      p: 1,
-                      backgroundColor: 'background.default',
-                      borderRadius: 1,
-                    }}
-                  >
-                    <Typography variant="caption" display="block">
-                      Night
-                    </Typography>
-                    <Typography variant="body2" fontWeight="bold">
-                      {stats.timeDistribution.night}%
-                    </Typography>
-                  </Box>
-                </Grid>
-              </Grid>
-            </Box>
-          )}
-        </>
+        </Box>
       )}
     </Paper>
   );

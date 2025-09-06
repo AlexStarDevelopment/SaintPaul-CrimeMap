@@ -36,14 +36,17 @@ import CrimeStats from './components/CrimeStats';
 import IncidentsFeed from './components/IncidentsFeed';
 import AddLocation from './components/AddLocation';
 import EditLocation from './components/EditLocation';
+
 import { SavedLocation, LOCATION_LIMITS, Crime } from '@/types';
+import { calculateDistanceMiles } from '../../lib/geo';
+import { computeSafetyScore } from '../../lib/safety';
 
 export default function DashboardPage() {
   const { session, loading: authLoading, authenticated } = useRequireAuth();
   const router = useRouter();
   const theme = useTheme();
   const { flags, isEnabled, loading: flagsLoading } = useFeatureFlags();
-  const { updateCrimeData } = useCrimeData();
+  const { updateCrimeData, crimeData, getCrimesForLocation } = useCrimeData();
 
   // Check for session updates when dashboard loads
   useCheckSessionUpdate();
@@ -56,8 +59,7 @@ export default function DashboardPage() {
   }, [flagsLoading, flags, isEnabled, router]);
 
   const [locations, setLocations] = useState<SavedLocation[]>([]);
-  const [locationsLoading, setLocationsLoading] = useState(true);
-  const [crimeDataLoading, setCrimeDataLoading] = useState(true);
+  const [locationsLoading, setLocationsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedLocation, setSelectedLocation] = useState<SavedLocation | null>(null);
   const [tabValue, setTabValue] = useState(0);
@@ -65,7 +67,12 @@ export default function DashboardPage() {
 
   // Fetch crime data using the same method as the main page
   const fetchCrimeData = useCallback(async () => {
-    setCrimeDataLoading(true);
+    updateCrimeData({
+      items: [],
+      isLoading: true,
+      selectedMonth: crimeData.selectedMonth,
+      selectedYear: crimeData.selectedYear,
+    });
     try {
       // Use All 2025 dataset for dashboard
       const dashboardData = dataSelection.find(
@@ -74,7 +81,6 @@ export default function DashboardPage() {
 
       if (!dashboardData) {
         console.error('All 2025 data selection not found.');
-        setCrimeDataLoading(false);
         return;
       }
 
@@ -118,10 +124,8 @@ export default function DashboardPage() {
         selectedMonth: dashboardData?.month || 'all',
         selectedYear: dashboardData?.year || 2025,
       });
-    } finally {
-      setCrimeDataLoading(false);
     }
-  }, [updateCrimeData]);
+  }, [updateCrimeData, crimeData.selectedMonth, crimeData.selectedYear]);
 
   const fetchLocations = useCallback(async () => {
     try {
@@ -233,7 +237,7 @@ export default function DashboardPage() {
     }
   };
 
-  if (authLoading || locationsLoading || crimeDataLoading) {
+  if (authLoading || locationsLoading || (crimeData.isLoading && crimeData.items.length === 0)) {
     return (
       <Container maxWidth="xl" sx={{ mt: 4, display: 'flex', justifyContent: 'center' }}>
         <CircularProgress />
@@ -360,6 +364,512 @@ export default function DashboardPage() {
               <>
                 {/* Location Overview Card */}
                 <LocationCard location={selectedLocation} period="30d" />
+
+                {/* Export as PDF for pro users */}
+                {userTier === 'pro' && (
+                  <Box sx={{ mt: 2, mb: 2, textAlign: 'right' }}>
+                    <Button
+                      variant="outlined"
+                      color="primary"
+                      onClick={async () => {
+                        if (!selectedLocation) return;
+                        // Use the same method as the dashboard for incidents and distance calculation
+                        const radiusKm = (selectedLocation.radius || 1.0) * 1.609344;
+                        const localCrimes = getCrimesForLocation(
+                          selectedLocation.coordinates.lat,
+                          selectedLocation.coordinates.lng,
+                          radiusKm
+                        );
+                        const allDates = localCrimes
+                          .map((crime) => parseInt(crime.DATE || '0'))
+                          .filter((date) => date > 0);
+                        const mostRecentDate = Math.max(...allDates);
+                        const daysAgo = 30;
+                        const cutoffTime = mostRecentDate - daysAgo * 24 * 60 * 60 * 1000;
+                        const currentPeriodCrimes = localCrimes.filter((crime) => {
+                          if (!crime.DATE) return false;
+                          return parseInt(crime.DATE) >= cutoffTime;
+                        });
+                        const totalCrimes = currentPeriodCrimes.length;
+                        // Use the same safety score logic as LocationCard for PDF export
+                        const maxExpectedCrimes = 50; // Must match LocationCard
+                        const crimeRatio = Math.min(totalCrimes / maxExpectedCrimes, 1);
+                        const safetyScore = Math.max(10, Math.round((1 - crimeRatio) * 100));
+                        // Use the same mapping as dashboard for incidents
+                        const incidents = currentPeriodCrimes.slice(0, 10).map((crime) => {
+                          let crimeLat = null;
+                          let crimeLng = null;
+                          const latVal = crime.LAT as unknown;
+                          const lonVal = crime.LON as unknown;
+                          if (typeof latVal === 'number') {
+                            crimeLat = latVal;
+                          } else if (typeof latVal === 'string' && latVal.trim() !== '') {
+                            const parsed = parseFloat(latVal);
+                            if (!isNaN(parsed)) crimeLat = parsed;
+                          }
+                          if (typeof lonVal === 'number') {
+                            crimeLng = lonVal;
+                          } else if (typeof lonVal === 'string' && lonVal.trim() !== '') {
+                            const parsed = parseFloat(lonVal);
+                            if (!isNaN(parsed)) crimeLng = parsed;
+                          }
+                          let distance = '';
+                          if (
+                            crimeLat !== null &&
+                            crimeLng !== null &&
+                            selectedLocation?.coordinates?.lat != null &&
+                            selectedLocation?.coordinates?.lng != null
+                          ) {
+                            const dist = calculateDistanceMiles(
+                              selectedLocation.coordinates.lat,
+                              selectedLocation.coordinates.lng,
+                              crimeLat,
+                              crimeLng
+                            );
+                            distance = `${dist.toFixed(1)} mi`;
+                          } else {
+                            distance = 'N/A';
+                          }
+                          return {
+                            type: crime.INCIDENT || crime.INCIDENT_TYPE || 'Unknown',
+                            date: crime.DATE
+                              ? new Date(Number(crime.DATE)).toLocaleDateString()
+                              : 'Unknown',
+                            location: crime.BLOCK_VIEW || crime.BLOCK || selectedLocation.address,
+                            distance,
+                          };
+                        });
+                        // --- Dashboard analytics for PDF ---
+                        // Crime type breakdown
+                        const typeCounts: Record<string, number> = {};
+                        currentPeriodCrimes.forEach((crime: any) => {
+                          const type = crime.INCIDENT || crime.TYPE || 'Unknown';
+                          typeCounts[type] = (typeCounts[type] || 0) + 1;
+                        });
+                        // Time of day breakdown
+                        const timeCounts: Record<string, number> = {
+                          morning: 0,
+                          afternoon: 0,
+                          evening: 0,
+                          night: 0,
+                        };
+                        currentPeriodCrimes.forEach((crime: any) => {
+                          if (crime.DATE) {
+                            const hour = new Date(parseInt(crime.DATE)).getHours();
+                            let timeOfDay = '';
+                            if (hour >= 6 && hour < 12) timeOfDay = 'morning';
+                            else if (hour >= 12 && hour < 18) timeOfDay = 'afternoon';
+                            else if (hour >= 18 && hour < 22) timeOfDay = 'evening';
+                            else timeOfDay = 'night';
+                            timeCounts[timeOfDay] = (timeCounts[timeOfDay] || 0) + 1;
+                          }
+                        });
+                        const totalTimeEntries = Object.values(timeCounts).reduce(
+                          (sum, c) => sum + c,
+                          0
+                        );
+                        const timePercentages = {
+                          morning:
+                            totalTimeEntries > 0
+                              ? Math.round((timeCounts.morning / totalTimeEntries) * 100)
+                              : 0,
+                          afternoon:
+                            totalTimeEntries > 0
+                              ? Math.round((timeCounts.afternoon / totalTimeEntries) * 100)
+                              : 0,
+                          evening:
+                            totalTimeEntries > 0
+                              ? Math.round((timeCounts.evening / totalTimeEntries) * 100)
+                              : 0,
+                          night:
+                            totalTimeEntries > 0
+                              ? Math.round((timeCounts.night / totalTimeEntries) * 100)
+                              : 0,
+                        };
+                        // Safest/riskiest time
+                        const sortedTimes = Object.entries(timeCounts).sort(
+                          ([, a], [, b]) => a - b
+                        );
+                        const formatTimeOfDay = (key: string) => {
+                          switch (key) {
+                            case 'morning':
+                              return '6 AM - 12 PM';
+                            case 'afternoon':
+                              return '12 PM - 6 PM';
+                            case 'evening':
+                              return '6 PM - 10 PM';
+                            case 'night':
+                              return '10 PM - 6 AM';
+                            default:
+                              return key;
+                          }
+                        };
+                        const safestTime = sortedTimes[0]
+                          ? formatTimeOfDay(sortedTimes[0][0])
+                          : 'Morning';
+                        const riskiestTime = sortedTimes[sortedTimes.length - 1]
+                          ? formatTimeOfDay(sortedTimes[sortedTimes.length - 1][0])
+                          : 'Evening';
+                        // Most common crime
+                        const topIncident =
+                          Object.entries(typeCounts).sort(([, a], [, b]) => b - a)[0]?.[0] ||
+                          'None';
+                        // Generate PDF on the frontend using pdf-lib
+                        const { PDFDocument, StandardFonts, rgb } = await import('pdf-lib');
+                        const lat = selectedLocation.coordinates.lat;
+                        const lng = selectedLocation.coordinates.lng;
+                        // Use staticmap.openstreetmap.de (no API key required, limited usage)
+                        const mapUrl = `https://staticmap.openstreetmap.de/staticmap.php?center=${lat},${lng}&zoom=15&size=600x200&markers=${lat},${lng},red-pushpin`;
+                        let mapImageBytes: Uint8Array | null = null;
+                        try {
+                          const mapResp = await fetch(mapUrl);
+                          if (mapResp.ok) {
+                            mapImageBytes = new Uint8Array(await mapResp.arrayBuffer());
+                          }
+                        } catch (e) {
+                          // Ignore map fetch errors, just skip image
+                        }
+                        const pdfDoc = await PDFDocument.create();
+                        const page = pdfDoc.addPage([600, 800]);
+                        const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+                        let y = 760;
+                        // Draw map image at the top if available
+                        if (mapImageBytes) {
+                          try {
+                            const mapImg = await pdfDoc.embedPng(mapImageBytes);
+                            page.drawImage(mapImg, {
+                              x: 0,
+                              y: y - 200,
+                              width: 600,
+                              height: 200,
+                            });
+                            y -= 210;
+                          } catch (e) {
+                            // If image fails to embed, just skip
+                          }
+                        }
+                        // Colored header bar
+                        page.drawRectangle({
+                          x: 0,
+                          y: y - 30,
+                          width: 600,
+                          height: 40,
+                          color: rgb(0.13, 0.32, 0.47),
+                        });
+                        page.drawText('Saint Paul CrimeMap', {
+                          x: 50,
+                          y: y - 10,
+                          size: 24,
+                          font,
+                          color: rgb(1, 1, 1),
+                        });
+                        y -= 50;
+
+                        // Address and date (wrap if too long)
+                        // Word-wrap address, label only on first line
+                        // Remove neighborhood, county, country from address for PDF
+                        function stripAddress(address: string) {
+                          // Remove after first comma if it looks like neighborhood/county/country
+                          // e.g. "123 Main St, Saint Paul, MN, USA" => "123 Main St"
+                          // If address has more than 2 commas, keep only up to the second part
+                          const parts = address.split(',');
+                          if (parts.length > 2) {
+                            return parts.slice(0, 2).join(',').trim();
+                          }
+                          return address;
+                        }
+                        function wrapText(text: string, maxLen: number) {
+                          const words = text.split(' ');
+                          const lines = [];
+                          let current = '';
+                          for (const word of words) {
+                            if ((current + word).length > maxLen) {
+                              lines.push(current.trim());
+                              current = '';
+                            }
+                            current += word + ' ';
+                          }
+                          if (current.trim()) lines.push(current.trim());
+                          return lines;
+                        }
+                        const cleanAddress = stripAddress(selectedLocation.address);
+                        const addressLines = wrapText(cleanAddress, 50);
+                        addressLines.forEach((line, idx) => {
+                          if (idx === 0) {
+                            page.drawText(`Address: ${line}`, {
+                              x: 50,
+                              y,
+                              size: 11,
+                              font,
+                              color: rgb(0.13, 0.32, 0.47),
+                            });
+                          } else {
+                            page.drawText(line, {
+                              x: 120,
+                              y,
+                              size: 11,
+                              font,
+                              color: rgb(0.13, 0.32, 0.47),
+                            });
+                          }
+                          y -= 15;
+                        });
+                        page.drawText(`Radius: ${(selectedLocation.radius || 1.0).toFixed(2)} mi`, {
+                          x: 50,
+                          y,
+                          size: 12,
+                          font,
+                          color: rgb(0.13, 0.32, 0.47),
+                        });
+                        y -= 16;
+                        page.drawText(`Date: ${new Date().toLocaleDateString()}`, {
+                          x: 50,
+                          y,
+                          size: 12,
+                          font,
+                          color: rgb(0.13, 0.32, 0.47),
+                        });
+                        y -= 20;
+
+                        // Summary section (moved up)
+                        page.drawText('Summary', {
+                          x: 50,
+                          y,
+                          size: 18,
+                          font,
+                          color: rgb(0.13, 0.32, 0.47),
+                        });
+                        y -= 22;
+                        // Safety Score Bar Visualization
+                        page.drawText('Safety Score:', { x: 50, y, size: 14, font });
+                        // Bar background
+                        page.drawRectangle({
+                          x: 150,
+                          y: y - 4,
+                          width: 200,
+                          height: 14,
+                          color: rgb(0.9, 0.9, 0.9),
+                        });
+                        // Bar fill (green to red)
+                        const scoreColor =
+                          safetyScore > 70
+                            ? rgb(0.2, 0.7, 0.2)
+                            : safetyScore > 40
+                              ? rgb(1, 0.8, 0.2)
+                              : rgb(0.9, 0.2, 0.2);
+                        page.drawRectangle({
+                          x: 150,
+                          y: y - 4,
+                          width: 2 * safetyScore,
+                          height: 14,
+                          color: scoreColor,
+                        });
+                        page.drawText(`${safetyScore}`, {
+                          x: 360,
+                          y,
+                          size: 12,
+                          font,
+                          color: scoreColor,
+                        });
+                        y -= 20;
+                        page.drawText(`Total Incidents (30 days): ${totalCrimes}`, {
+                          x: 50,
+                          y,
+                          size: 14,
+                          font,
+                        });
+                        y -= 28;
+
+                        // Section divider
+                        page.drawLine({
+                          start: { x: 50, y },
+                          end: { x: 550, y },
+                          thickness: 1,
+                          color: rgb(0.8, 0.8, 0.8),
+                        });
+                        y -= 18;
+                        // Crime type breakdown bar chart
+                        const chartY = y;
+                        page.drawText('Crime Type Breakdown', {
+                          x: 50,
+                          y: chartY,
+                          size: 14,
+                          font,
+                          color: rgb(0.13, 0.32, 0.47),
+                        });
+                        let barY = chartY - 18;
+                        const maxCount = Math.max(...Object.values(typeCounts));
+                        Object.entries(typeCounts).forEach(([type, count], idx) => {
+                          const barWidth = 300 * (count / (maxCount || 1));
+                          page.drawRectangle({
+                            x: 150,
+                            y: barY - 8,
+                            width: barWidth,
+                            height: 12,
+                            color: rgb(0.13, 0.32, 0.47),
+                          });
+                          page.drawText(type, { x: 50, y: barY, size: 10, font });
+                          page.drawText(`${count}`, { x: 460, y: barY, size: 10, font });
+                          barY -= 18;
+                        });
+                        y = barY - 10;
+
+                        // Time of Day Breakdown Bar Chart
+                        page.drawText('Time of Day Breakdown', {
+                          x: 50,
+                          y,
+                          size: 14,
+                          font,
+                          color: rgb(0.13, 0.32, 0.47),
+                        });
+                        y -= 18;
+                        const timeLabels = ['Morning', 'Afternoon', 'Evening', 'Night'];
+                        const timeKeys = ['morning', 'afternoon', 'evening', 'night'];
+                        let timeBarY = y;
+                        timeKeys.forEach((key, idx) => {
+                          const percent = timePercentages[key as keyof typeof timePercentages];
+                          const barWidth = 300 * (percent / 100);
+                          page.drawRectangle({
+                            x: 150,
+                            y: timeBarY - 8,
+                            width: barWidth,
+                            height: 12,
+                            color: rgb(0.47, 0.47, 0.7),
+                          });
+                          page.drawText(timeLabels[idx], { x: 50, y: timeBarY, size: 10, font });
+                          page.drawText(`${percent}%`, { x: 460, y: timeBarY, size: 10, font });
+                          timeBarY -= 18;
+                        });
+                        y = timeBarY - 10;
+
+                        // Key Insights Section
+                        page.drawText('Key Insights', {
+                          x: 50,
+                          y,
+                          size: 14,
+                          font,
+                          color: rgb(0.13, 0.32, 0.47),
+                        });
+                        y -= 18;
+                        page.drawText(`Most Common Crime: ${topIncident}`, {
+                          x: 50,
+                          y,
+                          size: 12,
+                          font,
+                        });
+                        y -= 14;
+                        page.drawText(`Safest Time: ${safestTime}`, { x: 50, y, size: 12, font });
+                        y -= 14;
+                        page.drawText(`Riskiest Time: ${riskiestTime}`, {
+                          x: 50,
+                          y,
+                          size: 12,
+                          font,
+                        });
+                        y -= 18;
+
+                        // Section divider
+                        page.drawLine({
+                          start: { x: 50, y },
+                          end: { x: 550, y },
+                          thickness: 1,
+                          color: rgb(0.8, 0.8, 0.8),
+                        });
+                        y -= 18;
+
+                        // Summary section
+
+                        // Recent Incidents Table
+                        page.drawText('Recent Incidents', {
+                          x: 50,
+                          y,
+                          size: 16,
+                          font,
+                          color: rgb(0.13, 0.32, 0.47),
+                        });
+                        y -= 20;
+                        page.drawText('Type', {
+                          x: 50,
+                          y,
+                          size: 12,
+                          font,
+                          color: rgb(0.13, 0.32, 0.47),
+                        });
+                        page.drawText('Date', {
+                          x: 170,
+                          y,
+                          size: 12,
+                          font,
+                          color: rgb(0.13, 0.32, 0.47),
+                        });
+                        page.drawText('Location', {
+                          x: 290,
+                          y,
+                          size: 12,
+                          font,
+                          color: rgb(0.13, 0.32, 0.47),
+                        });
+                        page.drawText('Distance', {
+                          x: 470,
+                          y,
+                          size: 12,
+                          font,
+                          color: rgb(0.13, 0.32, 0.47),
+                        });
+                        y -= 14;
+                        incidents.forEach((incident: any, idx: number) => {
+                          if (y < 50) return; // avoid overflow
+                          page.drawText(incident.type, { x: 50, y, size: 10, font });
+                          page.drawText(incident.date, { x: 170, y, size: 10, font });
+                          page.drawText(incident.location, { x: 290, y, size: 10, font });
+                          page.drawText(incident.distance, { x: 470, y, size: 10, font });
+                          y -= 12;
+                        });
+                        y -= 24;
+
+                        // Footer
+                        page.drawLine({
+                          start: { x: 50, y },
+                          end: { x: 550, y },
+                          thickness: 1,
+                          color: rgb(0.8, 0.8, 0.8),
+                        });
+                        y -= 18;
+                        page.drawText('Saint Paul CrimeMap | Generated for sharing', {
+                          x: 50,
+                          y,
+                          size: 10,
+                          font,
+                          color: rgb(0.13, 0.32, 0.47),
+                        });
+                        y -= 14;
+                        page.drawText('For more details, visit: https://saintpaul-crimemap.com', {
+                          x: 50,
+                          y,
+                          size: 10,
+                          font,
+                          color: rgb(0.13, 0.32, 0.47),
+                        });
+
+                        const pdfBytes = await pdfDoc.save();
+                        // Ensure we pass a regular ArrayBuffer, not SharedArrayBuffer
+                        // Create a new Uint8Array to guarantee compatibility
+                        const safeBytes = new Uint8Array(pdfBytes);
+                        const blob = new Blob([safeBytes], { type: 'application/pdf' });
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `crime-report-${selectedLocation.address}.pdf`;
+                        document.body.appendChild(a);
+                        a.click();
+                        a.remove();
+                        window.URL.revokeObjectURL(url);
+                      }}
+                    >
+                      Export as PDF
+                    </Button>
+                  </Box>
+                )}
 
                 {/* Crime Statistics */}
                 <Box sx={{ mt: 3 }}>

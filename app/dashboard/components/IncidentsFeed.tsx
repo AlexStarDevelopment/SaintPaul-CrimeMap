@@ -9,7 +9,6 @@ import {
   ListItemIcon,
   Chip,
   IconButton,
-  CircularProgress,
   Alert,
   Divider,
 } from '@mui/material';
@@ -66,7 +65,6 @@ function getIncidentColor(incident: string): 'error' | 'warning' | 'info' | 'inh
 
 export default function IncidentsFeed({ location, userTier, onViewOnMap }: IncidentsFeedProps) {
   const [incidents, setIncidents] = useState<Crime[]>([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { crimeData, getCrimesForLocation } = useCrimeData();
 
@@ -99,21 +97,17 @@ export default function IncidentsFeed({ location, userTier, onViewOnMap }: Incid
 
   const fetchIncidents = useCallback(() => {
     try {
-      setLoading(true);
       setError(null);
 
       if (!location.coordinates.lat || !location.coordinates.lng) {
-        setLoading(false);
         return;
       }
 
       if (crimeData.isLoading) {
-        setLoading(true);
         return;
       }
 
       if (!crimeData.items.length) {
-        setLoading(false);
         return;
       }
 
@@ -147,8 +141,6 @@ export default function IncidentsFeed({ location, userTier, onViewOnMap }: Incid
       console.error('Error processing incidents:', err);
       setError(err.message);
       setIncidents([]);
-    } finally {
-      setLoading(false);
     }
   }, [
     location.coordinates.lat,
@@ -167,16 +159,6 @@ export default function IncidentsFeed({ location, userTier, onViewOnMap }: Incid
     0,
     userTier === 'free' ? 5 : userTier === 'supporter' ? 10 : 20
   );
-
-  if (loading) {
-    return (
-      <Paper elevation={2} sx={{ p: 3 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-          <CircularProgress />
-        </Box>
-      </Paper>
-    );
-  }
 
   return (
     <Paper elevation={2} sx={{ p: 3 }}>
