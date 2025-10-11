@@ -32,7 +32,7 @@ An interactive web application that visualizes crime data for Saint Paul, Minnes
 
 ## 📋 Prerequisites
 
-- Node.js 18.x or higher
+- Node.js 22.x or higher
 - npm or yarn package manager
 - MongoDB database (local or cloud instance)
 
