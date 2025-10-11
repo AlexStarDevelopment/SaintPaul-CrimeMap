@@ -280,6 +280,8 @@ export default function IncidentsFeed({ location, userTier, onViewOnMap }: Incid
                           </Box>
                         </Box>
                       }
+                      primaryTypographyProps={{ component: 'div' }}
+                      secondaryTypographyProps={{ component: 'div' }}
                     />
                   </ListItem>
                   {index < displayIncidents.length - 1 && (

@@ -128,6 +128,7 @@ export default function SavedLocations({
                     />
                   </Box>
                 }
+                secondaryTypographyProps={{ component: 'div' }}
               />
               <ListItemSecondaryAction>
                 {deletingId === location._id ? (
