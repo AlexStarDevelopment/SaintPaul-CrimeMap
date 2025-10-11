@@ -473,6 +473,13 @@ export default function Home() {
               commitment to Saint Paul&apos;s most reliable crime data resource:
             </Typography>
             <Typography variant="body2" sx={{ mb: 1 }}>
+              10/10/25 4.1.0 - July 2025 crime data added to dropdown selector. All 2025 data
+              (January-July) updated with the most recent available information. NOTE: Due to the
+              Saint Paul digital security incident, the police department has been experiencing
+              delays in publishing the most up-to-date crime data. We are keeping a close eye on it
+              and will update the map as soon as new data is released by the city.
+            </Typography>
+            <Typography variant="body2" sx={{ mb: 1 }}>
               08/20/25 4.0.1 - Minor bug fixed in the dashboard preventing users from changing
               between 7 and 30 days in crime stats.
             </Typography>
