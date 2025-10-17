@@ -473,6 +473,11 @@ export default function Home() {
               commitment to Saint Paul&apos;s most reliable crime data resource:
             </Typography>
             <Typography variant="body2" sx={{ mb: 1 }}>
+              10/16/25 4.2.0 - August and September 2025 crime data added to dropdown selector. All
+              2025 data (January-September) now available. Dropdown reorganized in reverse
+              chronological order for easier navigation.
+            </Typography>
+            <Typography variant="body2" sx={{ mb: 1 }}>
               10/10/25 4.1.0 - July 2025 crime data added to dropdown selector. All 2025 data
               (January-July) updated with the most recent available information. NOTE: Due to the
               Saint Paul digital security incident, the police department has been experiencing
