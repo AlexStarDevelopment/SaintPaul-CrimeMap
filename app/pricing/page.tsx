@@ -193,9 +193,6 @@ export default function PricingPage() {
         <Typography variant="body2" color="text.secondary">
           All plans include access to the Saint Paul Crime Map with real-time data updates.
         </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-          Need help choosing? Contact us at support@saintpaulcrimemap.com
-        </Typography>
       </Box>
     </Container>
   );
