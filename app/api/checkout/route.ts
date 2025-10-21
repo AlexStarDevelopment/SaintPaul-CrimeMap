@@ -6,6 +6,15 @@ import { SubscriptionTier } from '@/types/user';
 
 export async function POST(req: NextRequest) {
   try {
+    // Check Stripe configuration first
+    if (!process.env.STRIPE_SECRET_KEY) {
+      console.error('STRIPE_SECRET_KEY not configured');
+      return NextResponse.json(
+        { error: 'Payment system not configured. Please contact support.' },
+        { status: 500 }
+      );
+    }
+
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.id) {
