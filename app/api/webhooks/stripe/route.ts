@@ -57,8 +57,8 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
     stripeSubscriptionId: subscription.id,
     tier: tier,
     status: mapStripeStatus(subscription.status),
-    subscriptionEndDate: new Date(subscription.current_period_end * 1000),
-    trialEndDate: subscription.trial_end ? new Date(subscription.trial_end * 1000) : undefined,
+    subscriptionEndDate: new Date((subscription.current_period_end as number) * 1000),
+    trialEndDate: subscription.trial_end ? new Date((subscription.trial_end as number) * 1000) : undefined,
   });
 
   console.log(`Subscription created for user ${user._id}: ${tier}`);
@@ -93,8 +93,8 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
     stripeSubscriptionId: subscription.id,
     tier: finalTier,
     status: status,
-    subscriptionEndDate: new Date(subscription.current_period_end * 1000),
-    trialEndDate: subscription.trial_end ? new Date(subscription.trial_end * 1000) : undefined,
+    subscriptionEndDate: new Date((subscription.current_period_end as number) * 1000),
+    trialEndDate: subscription.trial_end ? new Date((subscription.trial_end as number) * 1000) : undefined,
   });
 
   // Handle location limits on downgrade
@@ -123,7 +123,7 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
   await updateUserSubscription(user._id!, {
     tier: 'free',
     status: 'canceled',
-    subscriptionEndDate: new Date(subscription.current_period_end * 1000),
+    subscriptionEndDate: new Date((subscription.current_period_end as number) * 1000),
   });
 
   // Handle location limits when downgrading to free
