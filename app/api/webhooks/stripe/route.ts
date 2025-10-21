@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { stripe } from '@/lib/stripe';
-import { updateUserSubscription, getUserByStripeCustomerId } from '@/lib/services/users';
+import {
+  updateUserSubscription,
+  getUserByStripeCustomerId,
+  getUserById,
+  updateUser,
+} from '@/lib/services/users';
 import { SubscriptionStatus, SubscriptionTier } from '@/types/user';
 import { handleTierDowngrade } from '@/lib/services/locations';
 
@@ -147,17 +152,35 @@ async function handleSubscriptionDeleted(subscription: SubscriptionWithTimestamp
 async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   const customerId = session.customer as string;
   const subscriptionId = session.subscription as string;
+  const userId = session.metadata?.userId;
 
   if (!subscriptionId) {
     console.log('No subscription in checkout session');
     return;
   }
 
-  const user = await getUserByStripeCustomerId(customerId);
+  // Try to find user by Stripe customer ID first
+  let user = await getUserByStripeCustomerId(customerId);
+
+  // If not found, try userId from metadata (handles case where customer ID changed)
+  if (!user && userId) {
+    console.log(`User not found by customer ID ${customerId}, trying metadata userId: ${userId}`);
+    user = await getUserById(userId);
+  }
 
   if (!user) {
-    console.error('User not found for Stripe customer:', customerId);
+    console.error('User not found for Stripe customer:', customerId, 'metadata userId:', userId);
     return;
+  }
+
+  // Update the customer ID in case it changed (test -> live migration)
+  if (user.stripeCustomerId !== customerId) {
+    console.log(
+      `Updating customer ID for user ${user._id} from ${user.stripeCustomerId} to ${customerId}`
+    );
+    await updateUser(user._id!.toString(), {
+      stripeCustomerId: customerId,
+    });
   }
 
   // Fetch the full subscription object
