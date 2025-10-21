@@ -473,6 +473,14 @@ export default function Home() {
               commitment to Saint Paul&apos;s most reliable crime data resource:
             </Typography>
             <Typography variant="body2" sx={{ mb: 1 }}>
+              10/21/25 5.0.0 - MAJOR UPDATE: Optional subscription tiers now available! Supporter
+              ($5/month) and Pro ($15/month) tiers introduced with enhanced features including
+              increased saved location limits, dashboard analytics, and unlimited PDF address safety
+              reports for Pro users. Free tier remains fully functional with core map features. All
+              paid tiers include 7-day free trial. This sustainable funding model ensures continued
+              development and maintenance of Saint Paul&apos;s most trusted crime data resource.
+            </Typography>
+            <Typography variant="body2" sx={{ mb: 1 }}>
               10/16/25 4.2.0 - August and September 2025 crime data added to dropdown selector. All
               2025 data (January-September) now available. Dropdown reorganized in reverse
               chronological order for easier navigation.

@@ -309,11 +309,16 @@ export default function AccountPage() {
                     sx={{ display: 'flex', alignItems: 'center' }}
                   >
                     <CalendarIcon sx={{ fontSize: 16, mr: 0.5 }} />
-                    Renews On
+                    {user.subscriptionStatus === 'canceled' ? 'Subscription Ends On' : 'Renews On'}
                   </Typography>
                   <Typography variant="body2">
                     {new Date(user.subscriptionEndDate).toLocaleDateString()}
                   </Typography>
+                  {user.subscriptionStatus === 'canceled' && (
+                    <Typography variant="caption" color="warning.main" sx={{ mt: 0.5 }}>
+                      Your subscription has been canceled and will end on this date.
+                    </Typography>
+                  )}
                 </Box>
               )}
 

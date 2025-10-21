@@ -70,6 +70,7 @@ export const SUBSCRIPTION_TIERS: Record<
       'Everything in Supporter',
       'Unlimited saved locations',
       'Dashboard analytics',
+      'Unlimited PDF address safety reports',
       '7-day free trial',
     ],
     stripePriceId: process.env.STRIPE_PRO_PRICE_ID,
