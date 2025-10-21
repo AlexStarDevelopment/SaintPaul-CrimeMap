@@ -8,6 +8,12 @@ import { handleTierDowngrade } from '@/lib/services/locations';
 // Disable body parsing for webhooks
 export const runtime = 'nodejs';
 
+// Helper type for subscription with timestamps
+type SubscriptionWithTimestamps = Stripe.Subscription & {
+  current_period_end: number;
+  trial_end?: number | null;
+};
+
 /**
  * Map Stripe price ID to subscription tier
  */
@@ -41,7 +47,7 @@ function mapStripeStatus(stripeStatus: string): SubscriptionStatus {
 /**
  * Handle subscription created event
  */
-async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
+async function handleSubscriptionCreated(subscription: SubscriptionWithTimestamps) {
   const customerId = subscription.customer as string;
   const user = await getUserByStripeCustomerId(customerId);
 
@@ -57,8 +63,8 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
     stripeSubscriptionId: subscription.id,
     tier: tier,
     status: mapStripeStatus(subscription.status),
-    subscriptionEndDate: new Date((subscription.current_period_end as number) * 1000),
-    trialEndDate: subscription.trial_end ? new Date((subscription.trial_end as number) * 1000) : undefined,
+    subscriptionEndDate: new Date(subscription.current_period_end * 1000),
+    trialEndDate: subscription.trial_end ? new Date(subscription.trial_end * 1000) : undefined,
   });
 
   console.log(`Subscription created for user ${user._id}: ${tier}`);
@@ -67,7 +73,7 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
 /**
  * Handle subscription updated event
  */
-async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
+async function handleSubscriptionUpdated(subscription: SubscriptionWithTimestamps) {
   const customerId = subscription.customer as string;
   const user = await getUserByStripeCustomerId(customerId);
 
@@ -93,8 +99,8 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
     stripeSubscriptionId: subscription.id,
     tier: finalTier,
     status: status,
-    subscriptionEndDate: new Date((subscription.current_period_end as number) * 1000),
-    trialEndDate: subscription.trial_end ? new Date((subscription.trial_end as number) * 1000) : undefined,
+    subscriptionEndDate: new Date(subscription.current_period_end * 1000),
+    trialEndDate: subscription.trial_end ? new Date(subscription.trial_end * 1000) : undefined,
   });
 
   // Handle location limits on downgrade
@@ -111,7 +117,7 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
 /**
  * Handle subscription deleted event
  */
-async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
+async function handleSubscriptionDeleted(subscription: SubscriptionWithTimestamps) {
   const customerId = subscription.customer as string;
   const user = await getUserByStripeCustomerId(customerId);
 
@@ -123,7 +129,7 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
   await updateUserSubscription(user._id!, {
     tier: 'free',
     status: 'canceled',
-    subscriptionEndDate: new Date((subscription.current_period_end as number) * 1000),
+    subscriptionEndDate: new Date(subscription.current_period_end * 1000),
   });
 
   // Handle location limits when downgrading to free
@@ -206,15 +212,15 @@ export async function POST(req: NextRequest) {
   try {
     switch (event.type) {
       case 'customer.subscription.created':
-        await handleSubscriptionCreated(event.data.object as Stripe.Subscription);
+        await handleSubscriptionCreated(event.data.object as SubscriptionWithTimestamps);
         break;
 
       case 'customer.subscription.updated':
-        await handleSubscriptionUpdated(event.data.object as Stripe.Subscription);
+        await handleSubscriptionUpdated(event.data.object as SubscriptionWithTimestamps);
         break;
 
       case 'customer.subscription.deleted':
-        await handleSubscriptionDeleted(event.data.object as Stripe.Subscription);
+        await handleSubscriptionDeleted(event.data.object as SubscriptionWithTimestamps);
         break;
 
       case 'checkout.session.completed':
