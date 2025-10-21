@@ -186,7 +186,7 @@ export const handleTierDowngrade = async (
       { $set: { isActive: false, updatedAt: new Date() } }
     );
 
-    logger.info('Disabled excess locations on tier downgrade', {
+    console.log('Disabled excess locations on tier downgrade', {
       userId,
       newTier,
       limit,
@@ -199,7 +199,7 @@ export const handleTierDowngrade = async (
       disabledCount: idsToDisable.length,
     };
   } catch (error) {
-    logger.error('Error handling tier downgrade', error, { userId, newTier });
+    console.error('Error handling tier downgrade', error, { userId, newTier });
     return { keptCount: 0, disabledCount: 0 };
   }
 };

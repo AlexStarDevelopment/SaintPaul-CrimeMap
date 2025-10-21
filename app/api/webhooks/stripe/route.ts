@@ -162,7 +162,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
 
   // Fetch the full subscription object
   const subscription = await stripe.subscriptions.retrieve(subscriptionId);
-  await handleSubscriptionCreated(subscription);
+  await handleSubscriptionCreated(subscription as unknown as SubscriptionWithTimestamps);
 
   console.log(`Checkout completed for user ${user._id}`);
 }
