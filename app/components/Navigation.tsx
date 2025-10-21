@@ -28,6 +28,7 @@ import {
   AdminPanelSettings,
   Home,
   Map as MapIcon,
+  CreditCard,
 } from '@mui/icons-material';
 import { SelectChangeEvent } from '@mui/material/Select';
 import { useTheme as useMUITheme } from '@mui/material/styles';
@@ -344,6 +345,17 @@ export default function Navigation({
                         <Person fontSize="small" />
                       </ListItemIcon>
                       Account
+                    </MenuItem>
+                    <MenuItem
+                      onClick={() => {
+                        setAnchorEl(null);
+                        router.push('/pricing');
+                      }}
+                    >
+                      <ListItemIcon>
+                        <CreditCard fontSize="small" />
+                      </ListItemIcon>
+                      Pricing
                     </MenuItem>
                     {session.user?.isAdmin && (
                       <MenuItem

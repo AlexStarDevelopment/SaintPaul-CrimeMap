@@ -1,0 +1,136 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - generic [ref=e5]:
+        - heading "Saint Paul Crime Map" [level=1] [ref=e6]
+        - generic [ref=e7]:
+          - generic [ref=e8]:
+            - generic [ref=e9]: Crime Data
+            - generic [ref=e10]:
+              - combobox "Crime Data" [ref=e11] [cursor=pointer]: September 2025
+              - textbox: "1"
+              - img
+              - group:
+                - generic: Crime Data
+          - button "Filters" [ref=e12] [cursor=pointer]:
+            - img [ref=e14]
+            - text: Filters
+        - button "Sign In" [ref=e17] [cursor=pointer]:
+          - img [ref=e19]
+          - text: Sign In
+    - generic [ref=e21]:
+      - generic [ref=e25]:
+        - generic [ref=e26]:
+          - progressbar [ref=e27]:
+            - img [ref=e28]
+          - heading "Loading Crime Data..." [level=6] [ref=e30]
+          - paragraph [ref=e31]: Please wait while we fetch and process the data
+        - generic [ref=e32]:
+          - generic:
+            - generic [ref=e33]:
+              - button "Zoom in" [ref=e34] [cursor=pointer]: +
+              - button "Zoom out" [ref=e35] [cursor=pointer]: −
+            - generic [ref=e36]:
+              - link "Leaflet" [ref=e37] [cursor=pointer]:
+                - /url: https://leafletjs.com
+                - img [ref=e38]
+                - text: Leaflet
+              - text: "| ©"
+              - link "OpenStreetMap" [ref=e42] [cursor=pointer]:
+                - /url: https://www.openstreetmap.org/copyright
+              - text: contributors
+      - generic [ref=e43]:
+        - paragraph [ref=e44]: "Love this tool? Support Saint Paul's #1 crime resource"
+        - button "Support This Resource" [ref=e45] [cursor=pointer]
+      - generic [ref=e47]:
+        - heading "About" [level=3] [ref=e48]
+        - paragraph [ref=e49]: My name is Alex and I live on the Westside in Saint Paul. I couldn't find reliable crime maps for our city - the public data spreadsheets are buggy and nearly impossible to use. I figured if I was having trouble accessing this critical safety information, others would be too. Building this tool took extensive work cleaning the city's messy data, hand-correcting GPS coordinates, and making it actually usable for our community.
+        - paragraph [ref=e50]: "What started as a personal project has become Saint Paul's #1 crime resource, with thousands of monthly users who depend on accurate, up-to-date safety information. I spend 15-20 hours monthly maintaining this tool, ensuring it stays reliable when other resources fail. If this helps you stay informed about your neighborhood's safety, please consider supporting its continued development."
+      - generic [ref=e52]:
+        - heading "Why This Tool Matters" [level=3] [ref=e53]
+        - paragraph [ref=e54]:
+          - strong [ref=e55]: "Unlike other crime resources, this tool actually works:"
+        - paragraph [ref=e56]:
+          - text: •
+          - strong [ref=e57]: "#1 Google ranking"
+          - text: for Saint Paul crime data
+        - paragraph [ref=e58]:
+          - text: •
+          - strong [ref=e59]: Monthly updates
+          - text: with cleaned, verified data
+        - paragraph [ref=e60]:
+          - text: •
+          - strong [ref=e61]: Hand-corrected GPS coordinates
+          - text: for accurate mapping
+        - paragraph [ref=e62]:
+          - text: •
+          - strong [ref=e63]: No crashes or bugs
+          - text: like the city's official tools
+        - paragraph [ref=e64]:
+          - text: •
+          - strong [ref=e65]: Free for everyone
+          - text: in our community
+        - paragraph [ref=e66]:
+          - strong [ref=e67]: "Monthly costs to maintain this resource:"
+          - text: Server hosting, data processing, and 20+ hours of manual updates to ensure accuracy.
+      - generic [ref=e69]:
+        - heading "Support Saint Paul's Crime Data Resource" [level=3] [ref=e70]
+        - paragraph [ref=e71]: This tool has grown from a personal project to the most trusted crime resource in Saint Paul. Maintaining this level of accuracy and reliability requires ongoing investment.
+        - paragraph [ref=e72]:
+          - strong [ref=e73]: Join hundreds of Saint Paul residents
+          - text: who support keeping this critical safety resource free and updated for our entire community.
+        - generic [ref=e74]:
+          - button "Support This Resource" [ref=e75] [cursor=pointer]
+          - paragraph [ref=e76]: (Buy Alex a coffee at Amore)
+      - generic [ref=e78]:
+        - heading "Limitations" [level=3] [ref=e79]
+        - paragraph [ref=e80]: "Data provided by the city is not exact and locations are approximate. Addresses from the city are obfuscated for privacy so I round dates to the middle. Ex: 1XX Robert St will become 150 Robert St. Only crimes that have been reported and entered into the cities database will be displayed"
+      - generic [ref=e82]:
+        - heading "Development History" [level=3] [ref=e83]
+        - paragraph [ref=e84]:
+          - strong [ref=e85]: Over 25 major updates
+          - text: "in the past year - demonstrating ongoing commitment to Saint Paul's most reliable crime data resource:"
+        - paragraph [ref=e86]: 10/16/25 4.2.0 - August and September 2025 crime data added to dropdown selector. All 2025 data (January-September) now available. Dropdown reorganized in reverse chronological order for easier navigation.
+        - paragraph [ref=e87]: "10/10/25 4.1.0 - July 2025 crime data added to dropdown selector. All 2025 data (January-July) updated with the most recent available information. NOTE: Due to the Saint Paul digital security incident, the police department has been experiencing delays in publishing the most up-to-date crime data. We are keeping a close eye on it and will update the map as soon as new data is released by the city."
+        - paragraph [ref=e88]: 08/20/25 4.0.1 - Minor bug fixed in the dashboard preventing users from changing between 7 and 30 days in crime stats.
+        - paragraph [ref=e89]: "08/19/25 4.0.0 - MAJOR UPDATE: Personal Crime Dashboard! Save up to 2 locations (more coming soon), track crime statistics with safety scores, view recent incidents in your areas, and monitor crime trends. Plus: Improved navigation with compact mobile design, new account benefits dialog, foundation for upcoming subscription features. The most comprehensive update yet!"
+        - paragraph [ref=e90]: 08/18/25 3.1.1 - Small bug fixes to account themes.
+        - paragraph [ref=e91]: "08/17/25 3.1.0 - NEW: User accounts now available! Create an account to save your preferred theme settings, access personalized dashboard features, and get a customized experience. Also includes major performance improvements: faster page loading, quicker map rendering, cleaner navigation, and enhanced reliability across all devices."
+        - paragraph [ref=e92]: 08/01/25 3.0.0 - Updates to the map component package. Updates to all 2025 crime data. Another major makeover and component upgrade.
+        - paragraph [ref=e93]: 07/03/25 2.0.0 - We have added June 2025 data, cleaned up old data, and made sure you can select your own theme and it stays just how you like it. Enjoy the fresh new look and feel!
+        - paragraph [ref=e94]: 06/10/25 1.9 - May data added. All 2025 updated as of today. Thank you for one year theme!
+        - paragraph [ref=e95]: 05/13/25 1.8.9 - March / April data added. All 2025 updated as of today
+        - paragraph [ref=e96]: 03/30/25 1.8.9 - February data added. All 2025 updated as of today
+        - paragraph [ref=e97]: "02/17/25 1.8.8 - Sorry for the delay in the most recent data. I have a new job now and I am settling in well so I took some time to come back to this app and was thrilled to see all the traffic and its #1 google ranking! I have updated the app to add december 2024, january 2025, and all 2024 is now all of 2024! Another year in the books! Thanks for the support."
+        - paragraph [ref=e98]: 12/11/24 1.8.7 - November data added - All 2024 Data updated
+        - paragraph [ref=e99]: 11/18/24 1.8.6 - October data added - All 2024 Data updated
+        - paragraph [ref=e100]: 10/15/24 1.8.5 - September data added - All 2024 Data updated
+        - paragraph [ref=e101]: 10/4/24 1.8.4 - September data added
+        - paragraph [ref=e102]: 9/14/24 1.8.3 - August data added
+        - paragraph [ref=e103]: 8/8/24 1.8.2 - Second half of July data added
+        - paragraph [ref=e104]: 7/22/24 1.8.1 - Data fixes for university ave
+        - paragraph [ref=e105]: 7/18/24 1.8.0 - Added July data and locations to each incident
+        - paragraph [ref=e106]: 7/15/24 1.7.0 - Filter menu added with support for filtering by date
+        - paragraph [ref=e107]: 7/14/24 1.6.0 - Filter menu added with support for filtering by neighborhood
+        - paragraph [ref=e108]: 7/10/24 1.5.0 - Filter menu added with support for filtering by crime types
+        - paragraph [ref=e109]: 7/4/24 1.4.1 - Fixed loading issues for years 2015-2022
+        - paragraph [ref=e110]: 7/3/24 1.4.0 - All data for 2014 - 2022 added.
+        - paragraph [ref=e111]: 7/2/24 1.3.0 - June 2024 data added. April, March, February, and January data added. All available for 2024 expanded to entire city. All 2023 data added.
+        - paragraph [ref=e112]: 6/20/24 1.2.0 - Expanded May 2024 data to include the entire city of Saint Paul. Widened text cards on desktop
+        - paragraph [ref=e113]: 6/19/24 1.1.0 - Added new dropdown feature which allows switching between May 2024 and All 2024 data available. Fixed minor issue with addresses on HALL. Crimes provided by the city via cross streets are now more accurate. Added change log.
+        - paragraph [ref=e114]: 6/18/24 1.0.2 - Added new icons for each offense
+        - paragraph [ref=e115]: 6/17/24 1.0.1 - Added dates to each offense
+        - paragraph [ref=e116]: 6/14/24 1.0.0 - Initial Release
+        - generic [ref=e117]:
+          - paragraph [ref=e118]: This level of dedication requires ongoing support to continue.
+          - button "Help Keep This Resource Running" [ref=e119] [cursor=pointer]
+      - generic [ref=e121]:
+        - heading "Disclaimer" [level=3] [ref=e122]
+        - paragraph [ref=e123]: "City of Saint Paul Disclaimer: This data is public domain. This data are provided to you \"as is\" and without any warranty as to their performance, merchantability, or fitness for any particular purpose. The City of Saint Paul does not represent or warrant that the data or the data documentation are error-free, complete, current, or accurate. You are responsible for any consequences resulting from your use of the data or your reliance on the data."
+  - button "Open Next.js Dev Tools" [ref=e129] [cursor=pointer]:
+    - img [ref=e130]
+  - alert [ref=e133]
+```

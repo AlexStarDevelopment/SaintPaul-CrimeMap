@@ -31,7 +31,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const locations = await getUserLocations(session.user.id);
+    const userTier = session.user.subscriptionTier || 'free';
+    const locations = await getUserLocations(session.user.id, userTier);
 
     return NextResponse.json({ locations });
   } catch (error) {

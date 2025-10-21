@@ -49,6 +49,8 @@ export default function AccountPage() {
   const [saving, setSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
   const [dashboardEnabled, setDashboardEnabled] = useState<boolean>(true);
+  const [portalLoading, setPortalLoading] = useState(false);
+  const [checkoutSuccess, setCheckoutSuccess] = useState(false);
 
   useEffect(() => {
     if (authenticated && session?.user?.theme) {
@@ -74,6 +76,18 @@ export default function AccountPage() {
     };
     loadFlags();
   }, []);
+
+  useEffect(() => {
+    // Check for checkout success in URL
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('checkout') === 'success') {
+      setCheckoutSuccess(true);
+      // Update session to reflect new subscription
+      update();
+      // Clean URL
+      window.history.replaceState({}, '', '/account');
+    }
+  }, [update]);
 
   const handleThemeChange = async (event: SelectChangeEvent<ThemeType>) => {
     const newTheme = event.target.value as ThemeType;
@@ -106,6 +120,30 @@ export default function AccountPage() {
       setSaveMessage('An error occurred. Please try again.');
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleManageBilling = async () => {
+    setPortalLoading(true);
+    try {
+      const response = await fetch('/api/subscription/portal', {
+        method: 'POST',
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to open billing portal');
+      }
+
+      // Redirect to Stripe customer portal
+      if (data.url) {
+        window.location.href = data.url;
+      }
+    } catch (error) {
+      console.error('Portal error:', error);
+      alert(error instanceof Error ? error.message : 'Failed to open billing portal');
+      setPortalLoading(false);
     }
   };
 
@@ -171,6 +209,13 @@ export default function AccountPage() {
             Account Settings
           </Typography>
         </Box>
+
+        {checkoutSuccess && (
+          <Alert severity="success" sx={{ mb: 3 }} onClose={() => setCheckoutSuccess(false)}>
+            Welcome to your subscription! Your trial has started and you now have access to all
+            premium features.
+          </Alert>
+        )}
 
         <Grid container spacing={3}>
           {/* Profile Information */}
@@ -281,6 +326,38 @@ export default function AccountPage() {
                     <Chip key={index} label={feature} size="small" variant="outlined" />
                   ))}
                 </Box>
+              </Box>
+
+              <Box sx={{ mt: 3, display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+                {(user.subscriptionTier === 'free' || !user.subscriptionTier) && (
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => router.push('/pricing')}
+                    fullWidth
+                  >
+                    Upgrade Plan
+                  </Button>
+                )}
+                {user.subscriptionTier && user.subscriptionTier !== 'free' && (
+                  <>
+                    <Button
+                      variant="contained"
+                      onClick={handleManageBilling}
+                      disabled={portalLoading}
+                      sx={{ flex: 1 }}
+                    >
+                      {portalLoading ? 'Loading...' : 'Manage Billing'}
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      onClick={() => router.push('/pricing')}
+                      sx={{ flex: 1 }}
+                    >
+                      Change Plan
+                    </Button>
+                  </>
+                )}
               </Box>
             </Paper>
           </Grid>

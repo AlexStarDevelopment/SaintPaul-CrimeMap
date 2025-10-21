@@ -105,10 +105,10 @@ export function getUpgradeOptions(currentTier: SubscriptionTier): SubscriptionTi
 }
 
 /**
- * Calculate trial end date (14 days from now)
+ * Calculate trial end date (7 days from now)
  */
 export function calculateTrialEndDate(): Date {
-  const trialDays = 14;
+  const trialDays = 7;
   const trialEnd = new Date();
   trialEnd.setDate(trialEnd.getDate() + trialDays);
   return trialEnd;

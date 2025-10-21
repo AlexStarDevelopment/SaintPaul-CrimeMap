@@ -308,9 +308,26 @@ export default function DashboardPage() {
         )}
 
         {!canAddMore && (
-          <Alert severity="info" sx={{ mb: 2 }}>
-            You&apos;ve reached the maximum number of saved locations for your {userTier} plan.
-            {userTier !== 'pro' && ' Upgrade to save more locations (coming soon).'}
+          <Alert
+            severity="info"
+            sx={{ mb: 2 }}
+            action={
+              userTier !== 'pro' && (
+                <Button
+                  color="inherit"
+                  size="small"
+                  onClick={() => router.push('/pricing')}
+                  sx={{ fontWeight: 'bold' }}
+                >
+                  Upgrade
+                </Button>
+              )
+            }
+          >
+            You&apos;ve reached the maximum number of saved locations for your {userTier} plan (
+            {LOCATION_LIMITS[userTier as keyof typeof LOCATION_LIMITS]}/
+            {LOCATION_LIMITS[userTier as keyof typeof LOCATION_LIMITS]}).
+            {userTier !== 'pro' && ' Upgrade to save more locations.'}
           </Alert>
         )}
 
