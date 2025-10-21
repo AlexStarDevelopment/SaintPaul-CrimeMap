@@ -190,9 +190,18 @@ export default function PricingPage() {
       </Box>
 
       <Box sx={{ mt: 6, textAlign: 'center' }}>
-        <Typography variant="body2" color="text.secondary">
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
           All plans include access to the Saint Paul Crime Map with real-time data updates.
         </Typography>
+        {status === 'authenticated' && (
+          <Button
+            variant="text"
+            onClick={() => router.push('/dashboard')}
+            sx={{ color: 'text.secondary' }}
+          >
+            No thanks, continue to dashboard
+          </Button>
+        )}
       </Box>
     </Container>
   );

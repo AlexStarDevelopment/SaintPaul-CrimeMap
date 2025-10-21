@@ -20,7 +20,8 @@ import {
   Palette as PaletteIcon,
   Bookmark as BookmarkIcon,
   TrendingUp as TrendingUpIcon,
-  Notifications as NotificationsIcon,
+  PictureAsPdf as PdfIcon,
+  Star as StarIcon,
   Close as CloseIcon,
 } from '@mui/icons-material';
 import { signIn } from 'next-auth/react';
@@ -32,7 +33,7 @@ interface AccountBenefitsDialogProps {
 
 export default function AccountBenefitsDialog({ open, onClose }: AccountBenefitsDialogProps) {
   const handleCreateAccount = () => {
-    signIn('google', { callbackUrl: '/' });
+    signIn('google', { callbackUrl: '/pricing' });
   };
 
   const benefits = [
@@ -40,13 +41,7 @@ export default function AccountBenefitsDialog({ open, onClose }: AccountBenefits
       icon: <DashboardIcon sx={{ color: 'primary.main' }} />,
       title: 'Personal Crime Dashboard',
       description:
-        'Save multiple locations and get detailed crime statistics for areas you care about',
-    },
-    {
-      icon: <BookmarkIcon sx={{ color: 'secondary.main' }} />,
-      title: 'Save Your Locations',
-      description:
-        'Track crime activity around your home, work, or any location that matters to you',
+        'Save locations and get detailed crime statistics for areas you care about (free tier: 2 locations)',
     },
     {
       icon: <PaletteIcon sx={{ color: 'info.main' }} />,
@@ -59,10 +54,16 @@ export default function AccountBenefitsDialog({ open, onClose }: AccountBenefits
       description: 'View detailed crime trends, safety scores, and historical data for your areas',
     },
     {
-      icon: <NotificationsIcon sx={{ color: 'warning.main' }} />,
-      title: 'Enhanced Features (Coming Soon)',
+      icon: <StarIcon sx={{ color: 'warning.main' }} />,
+      title: 'Premium Tiers Available',
       description:
-        'Get notified about crime activity in your saved locations and more premium features',
+        'Supporter ($5/mo): Save up to 5 locations. Pro ($15/mo): Unlimited locations + PDF reports',
+    },
+    {
+      icon: <PdfIcon sx={{ color: 'error.main' }} />,
+      title: 'PDF Address Safety Reports (Pro)',
+      description:
+        'Generate unlimited detailed PDF safety reports for any address with crime statistics and trends',
     },
   ];
 
@@ -107,7 +108,7 @@ export default function AccountBenefitsDialog({ open, onClose }: AccountBenefits
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
             The crime map is completely free to use, but an account unlocks powerful personalized
-            features:
+            features - plus optional premium tiers with enhanced capabilities:
           </Typography>
         </Box>
 
