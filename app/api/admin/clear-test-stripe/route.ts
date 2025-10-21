@@ -31,9 +31,6 @@ export async function POST(req: NextRequest) {
     });
   } catch (error) {
     console.error('Error clearing Stripe IDs:', error);
-    return NextResponse.json(
-      { error: 'Failed to clear Stripe IDs' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to clear Stripe IDs' }, { status: 500 });
   }
 }
